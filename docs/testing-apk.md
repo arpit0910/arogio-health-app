@@ -2,6 +2,23 @@
 
 ## Latest build - 2026-10-26
 
+Version **1.0.1**, Android build **5**, is a standalone signed APK with the JavaScript bundle included. It does not require Metro or Expo Go.
+
+- [Download build 5](https://expo.dev/artifacts/eas/wVHKk4mTUwgjkBMq-lCgwjSuduTr2dbdWMbCoZYq1RI.apk)
+- [EAS build 5](https://expo.dev/accounts/arpit0910/projects/arogio-health-app/builds/6aa56a81-90eb-48dc-9ada-b2ce6bf8ad25)
+- Local copy: `dist/arogio-health-1.0.1-build-5.apk` (99,015,907 bytes).
+- SHA-256: `a6c87f5ef110603cbb44eaca1becbf5a5f2027e439c783282abcb344091492b5`.
+
+EAS completed successfully. Android apksigner verified the signature; aapt confirmed `com.arogio.health`, versionCode 5, versionName 1.0.1, Android API 24 minimum, and arm64-v8a/armeabi-v7a/x86/x86_64 support. The downloaded APK's embedded bundle contains the production API URL, correct Google Web client ID, and setup route; the emulator API URL is absent. Lint, TypeScript and all 30 app tests passed before upload. Device rendering and successful Google account authentication remain unverified.
+
+The signing SHA-1 is `CD:D6:E8:F9:74:AB:F3:E8:1E:65:32:D0:4C:AD:3E:96:6D:BF:EB:B6`. Register it for `com.arogio.health` in the same Google project as the Web client; the supplied local debug SHA-1 does not cover this APK.
+
+The live production health endpoint was checked again during this build and returned HTTP 200 with `text/plain` containing `It works! NodeJS 22.23.4`. The hosted backend must be deployed/routed correctly before account and profile APIs can work. Rebuilding the APK does not resolve that server response.
+
+An additional local release build was attempted while EAS was queued, but Windows Ninja rejected a generated native path longer than 260 characters. No local release APK was produced; the download above is the successful EAS artifact.
+
+## Previous build 4
+
 Version **1.0.1**, Android build **4**, includes profile setup and the corrected Google Web client.
 
 - [Download APK](https://expo.dev/artifacts/eas/d2mqfmsIjGyz2e5j0IufAU8akfx5R9iILcVPsxpdg3Y.apk)
