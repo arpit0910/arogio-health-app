@@ -3,7 +3,7 @@
     "name": "arogio-health-app",
     "slug": "arogio-health-app",
     "scheme": "arogiohealth",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -27,7 +27,18 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "expo-web-browser"
-    ]
+      "expo-web-browser",
+      "expo-font"
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "74b1d2d2-f785-4933-80a9-bea41803a5fd"
+      }
+    }
   }
 }

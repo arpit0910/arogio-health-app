@@ -4,6 +4,8 @@ React Native (Expo SDK 58) client for `arogio_health_backend`, built with TypeSc
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the project structure, development builds, EAS setup, environment configuration, and validation commands.
 
+For a standalone Android test build and the live API verification status, see [testing-apk.md](docs/testing-apk.md).
+
 ## Start Locally
 
 1. Copy `.env.example` to `.env` (pre-configured with `https://backend.arogio.com/api/v1` and Google OAuth Client ID).
@@ -45,11 +47,14 @@ The app is mapped directly to the backend contracts found in `arogio_health_api.
 | **Token Refresh** | `POST /auth/refresh` | `refreshToken` for rotating session tokens |
 | **Logout** | `POST /auth/logout` | `refreshToken` to revoke session server-side |
 | **Current User** | `GET /users/me` | Bearer token authorization returning `SafeUser` |
+| **Update Profile** | `PATCH /users/me` | Name, username, and health measurements through `useAuth().updateProfile` |
+| **API Status** | `GET /health`, `GET /ready` | Liveness and dependency readiness |
 
 ## Google Sign-In
 
-- Configured using `expo-auth-session/providers/google` and `expo-web-browser`.
-- Google Client ID is configured in `.env` (`EXPO_PUBLIC_GOOGLE_CLIENT_ID`).
+- Android/iOS use `@react-native-google-signin/google-signin` to open native Google sign-in. Web uses `expo-auth-session/providers/google` and `expo-web-browser`.
+- The shared **Web application** OAuth client ID is configured in `.env` (`EXPO_PUBLIC_GOOGLE_CLIENT_ID`). `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, when set, takes precedence. Android does not require a separate client ID variable in JavaScript.
+- iOS also requires `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`; `app.config.js` automatically registers its reversed client ID URL scheme without Firebase configuration.
 - Deep link scheme `arogiohealth` is configured in `app.json`.
 
 ## Testing the Application
@@ -66,8 +71,15 @@ The app is mapped directly to the backend contracts found in `arogio_health_api.
    ```
    Opens the app immediately in your browser. Includes cross-platform secure storage fallback.
 
-3. **Built-in Quick-Fill Helpers**:
-   - In **Sign In**: Tap **"Fill Sample"** to auto-fill the test credentials from the Postman environment (`user@example.com` / `SecurePassword123!`).
-   - In **Sign Up**: Tap **"Fill Sample"** to generate a randomized new test account with BMI height/weight measurements.
-   - For **Google Auth**: Tap **"⚙️ Test Google Sign-in with ID Token"** to test `POST /auth/google` directly with sample or developer ID tokens.
-   - For **UI Verification**: Tap **"Demo Sign-In"** to preview the dashboard, health metrics, and BMI calculator instantly without requiring live network access.
+## Authentication screens
+
+The `/login` and `/signup` screens use the supplied Figma design, local SVG exports in `assets/auth/`, and the shared design tokens in `src/theme/tokens.ts`. Reusable fields, buttons, validation messages, consent controls, and the keyboard-aware layout are kept outside the route directory.
+
+- Email sign-in and registration use the existing backend contracts.
+- Sign-up validates password complexity, matching confirmation, and explicit agreement before submission. Consent is currently a client-side requirement; backend policy-version auditing is a future integration.
+- Remember me stores session tokens securely on mobile; turning it off keeps tokens in memory for the current session. The web preview uses browser storage for remembered sessions.
+- `/terms` and `/privacy` are in-app drafts requiring approval and confirmation of business/backend details before public release.
+- `/forgot-password` provides a recovery information screen. Reset emails are not implemented because the backend collection has no recovery endpoint.
+- Google sign-in requires a new development build after installing the native module. Expo Go does not include it. See [Google sign-in setup](docs/google-sign-in.md) for Google Cloud registrations and the live verification status.
+
+Run `npm run check` for lint, TypeScript, and the existing contract tests. Verify the screens on compact phones and tablets, with the keyboard open, large accessibility text, a screen reader, and native Back gestures. Browser previews do not establish native correctness or backend capacity.

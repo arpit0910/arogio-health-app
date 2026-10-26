@@ -9,6 +9,8 @@ import {
   safeUserSchema,
   TokenPair,
   tokenPairSchema,
+  UpdateProfileInput,
+  updateProfileSchema,
 } from '../types';
 
 export async function registerWithEmailPassword(
@@ -105,3 +107,19 @@ export async function getCurrentUserProfile(signal?: AbortSignal): Promise<SafeU
   return safeUserSchema.parse(response);
 }
 
+export async function updateCurrentUserProfile(input: UpdateProfileInput, signal?: AbortSignal): Promise<SafeUser> {
+  const response = await apiClient.request<unknown>({
+    path: '/users/me',
+    method: 'PATCH',
+    body: updateProfileSchema.parse(input),
+    signal,
+  });
+  return safeUserSchema.parse(response);
+}
+
+
+export async function saveProfileSetup(input: Record<string, unknown>): Promise<SafeUser> {
+  return safeUserSchema.parse(await apiClient.request<unknown>({
+    path: '/users/me/setup', method: 'PATCH', body: input,
+  }));
+}

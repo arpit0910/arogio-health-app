@@ -110,7 +110,17 @@ export class HttpClient {
 
   private async readBody(response: Response): Promise<unknown> {
     const contentType = response.headers.get('content-type') ?? '';
-    if (response.status === 204 || !contentType.includes('application/json')) return undefined;
-    return response.json();
+    if (response.status === 204) return undefined;
+    if (!contentType.includes('application/json')) {
+      if (response.ok) {
+        throw new ApiError('The API is not available right now. Please try again later.', 502, 'INVALID_API_RESPONSE');
+      }
+      return undefined;
+    }
+    try {
+      return await response.json();
+    } catch {
+      throw new ApiError('The API returned an invalid response. Please try again later.', 502, 'INVALID_API_RESPONSE');
+    }
   }
 }

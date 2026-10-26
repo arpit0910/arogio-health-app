@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 export const safeUserSchema = z.object({
+  profileCompletedAt: z.string().nullable().optional(),
+  profileSetup: z.record(z.unknown()).nullable().optional(),
   id: z.string(),
   fullName: z.string().nullable().optional(),
   username: z.string().nullable().optional(),
@@ -51,6 +53,15 @@ export const registerSchema = z.object({
   weightUnit: z.enum(['kg', 'lb']).optional(),
 });
 export type RegisterInput = z.infer<typeof registerSchema>;
+
+export const updateProfileSchema = registerSchema.pick({
+  fullName: true,
+  heightValue: true,
+  heightUnit: true,
+  weightValue: true,
+  weightUnit: true,
+}).extend({ username: z.string().min(2).max(50).optional() });
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
 export type GoogleLoginInput = {
   idToken: string;

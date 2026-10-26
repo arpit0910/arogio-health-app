@@ -5,6 +5,8 @@ const SESSION_KEY = 'arogio.session.v1';
 export type SessionTokens = { accessToken: string; refreshToken: string };
 
 const memoryStore = new Map<string, string>();
+let temporarySession: SessionTokens | null = null;
+let persistSession = true;
 
 async function getStorageItem(key: string): Promise<string | null> {
   if (Platform.OS === 'web') {
@@ -54,6 +56,7 @@ async function deleteStorageItem(key: string): Promise<void> {
 
 export const tokenStore = {
   async get(): Promise<SessionTokens | null> {
+    if (temporarySession) return temporarySession;
     const value = await getStorageItem(SESSION_KEY);
     if (!value) return null;
     try {
@@ -63,10 +66,20 @@ export const tokenStore = {
       return null;
     }
   },
-  async save(tokens: SessionTokens): Promise<void> {
+  async save(tokens: SessionTokens, persist = persistSession): Promise<void> {
+    if (!persist) {
+      await deleteStorageItem(SESSION_KEY);
+      persistSession = false;
+      temporarySession = tokens;
+      return;
+    }
     await setStorageItem(SESSION_KEY, JSON.stringify(tokens));
+    temporarySession = null;
+    persistSession = true;
   },
   async clear(): Promise<void> {
+    temporarySession = null;
+    persistSession = true;
     await deleteStorageItem(SESSION_KEY);
   },
 };

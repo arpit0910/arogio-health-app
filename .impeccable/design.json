@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-25T17:52:35.944319+00:00",
+  "title": "Design System: Arogio Authentication",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Deep Teal"
+      },
+      "primary-pressed": {
+        "role": "primary",
+        "displayName": "Pressed Teal"
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "White Canvas"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Deep Ink"
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Slate"
+      },
+      "placeholder": {
+        "role": "neutral",
+        "displayName": "Placeholder Slate"
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Pale Border"
+      },
+      "subtle": {
+        "role": "primary",
+        "displayName": "Mint Tint"
+      },
+      "error": {
+        "role": "error",
+        "displayName": "Error Red"
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Authentication Heading",
+        "purpose": "Centered screen headings."
+      },
+      "subtitle": {
+        "displayName": "Authentication Subtitle",
+        "purpose": "DM Sans supporting line beneath headings."
+      }
+    },
+    "shadows": [
+      {
+        "name": "primary-action",
+        "value": "0px 6px 12px rgba(9,110,100,0.22)",
+        "purpose": "Primary button depth."
+      },
+      {
+        "name": "secondary-action",
+        "value": "0px 2px 4px rgba(15,31,46,0.05)",
+        "purpose": "Secondary button depth."
+      }
+    ],
+    "motion": [],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main authentication action.",
+      "html": "<button class=\"ds-primary\">Sign In</button>",
+      "css": ".ds-primary{font-family:Inter,sans-serif;background:#096E64;color:#FFFFFF;font-size:14px;font-weight:600;line-height:21px;border:0;border-radius:999px;padding:10px 20px;min-height:48px;width:100%;box-shadow:0px 6px 12px rgba(9,110,100,0.22)}.ds-primary:hover,.ds-primary:active{background:#07574F}.ds-primary:focus-visible{outline:2px solid #096E64;outline-offset:3px}.ds-primary:disabled{opacity:.55}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Alternative authentication action.",
+      "html": "<button class=\"ds-secondary\">Continue with Google</button>",
+      "css": ".ds-secondary{font-family:Inter,sans-serif;background:#FFFFFF;color:#0D1F33;font-size:13px;font-weight:600;border:1px solid #E5E9F0;border-radius:999px;padding:10px 20px;min-height:48px;width:100%;box-shadow:0px 2px 4px rgba(15,31,46,0.05)}.ds-secondary:hover,.ds-secondary:active{background:#EFF9F6}.ds-secondary:focus-visible{outline:2px solid #096E64;outline-offset:3px}"
+    },
+    {
+      "name": "Authentication Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Reusable text entry with visible focus and invalid outline.",
+      "html": "<input class=\"ds-field\" aria-label=\"Email address\" placeholder=\"Email address\" type=\"email\">",
+      "css": ".ds-field{font-family:Inter,sans-serif;background:#FFFFFF;color:#0D1F33;font-size:13px;border:1px solid #E5E9F0;border-radius:12px;padding:10px 14px;min-height:48px}.ds-field::placeholder{color:#6C7A89}.ds-field:hover{border-color:#E5E9F0}.ds-field:focus-visible{outline:0;border-color:#096E64}.ds-field[aria-invalid=true]{border-color:#A42A36}"
+    },
+    {
+      "name": "Consent Checkbox",
+      "kind": "custom",
+      "refersTo": "field",
+      "description": "Compact square mark within an expanded touch target.",
+      "html": "<label class=\"ds-consent\"><input type=\"checkbox\"> I agree to the terms</label>",
+      "css": ".ds-consent{font-family:Inter,sans-serif;display:flex;align-items:center;gap:10px;min-height:48px;font-size:11.5px;color:#5E6D7E}.ds-consent input{accent-color:#096E64;width:18px;height:18px}.ds-consent:hover{color:#0D1F33}.ds-consent input:focus-visible{outline:2px solid #096E64;outline-offset:3px}"
+    },
+    {
+      "name": "Legal Draft Notice",
+      "kind": "custom",
+      "refersTo": "legal-notice",
+      "description": "Supporting notice on Terms and Privacy pages.",
+      "html": "<div class=\"ds-notice\">Draft for review ? Not yet approved for public launch</div>",
+      "css": ".ds-notice{font-family:Inter,sans-serif;background:#EFF9F6;color:#096E64;font-size:13px;font-weight:500;line-height:20px;border-radius:12px;padding:14px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "",
+    "overview": "The implemented authentication system follows the pinned Figma welcome, login, and signup screens: white surfaces, deep teal actions, centered identity, and restrained health-themed SVG artwork. The interface supports focused account tasks with reusable fields, actions, headings, and consent controls.\n\nScope is authentication, recovery, and supporting legal pages. The existing dashboard has not been fully migrated to this system. The intended large user base motivates reusable components; this document makes no backend capacity claim.",
+    "keyCharacteristics": [
+      "White canvas with teal actions and dark ink text.",
+      "Rounded fields and pill-shaped buttons.",
+      "Original Figma SVG artwork preserved as assets.",
+      "Mobile-first scrolling forms with accessible control targets.",
+      "Canonical 326 by 678 composition with native chrome, a 420dp width cap, and scale-aware touch targets."
+    ],
+    "rules": [],
+    "dos": [
+      "Do reuse the shared tokens and authentication components when extending account flows.",
+      "Do preserve the original SVG assets and their proportions.",
+      "Do retain keyboard scrolling, default font scaling, and accessible touch areas.",
+      "Do keep legal drafts visibly labeled until approved content replaces them."
+    ],
+    "donts": [
+      "Don't claim native device verification from browser previews.",
+      "Don't describe the unrelated dashboard as fully migrated.",
+      "Don't imply recovery delivery, Google native configuration, or backend scale has been verified."
+    ]
+  }
+}

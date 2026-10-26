@@ -1,0 +1,17 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="326" height="714" viewBox="0 0 326 714" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Icon" clip-path="url(#clip0_0_9)">
+<path id="Vector" opacity="0.7" d="M-4 118C24 122 44 145 42 174C18 170 -1 148 -4 118Z" fill="#CBECE3"/>
+<path id="Vector_2" opacity="0.55" d="M-4 152C18 164 28 188 20 212C2 200 -4 178 -4 152Z" fill="#B8E4D8"/>
+<path id="Vector_3" opacity="0.6" d="M42 174C25 154 10 135 -4 118" stroke-width="1.2" stroke="#9AD5C6"/>
+<path id="Vector_4" opacity="0.7" d="M310 210C340.376 210 365 185.376 365 155C365 124.624 340.376 100 310 100C279.624 100 255 124.624 255 155C255 185.376 279.624 210 310 210Z" fill="#E8F7F3"/>
+<path id="Vector_5" opacity="0.7" d="M-6 642C28 644 54 670 58 710C25 708 -2 682 -6 642Z" fill="#CBECE3"/>
+<path id="Vector_6" opacity="0.75" d="M48 668C68 650 96 656 112 684C86 698 62 692 48 668Z" fill="#D8F2EB"/>
+<path id="Vector_7" opacity="0.6" d="M58 710C38 686 18 664 -6 642" stroke-width="1.2" stroke="#94D1C1"/>
+<path id="Vector_8" opacity="0.7" d="M240 714C260 682 295 668 326 674V714H240Z" fill="#E6F6F2"/>
+</g>
+<defs>
+<clipPath id="clip0_0_9">
+<rect width="326" height="714" fill="white"/>
+</clipPath>
+</defs>
+</svg>

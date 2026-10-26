@@ -1,11 +1,13 @@
 import React from 'react';
-import { ActivityIndicator, SafeAreaView, StyleSheet, View } from 'react-native';
-import { AuthScreen } from '../features/auth/components/AuthScreen';
+import { Redirect } from 'expo-router';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { WelcomeScreen } from '../features/auth/components/WelcomeScreen';
 import { UserDashboard } from '../features/auth/components/UserDashboard';
 import { useAuth } from '../features/auth/context/AuthContext';
 
 export default function HomeScreen() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -17,9 +19,13 @@ export default function HomeScreen() {
     );
   }
 
+  if (!isAuthenticated) return <WelcomeScreen />;
+
+  if (!user?.profileCompletedAt) return <Redirect href="/setup-profile" />;
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      {isAuthenticated ? <UserDashboard /> : <AuthScreen />}
+      <UserDashboard />
     </SafeAreaView>
   );
 }

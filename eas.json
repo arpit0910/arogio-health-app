@@ -6,18 +6,29 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "environment": "development"
+      "environment": "development",
+      "env": {
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "987857172312-fil8ani3esi0j9gsg095c6tg1utcbm2j.apps.googleusercontent.com"
+      }
     },
     "preview": {
+      "autoIncrement": true,
       "distribution": "internal",
       "environment": "preview",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://backend.arogio.com/api/v1",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "987857172312-fil8ani3esi0j9gsg095c6tg1utcbm2j.apps.googleusercontent.com"
+      },
       "android": {
         "buildType": "apk"
       }
     },
     "production": {
       "autoIncrement": true,
-      "environment": "production"
+      "environment": "production",
+      "env": {
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "987857172312-fil8ani3esi0j9gsg095c6tg1utcbm2j.apps.googleusercontent.com"
+      }
     }
   },
   "submit": {

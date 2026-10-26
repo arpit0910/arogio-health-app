@@ -1,14 +1,16 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { tokenStore } from '../../../services/auth/tokenStore';
 import {
   getCurrentUserProfile,
+  saveProfileSetup,
   loginWithEmailPassword,
   loginWithGoogleIdToken,
   logoutAuthSession,
   refreshAuthSession,
   registerWithEmailPassword,
+  updateCurrentUserProfile,
 } from '../api/authApi';
-import { AuthResponse, LoginInput, RegisterInput, SafeUser } from '../types';
+import { AuthResponse, LoginInput, RegisterInput, SafeUser, UpdateProfileInput } from '../types';
 
 interface AuthContextType {
   user: SafeUser | null;
@@ -16,14 +18,18 @@ interface AuthContextType {
   isSubmitting: boolean;
   error: string | null;
   isAuthenticated: boolean;
-  login: (data: LoginInput) => Promise<AuthResponse>;
+  login: (data: LoginInput, remember?: boolean) => Promise<AuthResponse>;
   register: (data: RegisterInput) => Promise<AuthResponse>;
   loginWithGoogle: (idToken: string) => Promise<AuthResponse>;
   logout: () => Promise<void>;
   refreshTokens: () => Promise<void>;
   reloadProfile: () => Promise<void>;
+  updateProfile: (data: UpdateProfileInput) => Promise<SafeUser>;
+  saveSetup: (data: Record<string, unknown>) => Promise<SafeUser>;
   clearError: () => void;
   mockLoginForTesting: () => Promise<void>;
+  beginExternalSignIn: () => boolean;
+  endExternalSignIn: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,6 +39,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [externalSignIn, setExternalSignIn] = useState(false);
+  const externalSignInRef = useRef(false);
+  const authRequestRef = useRef(false);
+  const beginExternalSignIn = useCallback(() => {
+    if (externalSignInRef.current || authRequestRef.current) return false;
+    externalSignInRef.current = true;
+    setExternalSignIn(true);
+    return true;
+  }, []);
+  const endExternalSignIn = useCallback(() => {
+    externalSignInRef.current = false;
+    setExternalSignIn(false);
+  }, []);
 
   const clearError = useCallback(() => setError(null), []);
 
@@ -80,32 +99,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const handleAuthSuccess = async (response: AuthResponse) => {
+  const handleAuthSuccess = async (response: AuthResponse, remember = true) => {
     await tokenStore.save({
       accessToken: response.accessToken,
       refreshToken: response.refreshToken,
-    });
+    }, remember);
     setUser(response.user);
     setError(null);
   };
 
-  const login = useCallback(async (data: LoginInput): Promise<AuthResponse> => {
+  const login = useCallback(async (data: LoginInput, remember = true): Promise<AuthResponse> => {
+    if (externalSignInRef.current || authRequestRef.current) throw new Error('A sign-in request is already in progress.');
+    authRequestRef.current = true;
     setIsSubmitting(true);
     setError(null);
     try {
       const result = await loginWithEmailPassword(data);
-      await handleAuthSuccess(result);
+      await handleAuthSuccess(result, remember);
       return result;
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Login failed. Please check your credentials.';
       setError(msg);
       throw err;
     } finally {
+      authRequestRef.current = false;
       setIsSubmitting(false);
     }
   }, []);
 
   const register = useCallback(async (data: RegisterInput): Promise<AuthResponse> => {
+    if (externalSignInRef.current || authRequestRef.current) throw new Error('A sign-in request is already in progress.');
+    authRequestRef.current = true;
     setIsSubmitting(true);
     setError(null);
     try {
@@ -117,11 +141,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(msg);
       throw err;
     } finally {
+      authRequestRef.current = false;
       setIsSubmitting(false);
     }
   }, []);
 
   const loginWithGoogle = useCallback(async (idToken: string): Promise<AuthResponse> => {
+    if (authRequestRef.current) throw new Error('A sign-in request is already in progress.');
+    authRequestRef.current = true;
     setIsSubmitting(true);
     setError(null);
     try {
@@ -133,6 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(msg);
       throw err;
     } finally {
+      authRequestRef.current = false;
       setIsSubmitting(false);
     }
   }, []);
@@ -168,7 +196,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Unable to load profile.';
       setError(msg);
+      throw err;
     }
+  }, []);
+
+  const updateProfile = useCallback(async (data: UpdateProfileInput): Promise<SafeUser> => {
+    if (externalSignInRef.current || authRequestRef.current) throw new Error('Another account request is already in progress.');
+    authRequestRef.current = true;
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const profile = await updateCurrentUserProfile(data);
+      setUser(profile);
+      return profile;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to update your profile.');
+      throw err;
+    } finally {
+      authRequestRef.current = false;
+      setIsSubmitting(false);
+    }
+  }, []);
+
+  const saveSetup = useCallback(async (data: Record<string, unknown>) => {
+    const profile = await saveProfileSetup(data);
+    setUser(profile);
+    return profile;
   }, []);
 
   const logout = useCallback(async () => {
@@ -217,7 +270,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       user,
       isLoading,
-      isSubmitting,
+      isSubmitting: isSubmitting || externalSignIn,
       error,
       isAuthenticated: Boolean(user),
       login,
@@ -226,13 +279,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logout,
       refreshTokens,
       reloadProfile,
+      updateProfile,
+      saveSetup,
       clearError,
       mockLoginForTesting,
+      beginExternalSignIn,
+      endExternalSignIn,
     }),
     [
       user,
       isLoading,
       isSubmitting,
+      externalSignIn,
+      beginExternalSignIn,
+      endExternalSignIn,
       error,
       login,
       register,
@@ -240,6 +300,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       logout,
       refreshTokens,
       reloadProfile,
+      updateProfile,
+      saveSetup,
       clearError,
       mockLoginForTesting,
     ],

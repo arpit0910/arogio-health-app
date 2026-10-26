@@ -1,0 +1,25 @@
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { AuthShell } from './AuthScreen';
+import { AuthHeading, authStyles } from './AuthPrimitives';
+import { Button } from '../../../components/ui/Button';
+import { colors, fonts } from '../../../theme/tokens';
+
+export function ForgotPasswordScreen() {
+  return <AuthShell>
+    <AuthHeading title="Forgot password?" subtitle="Let’s help you get back to your health journey." />
+    <View style={styles.notice}>
+      <Text style={styles.noticeTitle}>Password recovery is not available yet</Text>
+      <Text style={styles.copy}>You can use Google to sign in if it is linked to your account, or return to log in with your password.</Text>
+    </View>
+    <Button title="Back to Log In" onPress={() => router.replace('/login')} />
+    <Pressable accessibilityRole="link" style={styles.link} onPress={() => router.push('/privacy')}><Text style={authStyles.link}>How your sign-in information is used</Text></Pressable>
+  </AuthShell>;
+}
+
+const styles = StyleSheet.create({
+  notice: { backgroundColor: colors.subtle, borderRadius: 12, padding: 20, marginBottom: 24 },
+  noticeTitle: { fontFamily: fonts.semibold, fontSize: 15, lineHeight: 22, color: colors.ink, marginBottom: 8 },
+  copy: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 21, color: colors.muted },
+  link: { minHeight: 44, justifyContent: 'center', alignItems: 'center', marginTop: 16 },
+});
