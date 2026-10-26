@@ -2,6 +2,9 @@
 module.exports = ({ config }) => {
   const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?.trim();
   const plugins = [...(config.plugins ?? [])];
+  if (process.env.AROGIO_LOCAL_DEBUG_KEYSTORE && process.env.EAS_BUILD !== 'true') {
+    plugins.push('./plugins/with-local-debug-keystore');
+  }
   // Android is autolinked and uses the shared web client ID. The plugin only
   // registers iOS's callback scheme; do not enable its Firebase configuration.
   if (iosClientId) {

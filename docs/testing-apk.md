@@ -1,8 +1,19 @@
 # Android test APK
 
+## Latest build - 2026-10-26
+
+Version **1.0.1**, Android build **4**, includes profile setup and the corrected Google Web client.
+
+- [Download APK](https://expo.dev/artifacts/eas/d2mqfmsIjGyz2e5j0IufAU8akfx5R9iILcVPsxpdg3Y.apk)
+- [EAS build](https://expo.dev/accounts/arpit0910/projects/arogio-health-app/builds/21f7cc60-972a-4771-9a76-07d919a20b6e)
+- APK size: 99,015,907 bytes. Local APK copies and generated build exports were removed after sharing to reclaim disk space; use the download link above.
+- SHA-256: `7a4bc5d59f6fee9fe41b4be1e028a73f3a5085c14d55e638456d673018c4a2e9`.
+
+Verified with Android apksigner/aapt: valid signature, package `com.arogio.health`, versionCode 4, versionName 1.0.1, and the same signing SHA-1 documented below. APK archive integrity and bundled setup route, corrected Google client and Google SDK references were checked. This is build/archive verification; device runtime and real Google account authorization remain unverified. Deploy the matching backend and migrations before testing account/setup APIs.
+
 The EAS `preview` profile produces a standalone, signed APK with its JavaScript bundle included. It runs without Metro or Expo Go.
 
-The first successful build is [available on EAS](https://expo.dev/accounts/arpit0910/projects/arogio-health-app/builds/77c958b8-ec59-4ad7-852c-2ae6ab9a93c2). A downloaded copy is saved as `dist/arogio-health-preview.apk` (excluded from Git). Build completion and archive contents were verified; installation/runtime behavior has not been tested on a physical device.
+The first successful build is [available on EAS](https://expo.dev/accounts/arpit0910/projects/arogio-health-app/builds/77c958b8-ec59-4ad7-852c-2ae6ab9a93c2). Its local downloaded copy was removed during cleanup. Build completion and archive contents were verified; installation/runtime behavior has not been tested on a physical device.
 
 ## Test build signing
 

@@ -1,5 +1,7 @@
 # Google sign-in
 
+For the verified local debug certificate, supplied Android/Web client IDs, and isolated local API commands, see [local-google-testing.md](local-google-testing.md). The local debug and EAS release signing certificates differ.
+
 The app opens Google authentication directly and sends the resulting ID token to the existing `POST /auth/google` endpoint. Account creation/sign-in and Arogio session storage continue through `AuthContext`. There is no manual ID-token entry.
 
 ## Credentials
