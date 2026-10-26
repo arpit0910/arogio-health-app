@@ -18,7 +18,7 @@ export const env = {
   apiUrl: normalizeUrl(rawApiUrl) ?? 'https://backend.arogio.com/api/v1',
   googleClientId:
     rawGoogleWebClientId || rawGoogleClientId ||
-    '987857172312-2lpo2lomjmfde8r0kr4k9doeqnkfeb17.apps.googleusercontent.com',
+    '987857172312-fil8ani3esi0j9gsg095c6tg1utcbm2j.apps.googleusercontent.com',
   isDevelopment: __DEV__,
   googleIosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?.trim(),
 } as const;

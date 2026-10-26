@@ -32,3 +32,11 @@ On 2026-10-25, the supplied installed-app client was replaced with Web client ID
 Real Google sign-in remains unverified. The deployed API still returns the hosting sample page and must be restarted with the actual Nest application. Confirm the Android OAuth registration for package com.arogio.health and release SHA-1 CD:D6:E8:F9:74:AB:F3:E8:1E:65:32:D0:4C:AD:3E:96:6D:BF:EB:B6. No client secret is included in the app.
 
 References: [Expo Google authentication](https://docs.expo.dev/guides/google-authentication/), [native SDK configuration](https://react-native-google-signin.github.io/docs/original), [Expo plugin setup](https://react-native-google-signin.github.io/docs/setting-up/expo), [Google loopback migration](https://developers.google.com/identity/protocols/oauth2/resources/loopback-migration).
+
+## 2026-10-26 verification
+
+The supplied downloaded OAuth JSON is a Web client for project `arogio-health`, matching `987857172312-fil8ani3esi0j9gsg095c6tg1utcbm2j.apps.googleusercontent.com`. Its secret is unnecessary for the mobile flow and was not copied into code. The file has no registered browser origins or redirect URIs; configure those in Google Cloud before browser authorization can succeed. Android OAuth registration with the package/signing SHA-1 remains unconfirmed.
+
+The existing preview APK was inspected with apksigner and aapt: package and SHA-1 match the values above, but the APK predates the setup route and contains the old client ID. Build a new preview APK after backend deployment. The hosted API still returns the sample page or HTML 503 responses.
+
+New backend HTTP journeys exercise actual RSA verification with a synthetic certificate set, new/restored Google identities and full profile completion. These do not represent real Google account authorization or a device test. See `D:/arogio_health_backend/RELEASE_CHECK.md`.
