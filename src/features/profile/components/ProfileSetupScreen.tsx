@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { BackHandler, Keyboard, StyleSheet, Switch, Text, View } from 'react-native';
+import { BackHandler, Keyboard, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { SvgXml } from 'react-native-svg';
 import { AuthCanvas } from '../../auth/components/AuthCanvas';
@@ -13,6 +13,7 @@ import { profileAssets } from '../assets/profileAssets';
 import { activities, goals, genders, type SetupDraft, validBirthDate, validatePersonal, convertMeasurement } from '../model';
 import { ChoiceCard, ProfileDialog, ProfileField, ProfileHeading, ProfileIcon, ProfileProgress, UnitSelector, profileStyles as ps } from './ProfilePrimitives';
 import { ProfileBirthDatePicker } from './ProfileBirthDatePicker';
+import { ProfilePreferences } from './ProfilePreferences';
 import { profileDraft } from '../profileViewModel';
 
 export function ProfileSetupScreen() {
@@ -93,9 +94,7 @@ export function ProfileSetupScreen() {
         <ProfileField label="Location" icon="location" placeholder="Select your city" value={draft.location} onPress={() => openDialog('location')} />
         <ProfileField label="How did you hear about Arogio?" icon="referral" placeholder="Add a source (optional)" value={draft.referralSource} onPress={() => openDialog('referralSource')} />
       </>}
-      {step === 5 && <><ProfileHeading title="Stay on track" subtitle="Get helpful reminders and insights to reach your goals." />
-        {([{ key: 'healthReminders', title: 'Health reminders', subtitle: 'Take medications, track habits and daily check-ins', icon: 'bell' }, { key: 'tipsAndInsights', title: 'Tips and insights', subtitle: 'Personalized health tips and recommendations', icon: 'tips' }, { key: 'productUpdates', title: 'Product updates', subtitle: 'New features and important announcements', icon: 'email' }] as const).map(p => <View key={p.key} style={s.preference}><ChoiceCard {...p}><Switch accessibilityLabel={p.title} value={draft[p.key]} onValueChange={v => set(p.key, v)} trackColor={{ false: '#CBD5E1', true: '#168C80' }} thumbColor="#FFFFFF" /></ChoiceCard></View>)}
-      </>}
+      {step === 5 && <ProfilePreferences values={draft} onChange={set} disabled={busy} />}
       {step === 6 && <><ProfileHeading title="Review your profile" subtitle="Please check your details before continuing." />
         <View style={s.review}>{[
           { label: 'Date of birth', value: birthLabel, icon: 'calendar', target: 1 },
@@ -119,7 +118,7 @@ export function ProfileSetupScreen() {
 const s = StyleSheet.create({
   screen: { flexGrow: 1, flexShrink: 0, paddingBottom: 24 }, back: { marginLeft: 14, width: 48, alignItems: 'center', justifyContent: 'center' },
   hero: { alignItems: 'center', paddingHorizontal: 20, marginTop: 50 }, completeHero: { marginTop: 115 }, heroTitle: { marginTop: 28 },
-  label: { fontFamily: fonts.semibold, color: colors.ink, fontSize: 11.5 }, choices: { gap: 10 }, preference: { marginBottom: 2 },
+  label: { fontFamily: fonts.semibold, color: colors.ink, fontSize: 11.5 }, choices: { gap: 10 },
   footer: { paddingHorizontal: 24, marginTop: 'auto', paddingTop: 24 }, goBack: { justifyContent: 'center', alignItems: 'center', marginBottom: -14 },
   review: { borderWidth: 1, borderColor: colors.border, borderRadius: 16, overflow: 'hidden' }, reviewRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingLeft: 14, paddingRight: 8, paddingVertical: 4, minHeight: 54 }, reviewBorder: { borderTopWidth: 1, borderColor: '#F1F4F8' },
   reviewIcon: { backgroundColor: '#EBF7F4', borderRadius: 20, width: 32, height: 32, justifyContent: 'center', alignItems: 'center' }, reviewCopy: { flex: 1 }, reviewLabel: { fontFamily: fonts.regular, fontSize: 10, color: colors.muted, marginBottom: 2 }, reviewValue: { fontFamily: fonts.bold, fontSize: 12, lineHeight: 16, color: colors.ink }, edit: { width: 38, justifyContent: 'center', alignItems: 'center' },
