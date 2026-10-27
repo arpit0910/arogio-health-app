@@ -22,6 +22,16 @@ export function validBirthDate(value: string) {
   const date = new Date(value + 'T00:00:00Z');
   return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value && date <= new Date() && date.getUTCFullYear() >= 1900;
 }
+// Birthdays are calendar dates. Serializing a local picker Date as UTC can
+// shift the birthday to the previous day in timezones such as Asia/Kolkata.
+export function birthDateValue(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+export function birthDateInitialValue(value: string): Date {
+  if (!validBirthDate(value)) return new Date(2000, 0, 1);
+  const [year, month, day] = value.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
 export function validatePersonal(draft: SetupDraft): string | null {
   if (!validBirthDate(draft.dateOfBirth)) return 'Enter a valid date of birth in the past.';
   const weight = Number(draft.weightValue) * (draft.weightUnit === 'lb' ? 0.45359237 : 1);

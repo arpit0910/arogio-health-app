@@ -1,5 +1,13 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { tokenStore } from '../../../services/auth/tokenStore';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { tokenStore } from "../../../services/auth/tokenStore";
 import {
   getCurrentUserProfile,
   saveProfileSetup,
@@ -9,8 +17,14 @@ import {
   refreshAuthSession,
   registerWithEmailPassword,
   updateCurrentUserProfile,
-} from '../api/authApi';
-import { AuthResponse, LoginInput, RegisterInput, SafeUser, UpdateProfileInput } from '../types';
+} from "../api/authApi";
+import {
+  AuthResponse,
+  LoginInput,
+  RegisterInput,
+  SafeUser,
+  UpdateProfileInput,
+} from "../types";
 
 interface AuthContextType {
   user: SafeUser | null;
@@ -27,7 +41,6 @@ interface AuthContextType {
   updateProfile: (data: UpdateProfileInput) => Promise<SafeUser>;
   saveSetup: (data: Record<string, unknown>) => Promise<SafeUser>;
   clearError: () => void;
-  mockLoginForTesting: () => Promise<void>;
   beginExternalSignIn: () => boolean;
   endExternalSignIn: () => void;
 }
@@ -100,70 +113,92 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleAuthSuccess = async (response: AuthResponse, remember = true) => {
-    await tokenStore.save({
-      accessToken: response.accessToken,
-      refreshToken: response.refreshToken,
-    }, remember);
+    await tokenStore.save(
+      {
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      },
+      remember,
+    );
     setUser(response.user);
     setError(null);
   };
 
-  const login = useCallback(async (data: LoginInput, remember = true): Promise<AuthResponse> => {
-    if (externalSignInRef.current || authRequestRef.current) throw new Error('A sign-in request is already in progress.');
-    authRequestRef.current = true;
-    setIsSubmitting(true);
-    setError(null);
-    try {
-      const result = await loginWithEmailPassword(data);
-      await handleAuthSuccess(result, remember);
-      return result;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Login failed. Please check your credentials.';
-      setError(msg);
-      throw err;
-    } finally {
-      authRequestRef.current = false;
-      setIsSubmitting(false);
-    }
-  }, []);
+  const login = useCallback(
+    async (data: LoginInput, remember = true): Promise<AuthResponse> => {
+      if (externalSignInRef.current || authRequestRef.current)
+        throw new Error("A sign-in request is already in progress.");
+      authRequestRef.current = true;
+      setIsSubmitting(true);
+      setError(null);
+      try {
+        const result = await loginWithEmailPassword(data);
+        await handleAuthSuccess(result, remember);
+        return result;
+      } catch (err) {
+        const msg =
+          err instanceof Error
+            ? err.message
+            : "Login failed. Please check your credentials.";
+        setError(msg);
+        throw err;
+      } finally {
+        authRequestRef.current = false;
+        setIsSubmitting(false);
+      }
+    },
+    [],
+  );
 
-  const register = useCallback(async (data: RegisterInput): Promise<AuthResponse> => {
-    if (externalSignInRef.current || authRequestRef.current) throw new Error('A sign-in request is already in progress.');
-    authRequestRef.current = true;
-    setIsSubmitting(true);
-    setError(null);
-    try {
-      const result = await registerWithEmailPassword(data);
-      await handleAuthSuccess(result);
-      return result;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Registration failed. Please try again.';
-      setError(msg);
-      throw err;
-    } finally {
-      authRequestRef.current = false;
-      setIsSubmitting(false);
-    }
-  }, []);
+  const register = useCallback(
+    async (data: RegisterInput): Promise<AuthResponse> => {
+      if (externalSignInRef.current || authRequestRef.current)
+        throw new Error("A sign-in request is already in progress.");
+      authRequestRef.current = true;
+      setIsSubmitting(true);
+      setError(null);
+      try {
+        const result = await registerWithEmailPassword(data);
+        await handleAuthSuccess(result);
+        return result;
+      } catch (err) {
+        const msg =
+          err instanceof Error
+            ? err.message
+            : "Registration failed. Please try again.";
+        setError(msg);
+        throw err;
+      } finally {
+        authRequestRef.current = false;
+        setIsSubmitting(false);
+      }
+    },
+    [],
+  );
 
-  const loginWithGoogle = useCallback(async (idToken: string): Promise<AuthResponse> => {
-    if (authRequestRef.current) throw new Error('A sign-in request is already in progress.');
-    authRequestRef.current = true;
-    setIsSubmitting(true);
-    setError(null);
-    try {
-      const result = await loginWithGoogleIdToken({ idToken });
-      await handleAuthSuccess(result);
-      return result;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Google authentication failed.';
-      setError(msg);
-      throw err;
-    } finally {
-      authRequestRef.current = false;
-      setIsSubmitting(false);
-    }
-  }, []);
+  const loginWithGoogle = useCallback(
+    async (idToken: string): Promise<AuthResponse> => {
+      if (authRequestRef.current)
+        throw new Error("A sign-in request is already in progress.");
+      authRequestRef.current = true;
+      setIsSubmitting(true);
+      setError(null);
+      try {
+        const result = await loginWithGoogleIdToken({ idToken });
+        await handleAuthSuccess(result);
+        return result;
+      } catch (err) {
+        const msg =
+          err instanceof Error ? err.message : "Google authentication failed.";
+        setError(msg);
+        throw err;
+      } finally {
+        authRequestRef.current = false;
+        setIsSubmitting(false);
+      }
+    },
+    [],
+  );
 
   const refreshTokens = useCallback(async () => {
     setIsSubmitting(true);
@@ -171,7 +206,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const stored = await tokenStore.get();
       if (!stored?.refreshToken) {
-        throw new Error('No active session token found to refresh.');
+        throw new Error("No active session token found to refresh.");
       }
       const renewed = await refreshAuthSession(stored.refreshToken);
       await tokenStore.save({
@@ -181,7 +216,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const profile = await getCurrentUserProfile();
       setUser(profile);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Unable to refresh session.';
+      const msg =
+        err instanceof Error ? err.message : "Unable to refresh session.";
       setError(msg);
       throw err;
     } finally {
@@ -194,35 +230,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const profile = await getCurrentUserProfile();
       setUser(profile);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Unable to load profile.';
+      const msg =
+        err instanceof Error ? err.message : "Unable to load profile.";
       setError(msg);
       throw err;
     }
   }, []);
 
-  const updateProfile = useCallback(async (data: UpdateProfileInput): Promise<SafeUser> => {
-    if (externalSignInRef.current || authRequestRef.current) throw new Error('Another account request is already in progress.');
-    authRequestRef.current = true;
-    setIsSubmitting(true);
-    setError(null);
-    try {
-      const profile = await updateCurrentUserProfile(data);
+  const updateProfile = useCallback(
+    async (data: UpdateProfileInput): Promise<SafeUser> => {
+      if (externalSignInRef.current || authRequestRef.current)
+        throw new Error("Another account request is already in progress.");
+      authRequestRef.current = true;
+      setIsSubmitting(true);
+      setError(null);
+      try {
+        const profile = await updateCurrentUserProfile(data);
+        setUser(profile);
+        return profile;
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Unable to update your profile.",
+        );
+        throw err;
+      } finally {
+        authRequestRef.current = false;
+        setIsSubmitting(false);
+      }
+    },
+    [],
+  );
+
+  const saveSetup = useCallback(
+    async (data: Record<string, unknown>) => {
+      const profile = await saveProfileSetup(data, !user?.profileSetup);
       setUser(profile);
       return profile;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to update your profile.');
-      throw err;
-    } finally {
-      authRequestRef.current = false;
-      setIsSubmitting(false);
-    }
-  }, []);
-
-  const saveSetup = useCallback(async (data: Record<string, unknown>) => {
-    const profile = await saveProfileSetup(data);
-    setUser(profile);
-    return profile;
-  }, []);
+    },
+    [user?.profileSetup],
+  );
 
   const logout = useCallback(async () => {
     setIsSubmitting(true);
@@ -241,31 +287,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // For testing without live backend or when verifying UI states
-  const mockLoginForTesting = useCallback(async () => {
-    const mockUser: SafeUser = {
-      id: 'test-user-uuid-1234',
-      fullName: 'Alex River (Test User)',
-      username: 'alex_river',
-      email: 'alex.river@example.com',
-      mobileNumber: '+1 555-0199',
-      heightValue: 175,
-      heightUnit: 'cm',
-      weightValue: 70,
-      weightUnit: 'kg',
-      bmi: 22.9,
-      status: 'active',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    await tokenStore.save({
-      accessToken: 'test-mock-access-token',
-      refreshToken: 'test-mock-refresh-token',
-    });
-    setUser(mockUser);
-    setError(null);
-  }, []);
-
   const value = useMemo(
     () => ({
       user,
@@ -282,7 +303,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       updateProfile,
       saveSetup,
       clearError,
-      mockLoginForTesting,
       beginExternalSignIn,
       endExternalSignIn,
     }),
@@ -303,7 +323,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       updateProfile,
       saveSetup,
       clearError,
-      mockLoginForTesting,
     ],
   );
 
@@ -313,8 +332,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
-

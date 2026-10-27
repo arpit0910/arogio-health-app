@@ -33,6 +33,7 @@ yarn-error.*
 # local env files
 .env
 .env*.local
+.env*
 
 # typescript
 *.tsbuildinfo
@@ -47,4 +48,22 @@ yarn-error.*
 test/
 *.postman_collection.json
 *.postman_environment.json
+
+# Local instructions, documentation, QA and tooling are not build inputs.
+.git/
+.agents/
+.codex/
+.impeccable/
+docs/
+scripts/
+test-results/
+coverage/
+*.md
+*.log
+*.apk
+*.aab
+*.zip
+*.map
+client_secret*.json
+eslint.config.*
 

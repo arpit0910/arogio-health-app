@@ -1,12 +1,55 @@
 # Android test APK
 
-## Latest build - 2026-10-26
+## Latest build ? Arogio Health, Android 10
+
+Version **1.0.1**, Android build **10**, adds the native DOB picker, field-specific placeholders, optional-entry guidance and dark teal selected measurement units.
+
+- [Download build 10](https://expo.dev/artifacts/eas/mssU0ovDd2fU4UaKo49GUqEw3nCJjUKeYZsx-3qQ8cE.apk)
+- [EAS build 10](https://expo.dev/accounts/arpit0910/projects/arogio-health-app/builds/eb3aa848-0b1f-4717-a326-c55cfaae74e4)
+- Local copy: `dist/arogio-health-1.0.1-build-10.apk` (99,355,226 bytes).
+- SHA-256: `2ad2872cf14df514a84c1b1e9b87b851bd3b0e1d3391476f01359250f91e4eec`.
+
+Signature, name and package verified; installed as an update on API 34. Native calendar Save/Cancel, placeholders, unit conversion and live production profile save/reload passed. Lint, TypeScript, 32 tests, web export and browser flow checks passed. See [profile-picker-verification.md](./profile-picker-verification.md) for evidence and limits. Real Google account authorization and native iOS rendering remain unverified.
+
+The previous local build 8 APK was removed after verification; its cloud download remains available below.
+
+## Previous build 8
+
+Version **1.0.1**, Android build **8**, is a signed standalone production APK with the **Arogio Health** launcher name and the existing Arogio brand mark as its app icon.
+
+- [Download build 8](https://expo.dev/artifacts/eas/BQnvKCugQoQ54_iqSvoQ53UKi1sxs0CJxyPovzhAJmc.apk)
+- [EAS build 8](https://expo.dev/accounts/arpit0910/projects/arogio-health-app/builds/50e4d3f5-9443-4ec9-8fdb-a680bcc2bebc)
+- Local copy: `dist/arogio-health-1.0.1-build-8.apk` (98,762,270 bytes).
+- SHA-256: `5851d54dfe2e999669955711238fedcd15e1751487b40b99a31b710af0a69331`.
+
+Apksigner verified the unchanged release certificate. Aapt confirmed the name, package `com.arogio.health`, versionCode 8, minimum API 24 and target API 36. The manifest has no debuggable or testOnly flag. The archive's 1,333 entries contain no private env files, signing keys, source maps, tests, docs or node_modules. Its embedded bundle contains the production URL, canonical login/profile-setup paths, eight-character password message and configured Google Web client; emulator URLs and the old twelve-character message are absent.
+
+Installed as an update over build 6 without clearing data on the API 34 emulator. Standalone startup rendered the welcome screen without a development overlay; the app drawer visibly showed the Arogio Health name and unclipped circular launcher icon. App lint, TypeScript and all 31 tests passed. Production liveness/readiness returned HTTP 200. See [release-packaging.md](./release-packaging.md) for upload exclusions and icon generation.
+
+Real Google account authorization remains unverified; the release SHA-1 must be registered in Google Cloud. Build 7 was canceled before completion to correct the adaptive icon's circular safe area. The prior local build 6 APK was removed after build 8 verification; its cloud download remains available.
+
+## Previous build 6
+
+Version **1.0.1**, Android build **6**, includes responsive auth/profile layouts, the eight-character password minimum, and canonical API routes.
+
+- [Download build 6](https://expo.dev/artifacts/eas/XuNHxR_KE6Rz8ioV3xa_HuBb8fOqwq2e-sR_Yo4vI5E.apk)
+- [EAS build 6](https://expo.dev/accounts/arpit0910/projects/arogio-health-app/builds/e118c9a6-283f-4f17-b5cb-ea89fbfea1d7)
+- Local copy: `dist/arogio-health-1.0.1-build-6.apk` (99,016,855 bytes).
+- SHA-256: `1ce0a58ea2b4db8e1636a53d151b9926d8567ecee38e765c7196f0574d450911`.
+
+Android apksigner verified the signature; aapt confirmed package `com.arogio.health`, versionCode 6, versionName 1.0.1, API 24 minimum and all four Android architectures. The downloaded APK bundle contains the production API URL, eight-character message, canonical login/profile-setup paths and the configured Google Web client. The emulator API URL and old twelve-character message are absent.
+
+The signed release APK was installed and launched on the API 34 emulator with the test Metro server stopped; the welcome, login and signup screens rendered without the development overlay. Login/signup fit the normal phone viewport without unnecessary scrolling. Development-build native checks also passed all eight login/signup cases across phone, small-phone, large-text and tablet sizes; see [responsive-layout.md](./responsive-layout.md). App lint, TypeScript and 31 tests pass. The profile dialog was additionally checked with the virtual keyboard visible and Save/Cancel reachable through its bounded scroll view.
+
+Production's canonical liveness/readiness endpoints returned HTTP 200, and invalid-email input confirmed an eight-character password passes server length validation without creating an account. Existing live account-flow verification passed after migrations. Real Google account authorization on the release APK remains unverified. Its SHA-1 is unchanged: `CD:D6:E8:F9:74:AB:F3:E8:1E:65:32:D0:4C:AD:3E:96:6D:BF:EB:B6`; Google Cloud must register that fingerprint for this package in the Web client's project.
+
+## Previous build 5
 
 Version **1.0.1**, Android build **5**, is a standalone signed APK with the JavaScript bundle included. It does not require Metro or Expo Go.
 
 - [Download build 5](https://expo.dev/artifacts/eas/wVHKk4mTUwgjkBMq-lCgwjSuduTr2dbdWMbCoZYq1RI.apk)
 - [EAS build 5](https://expo.dev/accounts/arpit0910/projects/arogio-health-app/builds/6aa56a81-90eb-48dc-9ada-b2ce6bf8ad25)
-- Local copy: `dist/arogio-health-1.0.1-build-5.apk` (99,015,907 bytes).
+- Size: 99,015,907 bytes. Its older local copy was removed after build 6 verification; the download link remains available on EAS.
 - SHA-256: `a6c87f5ef110603cbb44eaca1becbf5a5f2027e439c783282abcb344091492b5`.
 
 EAS completed successfully. Android apksigner verified the signature; aapt confirmed `com.arogio.health`, versionCode 5, versionName 1.0.1, Android API 24 minimum, and arm64-v8a/armeabi-v7a/x86/x86_64 support. The downloaded APK's embedded bundle contains the production API URL, correct Google Web client ID, and setup route; the emulator API URL is absent. Lint, TypeScript and all 30 app tests passed before upload. Device rendering and successful Google account authentication remain unverified.

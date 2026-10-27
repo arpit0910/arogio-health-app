@@ -1,43 +1,23 @@
-import React from 'react';
-import { Redirect } from 'expo-router';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { WelcomeScreen } from '../features/auth/components/WelcomeScreen';
-import { UserDashboard } from '../features/auth/components/UserDashboard';
-import { useAuth } from '../features/auth/context/AuthContext';
-
-export default function HomeScreen() {
-  const { user, isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
+import { Redirect } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
+import { useAuth } from "../features/auth/context/AuthContext";
+import { WelcomeScreen } from "../features/auth/components/WelcomeScreen";
+export default function EntryRoute() {
+  const { user, isLoading } = useAuth();
+  if (isLoading)
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#097C68" />
-        </View>
-      </SafeAreaView>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          backgroundColor: "#FFFFFF",
+        }}
+      >
+        <ActivityIndicator accessibilityLabel="Loading Arogio" />
+      </View>
     );
-  }
-
-  if (!isAuthenticated) return <WelcomeScreen />;
-
-  if (!user?.profileCompletedAt) return <Redirect href="/setup-profile" />;
-
+  if (!user) return <WelcomeScreen />;
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <UserDashboard />
-    </SafeAreaView>
+    <Redirect href={user.profileCompletedAt ? "/home" : "/setup-profile"} />
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F7FAF9',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

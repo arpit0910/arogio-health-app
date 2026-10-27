@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validBirthDate } from '../profile/model.ts';
 
 export const safeUserSchema = z.object({
   profileCompletedAt: z.string().nullable().optional(),
@@ -60,7 +61,16 @@ export const updateProfileSchema = registerSchema.pick({
   heightUnit: true,
   weightValue: true,
   weightUnit: true,
-}).extend({ username: z.string().min(2).max(50).optional() });
+}).extend({
+  fullName: z.string().trim().min(2, 'Enter your full name (at least 2 characters).').max(100).optional(),
+  username: z.string().min(3).max(30).regex(/^[a-z0-9_]+$/).optional(),
+  dateOfBirth: z.string().refine(validBirthDate, 'Choose a valid date of birth.').optional(),
+  gender: z.enum(['female', 'male', 'other', 'prefer_not_to_say']).optional(),
+  location: z.string().trim().max(100).optional(),
+  activityLevel: z.enum(['sedentary', 'lightly_active', 'moderately_active', 'very_active']).optional(),
+  healthGoals: z.array(z.enum(['weight_management', 'fitness_activity', 'lose_weight', 'gain_weight', 'stay_fit', 'manage_condition', 'better_eating', 'improve_sleep', 'manage_stress'])).min(1, 'Choose at least one health goal.').optional(),
+  photo: z.string().max(220000).regex(/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/).optional(),
+});
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
 export type GoogleLoginInput = {

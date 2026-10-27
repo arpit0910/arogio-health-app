@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { BackHandler, StyleSheet, Switch, Text, View } from 'react-native';
+import { BackHandler, Keyboard, StyleSheet, Switch, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { SvgXml } from 'react-native-svg';
 import { AuthCanvas } from '../../auth/components/AuthCanvas';
@@ -12,18 +12,14 @@ import { colors, fonts } from '../../../theme/tokens';
 import { profileAssets } from '../assets/profileAssets';
 import { activities, goals, genders, type SetupDraft, validBirthDate, validatePersonal, convertMeasurement } from '../model';
 import { ChoiceCard, ProfileDialog, ProfileField, ProfileHeading, ProfileIcon, ProfileProgress, UnitSelector, profileStyles as ps } from './ProfilePrimitives';
+import { ProfileBirthDatePicker } from './ProfileBirthDatePicker';
+import { profileDraft } from '../profileViewModel';
 
 export function ProfileSetupScreen() {
   const { user, saveSetup, logout } = useAuth();
   const saved = user?.profileSetup ?? {};
   const [step, setStep] = useState(user?.profileCompletedAt ? 7 : Math.min(6, Math.max(0, Number(saved.step) || 0)));
-  const [draft, setDraft] = useState<SetupDraft>(() => ({
-    dateOfBirth: String(saved.dateOfBirth ?? ''), weightValue: String(user?.weightValue ?? ''), weightUnit: user?.weightUnit ?? 'kg',
-    heightValue: String(user?.heightValue ?? ''), heightUnit: user?.heightUnit ?? 'cm',
-    activityLevel: String(saved.activityLevel ?? ''), healthGoals: Array.isArray(saved.healthGoals) ? saved.healthGoals as string[] : [],
-    gender: String(saved.gender ?? ''), location: String(saved.location ?? ''), referralSource: String(saved.referralSource ?? ''),
-    healthReminders: saved.healthReminders !== false, tipsAndInsights: saved.tipsAndInsights !== false, productUpdates: saved.productUpdates === true,
-  }));
+  const [draft, setDraft] = useState<SetupDraft>(() => profileDraft(user!));
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +38,7 @@ export function ProfileSetupScreen() {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => { back(); return true; });
     return () => subscription.remove();
   });
-  const openDialog = (key: typeof dialog) => { if (key) { setDialogValue(draft[key]); setDialog(key); } };
+  const openDialog = (key: typeof dialog) => { if (key) { Keyboard.dismiss(); setError(null); setDialogValue(draft[key]); setDialog(key); } };
   const next = async () => {
     if (busyRef.current) return;
     setError(null);
@@ -52,6 +48,7 @@ export function ProfileSetupScreen() {
     if ((step === 2 || step === 6) && !draft.activityLevel) invalid = 'Choose your activity level.';
     if ((step === 3 || step === 6) && !draft.healthGoals.length) invalid = 'Choose at least one health goal.';
     if (invalid) { setError(invalid); return; }
+    Keyboard.dismiss();
     busyRef.current = true; setBusy(true);
     const target = editing ? 6 : step + 1;
     try {
@@ -79,18 +76,18 @@ export function ProfileSetupScreen() {
       <Text style={ps.centeredCopy}>{step === 0 ? 'This helps us personalize your experience\nand give better suggestions.' : "Your profile is ready. Let's start\nyour health journey with Arogio."}</Text>
     </View> : <View style={ps.body}>
       {step === 1 && <><ProfileHeading title="Personal details" subtitle="Tell us a bit about yourself." />
-        <ProfileField label="Date of birth" icon="calendar" value={birthLabel} onPress={() => openDialog('dateOfBirth')} />
-        <ProfileField label="Weight" icon="weight" value={draft.weightValue} numeric onChange={v => set('weightValue', v)} suffix={draft.weightUnit === 'lb' ? 'lbs' : 'kg'} />
+        <ProfileField label="Date of birth" icon="calendar" placeholder="Select your date of birth" value={birthLabel} onPress={() => openDialog('dateOfBirth')} />
+        <ProfileField label="Weight" icon="weight" placeholder="Enter your weight" value={draft.weightValue} numeric onChange={v => set('weightValue', v)} suffix={draft.weightUnit === 'lb' ? 'lbs' : 'kg'} />
         <UnitSelector units={['kg', 'lbs']} value={draft.weightUnit === 'lb' ? 'lbs' : 'kg'} onChange={v => { const unit = v === 'lbs' ? 'lb' : 'kg'; if (unit !== draft.weightUnit) { set('weightValue', convertMeasurement(draft.weightValue, unit === 'lb' ? 2.20462262 : 0.45359237)); set('weightUnit', unit); } }} />
-        <ProfileField label="Height" icon="height" value={draft.heightValue} numeric onChange={v => set('heightValue', v)} suffix={draft.heightUnit === 'in' ? 'inch' : 'cm'} />
+        <ProfileField label="Height" icon="height" placeholder="Enter your height" value={draft.heightValue} numeric onChange={v => set('heightValue', v)} suffix={draft.heightUnit === 'in' ? 'inch' : 'cm'} />
         <UnitSelector units={['cm', 'inch']} value={draft.heightUnit === 'in' ? 'inch' : 'cm'} onChange={v => { const unit = v === 'inch' ? 'in' : 'cm'; if (unit !== draft.heightUnit) { set('heightValue', convertMeasurement(draft.heightValue, unit === 'in' ? 1 / 2.54 : 2.54)); set('heightUnit', unit); } }} />
       </>}
       {step === 2 && <><ProfileHeading title="Your lifestyle" subtitle="This helps us understand your daily routine." /><Text style={s.label}>Activity level</Text><View accessibilityRole="radiogroup" style={s.choices}>{activities.map(a => <ChoiceCard key={a.value} {...a} selected={draft.activityLevel === a.value} onPress={() => set('activityLevel', a.value)} />)}</View></>}
       {step === 3 && <><ProfileHeading title="Your health goals" subtitle={'Choose what matters most to you.\nYou can select multiple goals.'} /><View style={s.choices}>{goals.map(g => <ChoiceCard key={g.value} {...g} multiple selected={draft.healthGoals.includes(g.value)} onPress={() => set('healthGoals', draft.healthGoals.includes(g.value) ? draft.healthGoals.filter(v => v !== g.value) : [...draft.healthGoals, g.value])} />)}</View></>}
       {step === 4 && <><ProfileHeading title="A few more details" subtitle="This information helps us provide more relevant recommendations." />
-        <ProfileField label="Gender" icon="user" value={genders.find(g => g.value === draft.gender)?.label ?? ''} onPress={() => openDialog('gender')} />
-        <ProfileField label="Location" icon="location" value={draft.location} onPress={() => openDialog('location')} />
-        <ProfileField label="How did you hear about Arogio?" icon="referral" value={draft.referralSource} onPress={() => openDialog('referralSource')} />
+        <ProfileField label="Gender" icon="user" placeholder="Select your gender" value={genders.find(g => g.value === draft.gender)?.label ?? ''} onPress={() => openDialog('gender')} />
+        <ProfileField label="Location" icon="location" placeholder="Select your city" value={draft.location} onPress={() => openDialog('location')} />
+        <ProfileField label="How did you hear about Arogio?" icon="referral" placeholder="Add a source (optional)" value={draft.referralSource} onPress={() => openDialog('referralSource')} />
       </>}
       {step === 5 && <><ProfileHeading title="Stay on track" subtitle="Get helpful reminders and insights to reach your goals." />
         {([{ key: 'healthReminders', title: 'Health reminders', subtitle: 'Take medications, track habits and daily check-ins', icon: 'bell' }, { key: 'tipsAndInsights', title: 'Tips and insights', subtitle: 'Personalized health tips and recommendations', icon: 'tips' }, { key: 'productUpdates', title: 'Product updates', subtitle: 'New features and important announcements', icon: 'email' }] as const).map(p => <View key={p.key} style={s.preference}><ChoiceCard {...p}><Switch accessibilityLabel={p.title} value={draft[p.key]} onValueChange={v => set(p.key, v)} trackColor={{ false: '#CBD5E1', true: '#168C80' }} thumbColor="#FFFFFF" /></ChoiceCard></View>)}
@@ -109,8 +106,8 @@ export function ProfileSetupScreen() {
     <View style={s.footer}><FormError message={error} /><Button title={step === 0 ? 'Get Started' : step === 6 ? 'Looks Good' : step === 7 ? 'Continue to App' : 'Continue'} onPress={() => void next()} loading={busy} trailing={<AuthIcon name="arrow" />} />
       {step === 6 && <TouchTarget accessibilityRole="button" onPress={back} disabled={busy} style={s.goBack}><Text style={ps.link}>Go Back</Text></TouchTarget>}
     </View>
-    {dialog && <ProfileDialog title={dialogTitle} value={dialogValue} onChange={setDialogValue} options={dialog === 'gender' ? genders : undefined} onClose={() => setDialog(null)} onSave={() => {
-      if (dialog === 'dateOfBirth' && !validBirthDate(dialogValue)) { setError('Enter a valid date of birth (YYYY-MM-DD) in the past.'); setDialog(null); return; }
+    {dialog === 'dateOfBirth' && <ProfileBirthDatePicker value={draft.dateOfBirth} onClose={() => setDialog(null)} onSelect={value => { set('dateOfBirth', value); setDialog(null); }} />}
+    {dialog && dialog !== 'dateOfBirth' && <ProfileDialog title={dialogTitle} subtitle={dialog === 'gender' ? 'Optional. Choose the option you prefer.' : dialog === 'location' ? 'Optional. Enter the city where you live.' : 'Optional. Tell us where you found Arogio.'} placeholder={dialog === 'location' ? 'Enter your city' : 'e.g. a friend, Google or social media'} value={dialogValue} onChange={setDialogValue} options={dialog === 'gender' ? genders : undefined} onClose={() => setDialog(null)} onSave={() => {
       set(dialog, dialogValue.trim()); setDialog(null);
     }} />}
   </View></AuthCanvas>;
