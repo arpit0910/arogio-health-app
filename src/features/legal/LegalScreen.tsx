@@ -30,7 +30,7 @@ const documents = {
 export function LegalScreen({ document }: { document: keyof typeof documents }) {
   const content = documents[document];
   return <SafeAreaView style={styles.safe}>
-    <ScrollView contentContainerStyle={styles.content}>
+    <ScrollView bounces={false} alwaysBounceVertical={false} overScrollMode="never" contentContainerStyle={styles.content}>
       <Pressable accessibilityRole="button" accessibilityLabel="Go back" style={styles.back}
         onPress={() => router.canGoBack() ? router.back() : router.replace('/signup')}><AuthIcon name="back" /></Pressable>
       <Text accessibilityRole="header" style={styles.title}>{content.title}</Text>

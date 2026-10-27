@@ -1,4 +1,5 @@
 import { TouchTarget } from '../../../components/ui/TouchTarget';
+import { useScreenLayout } from '../../../components/ui/useScreenLayout';
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
@@ -11,6 +12,7 @@ import { AuthHeading, Checkbox, FormError, SocialDivider, authStyles } from './A
 import { GoogleSignInButton } from './GoogleSignInButton';
 
 export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }) {
+  const { compact } = useScreenLayout();
   const { register, isSubmitting, error, clearError } = useAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -42,7 +44,7 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
         textContentType="emailAddress" returnKeyType="next" onSubmitEditing={() => passwordRef.current?.focus()} />
       <AuthField ref={passwordRef} icon="lock" password placeholder="Password" value={password} onChangeText={(value) => { setPassword(value); setValidationError(null); clearError(); }}
         editable={!isSubmitting} autoCapitalize="none" autoCorrect={false} autoComplete="new-password" textContentType="newPassword"
-        accessibilityHint="At least 12 characters, with uppercase, lowercase, and a number"
+        accessibilityHint="At least 8 characters, with uppercase, lowercase, and a number"
         returnKeyType="next" onSubmitEditing={() => confirmRef.current?.focus()} />
       <AuthField ref={confirmRef} icon="lock" password placeholder="Confirm password" value={confirmation} onChangeText={(value) => { setConfirmation(value); setValidationError(null); clearError(); }}
         editable={!isSubmitting} autoCapitalize="none" autoCorrect={false} autoComplete="new-password" textContentType="newPassword"
@@ -57,7 +59,7 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
       </Checkbox>
     </View>
     <FormError message={validationError || error} />
-    <View style={styles.spacer} />
+    <View style={[styles.spacer, compact && styles.compactSpacer]} />
     <View style={styles.action}><Button title="Create Account" onPress={handleSubmit} loading={isSubmitting} trailing={<AuthIcon name="arrow" />} /></View>
     <SocialDivider compact /><GoogleSignInButton disabled={isSubmitting || !accepted} />
     <View style={[authStyles.footer, styles.footer]}><Text style={authStyles.small}>Already have an account?</Text>
@@ -72,6 +74,7 @@ const styles = StyleSheet.create({
   agreement: { marginTop: 4 },
   legalCopy: { flex: 1 },
   spacer: { height: 40 },
+  compactSpacer: { height: 20 },
   footer: { marginTop: 0 },
   action: { marginTop: 0 },
 });

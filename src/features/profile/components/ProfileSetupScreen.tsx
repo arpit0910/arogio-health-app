@@ -74,7 +74,7 @@ export function ProfileSetupScreen() {
   return <AuthCanvas background="backgroundSignup" backgroundXml={step === 0 ? profileAssets.introBackground : step === 7 ? profileAssets.completeBackground : profileAssets.formBackground}><View style={s.screen}>
     {step !== 7 && <><TouchTarget accessibilityRole="button" accessibilityLabel={step === 0 ? 'Back to signup' : 'Go back'} disabled={busy} onPress={back} style={s.back}><ProfileIcon name="back" /></TouchTarget><ProfileProgress step={step} /></>}
     {(step === 0 || step === 7) ? <View style={[s.hero, step === 7 && s.completeHero]}>
-      <SvgXml xml={step === 0 ? profileAssets.intro : profileAssets.complete} width={step === 0 ? 286 : 278} height={step === 0 ? 250 : 255} />
+      <View style={{ width: '100%', maxWidth: step === 0 ? 286 : 278, aspectRatio: step === 0 ? 286 / 250 : 278 / 255 }}><SvgXml xml={step === 0 ? profileAssets.intro : profileAssets.complete} width="100%" height="100%" /></View>
       <Text accessibilityRole="header" style={[ps.title, s.heroTitle]}>{step === 0 ? <>Let&apos;s set up{'\n'}<Text style={{ color: colors.primary }}>your profile</Text></> : "You're all set!"}</Text>
       <Text style={ps.centeredCopy}>{step === 0 ? 'This helps us personalize your experience\nand give better suggestions.' : "Your profile is ready. Let's start\nyour health journey with Arogio."}</Text>
     </View> : <View style={ps.body}>
@@ -116,7 +116,7 @@ export function ProfileSetupScreen() {
   </View></AuthCanvas>;
 }
 const s = StyleSheet.create({
-  screen: { flex: 1, minHeight: 678, paddingBottom: 24 }, back: { marginLeft: 14, width: 48, alignItems: 'center', justifyContent: 'center' },
+  screen: { flexGrow: 1, flexShrink: 0, paddingBottom: 24 }, back: { marginLeft: 14, width: 48, alignItems: 'center', justifyContent: 'center' },
   hero: { alignItems: 'center', paddingHorizontal: 20, marginTop: 50 }, completeHero: { marginTop: 115 }, heroTitle: { marginTop: 28 },
   label: { fontFamily: fonts.semibold, color: colors.ink, fontSize: 11.5 }, choices: { gap: 10 }, preference: { marginBottom: 2 },
   footer: { paddingHorizontal: 24, marginTop: 'auto', paddingTop: 24 }, goBack: { justifyContent: 'center', alignItems: 'center', marginBottom: -14 },

@@ -8,11 +8,11 @@ const readinessResponseSchema = healthResponseSchema.extend({ checks: z.record(z
 export type ReadinessResponse = z.infer<typeof readinessResponseSchema>;
 
 export async function getApiHealth(signal?: AbortSignal): Promise<HealthResponse> {
-  const response = await apiClient.request<unknown>({ path: '/health', signal });
+  const response = await apiClient.request<unknown>({ path: '/health/liveness', signal });
   return healthResponseSchema.parse(response);
 }
 
 export async function getApiReadiness(signal?: AbortSignal): Promise<ReadinessResponse> {
-  const response = await apiClient.request<unknown>({ path: '/ready', signal });
+  const response = await apiClient.request<unknown>({ path: '/health/readiness', signal });
   return readinessResponseSchema.parse(response);
 }

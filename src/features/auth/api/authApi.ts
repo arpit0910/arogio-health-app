@@ -34,7 +34,7 @@ export async function registerWithEmailPassword(
   }
 
   const response = await apiClient.request<unknown>({
-    path: '/auth/register',
+    path: '/auth/email/register',
     method: 'POST',
     body: payload,
     signal,
@@ -47,7 +47,7 @@ export async function loginWithEmailPassword(
   signal?: AbortSignal,
 ): Promise<AuthResponse> {
   const response = await apiClient.request<unknown>({
-    path: '/auth/login',
+    path: '/auth/email/login',
     method: 'POST',
     body: {
       email: input.email.trim().toLowerCase(),
@@ -63,7 +63,7 @@ export async function loginWithGoogleIdToken(
   signal?: AbortSignal,
 ): Promise<AuthResponse> {
   const response = await apiClient.request<unknown>({
-    path: '/auth/google',
+    path: '/auth/google/login',
     method: 'POST',
     body: {
       idToken: input.idToken,
@@ -78,7 +78,7 @@ export async function refreshAuthSession(
   signal?: AbortSignal,
 ): Promise<TokenPair> {
   const response = await apiClient.request<unknown>({
-    path: '/auth/refresh',
+    path: '/auth/tokens/refresh',
     method: 'POST',
     body: { refreshToken },
     signal,
@@ -120,6 +120,6 @@ export async function updateCurrentUserProfile(input: UpdateProfileInput, signal
 
 export async function saveProfileSetup(input: Record<string, unknown>): Promise<SafeUser> {
   return safeUserSchema.parse(await apiClient.request<unknown>({
-    path: '/users/me/setup', method: 'PATCH', body: input,
+    path: '/users/me/profile-setup', method: 'PATCH', body: input,
   }));
 }

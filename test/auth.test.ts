@@ -40,8 +40,14 @@ describe('Auth Schemas & Input Validation', () => {
     assert.strictEqual(valid.success, true);
   });
 
+  it('accepts eight-character passwords and longer passwords', () => {
+    for (const password of ['Health1!', 'LongerPassword123!']) {
+      assert.strictEqual(registerSchema.safeParse({ email: 'user@example.com', password }).success, true);
+    }
+  });
+
   it('enforces backend password complexity rules', () => {
-    // Too short (< 12 chars)
+    // Too short (< 8 chars)
     const tooShort = registerSchema.safeParse({
       email: 'user@example.com',
       password: 'Short1!',

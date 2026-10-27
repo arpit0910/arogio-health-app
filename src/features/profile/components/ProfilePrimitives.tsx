@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { profileAssets } from '../assets/profileAssets';
 import { colors, fonts } from '../../../theme/tokens';
@@ -47,11 +47,11 @@ export function ChoiceCard({ title, subtitle, icon, selected, multiple, onPress,
 export function ProfileDialog({ title, value, onChange, options, onClose, onSave }: {
   title: string; value: string; onChange: (v: string) => void; options?: { value: string; label: string }[]; onClose: () => void; onSave: () => void;
 }) {
-  return <TouchTargetScale value={1}><Modal transparent visible animationType="fade" onRequestClose={onClose}><KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.overlay}><View accessibilityViewIsModal style={s.dialog}>
+  return <TouchTargetScale value={1}><Modal transparent visible animationType="fade" onRequestClose={onClose}><KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.overlay}><ScrollView accessibilityViewIsModal style={s.dialog} contentContainerStyle={s.dialogContent} keyboardShouldPersistTaps="handled" bounces={false} overScrollMode="never">
     <ProfileHeading title={title} subtitle={title === 'Date of birth' ? 'Enter your date of birth (YYYY-MM-DD).' : ''} />
     {options ? options.map(option => <TouchTarget key={option.value} accessibilityRole="radio" accessibilityState={{ checked: value === option.value }} onPress={() => onChange(option.value)} style={[s.option, value === option.value && s.selected]}><Text style={s.cardTitle}>{option.label}</Text></TouchTarget>) : <TextInput autoFocus maxLength={title === 'Date of birth' ? 10 : 100} accessibilityLabel={title} value={value} onChangeText={onChange} style={[s.field, s.input]} />}
     <Button title="Save" onPress={onSave} /><TouchTarget onPress={onClose} accessibilityRole="button" style={s.cancel}><Text style={s.link}>Cancel</Text></TouchTarget>
-  </View></KeyboardAvoidingView></Modal></TouchTargetScale>;
+  </ScrollView></KeyboardAvoidingView></Modal></TouchTargetScale>;
 }
 export const profileStyles = StyleSheet.create({
   body: { paddingHorizontal: 24, gap: 10 }, title: { fontFamily: fonts.bold, fontSize: 24, lineHeight: 30, color: colors.ink, textAlign: 'center' },
@@ -71,5 +71,5 @@ const s = StyleSheet.create({
   card: { flexDirection: 'row', alignItems: 'center', padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 13, gap: 11, backgroundColor: colors.background }, selected: { borderColor: '#279F95', backgroundColor: '#EBF7F4' },
   badge: { width: 32, height: 32, backgroundColor: '#EFFBF7', borderRadius: 8, alignItems: 'center', justifyContent: 'center' }, cardCopy: { flex: 1 }, cardTitle: { fontFamily: fonts.bold, fontSize: 12, color: colors.ink, lineHeight: 17 }, cardSubtitle: { fontFamily: fonts.regular, fontSize: 10, lineHeight: 14, color: colors.muted, marginTop: 2 },
   mark: { width: 18, height: 18, borderRadius: 4, borderWidth: 1, borderColor: '#CBD5E1', alignItems: 'center', justifyContent: 'center' }, markSelected: { backgroundColor: colors.primary, borderColor: colors.primary }, radioDot: { width: 5, height: 5, backgroundColor: '#FFFFFF', borderRadius: 3 },
-  overlay: { flex: 1, backgroundColor: 'rgba(13,31,51,0.35)', justifyContent: 'center', padding: 24 }, dialog: { alignSelf: 'center', width: '100%', maxWidth: 400, padding: 24, borderRadius: 16, backgroundColor: colors.background, gap: 12 }, option: { padding: 12, borderRadius: 8, borderWidth: 1, borderColor: colors.border }, cancel: { alignItems: 'center', justifyContent: 'center' }, link: { fontFamily: fonts.semibold, color: colors.primary, textDecorationLine: 'underline' },
+  overlay: { flex: 1, backgroundColor: 'rgba(13,31,51,0.35)', justifyContent: 'center', padding: 24 }, dialog: { flexGrow: 0, flexShrink: 1, alignSelf: 'center', width: '100%', maxWidth: 400, maxHeight: '100%', borderRadius: 16, backgroundColor: colors.background }, dialogContent: { padding: 24, gap: 12 }, option: { padding: 12, borderRadius: 8, borderWidth: 1, borderColor: colors.border }, cancel: { alignItems: 'center', justifyContent: 'center' }, link: { fontFamily: fonts.semibold, color: colors.primary, textDecorationLine: 'underline' },
 });

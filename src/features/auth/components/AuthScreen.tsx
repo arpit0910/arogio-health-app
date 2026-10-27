@@ -8,18 +8,20 @@ import { LoginForm } from './LoginForm';
 import { SignupForm } from './SignupForm';
 import { AuthCanvas } from './AuthCanvas';
 import { AuthBrand } from './AuthBrand';
+import { useScreenLayout } from '../../../components/ui/useScreenLayout';
 
 export function AuthShell({ children, signup = false }: { children: ReactNode; signup?: boolean }) {
   const { isSubmitting } = useAuth();
+  const { compact } = useScreenLayout();
   return <AuthCanvas background={signup ? 'backgroundSignup' : 'backgroundLogin'}>
-        <View style={styles.top}>
+        <View style={[styles.top, compact && styles.compactTop]}>
           <Pressable accessibilityRole="button" accessibilityLabel="Go back" disabled={isSubmitting} hitSlop={2} style={styles.back}
             onPress={() => router.canGoBack() ? router.back() : router.replace('/')}>
             <AuthIcon name="back" />
           </Pressable>
           <AuthBrand />
         </View>
-        <View style={[styles.body, signup && styles.signupBody]}>{children}</View>
+        <View style={[styles.body, compact && styles.compactBody, signup && styles.signupBody, signup && compact && styles.compactSignupBody]}>{children}</View>
   </AuthCanvas>;
 }
 
@@ -40,4 +42,7 @@ const styles = StyleSheet.create({
   back: { position: 'absolute', top: 0, left: 12, minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' },
   body: { flexGrow: 1, paddingHorizontal: 24, marginTop: 35.5, paddingBottom: 12 },
   signupBody: { flexGrow: 0, marginTop: 12, paddingBottom: 12 },
+  compactTop: { paddingTop: 16 },
+  compactBody: { marginTop: 24 },
+  compactSignupBody: { marginTop: 8 },
 });

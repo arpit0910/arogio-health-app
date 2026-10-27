@@ -61,7 +61,7 @@ export function UserDashboard() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView bounces={false} alwaysBounceVertical={false} overScrollMode="never" style={styles.container} contentContainerStyle={styles.content}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.avatar}>
@@ -194,6 +194,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7FAF9',
   },
   content: {
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
     padding: 20,
     paddingBottom: 40,
   },
