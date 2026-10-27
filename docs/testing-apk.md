@@ -1,6 +1,21 @@
 # Android test APK
 
-## Latest build ? Arogio Health, Android 10
+## Latest build - Arogio Health, Android 11
+
+Version **1.0.1**, Android build **11**, is a signed standalone production APK with Home, Profile, shared five-tab navigation, personal/body/photo editing and health-goal/activity editing. It uses the production backend and the new profile URLs.
+
+- [Download build 11](https://expo.dev/artifacts/eas/FHGo3M2v3ergEZFTVeZz6ceQjXIvcidfkgniX2ogwU0.apk)
+- [EAS build 11](https://expo.dev/accounts/arpit0910/projects/arogio-health-app/builds/81880888-149c-418e-802f-a23cf5be012c)
+- Local copy: `dist/arogio-health-1.0.1-build-11.apk` (99,720,281 bytes).
+- SHA-256: `8df08b270f9af00581dbf03340ec4279a4b1c67e8c049264eb9c496b918b9d9c`.
+
+Signature verified, with unchanged release certificate SHA-1 `CD:D6:E8:F9:74:AB:F3:E8:1E:65:32:D0:4C:AD:3E:96:6D:BF:EB:B6`. Manifest confirms Arogio Health, package `com.arogio.health`, versionCode 11, minimum API 24 and target API 36. It has no debug/test-only flag or camera/microphone permission. The 1,353 archive entries contain no env files, signing keys, source maps, tests, docs or node_modules. The bundle contains the production URL, /profile/view, /profile/create, /profile/update, correct Google Web client and both photo modules; the emulator URL is absent. Upload inspection found 138 files totaling 4,496,548 bytes, compressed to 3.6 MB.
+
+App lint, TypeScript and all 34 tests pass. Production liveness/readiness return 200; all three profile URLs are deployed and require authentication. Installed as an update over build 10 on API 34, without Metro or Expo Go. A generated account completed email login, Home/Profile navigation, profile editing, Android scoped photo selection and cropping, native JPEG processing, production photo save/read-back, all tabs/Coming soon states and logout. The saved DOB and BMI remained correct. Test sessions were revoked. A test helper was corrected to accept logout's expected empty HTTP 204 response; no application change was required. The generated test account remains in production.
+
+Google client configuration is embedded, but real Google account authorization remains unverified. Native iOS and physical-device testing remain unverified. The previous local build 10 APK was removed after this verification; its cloud download remains available below.
+
+## Previous build 10
 
 Version **1.0.1**, Android build **10**, adds the native DOB picker, field-specific placeholders, optional-entry guidance and dark teal selected measurement units.
 

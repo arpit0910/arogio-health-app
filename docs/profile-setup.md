@@ -6,6 +6,8 @@ Visual source: user-supplied `Body.svg` and `Body.png`, 2026-10-26. The source S
 
 The eight screens are intro, personal details, lifestyle, goals, additional details, preferences, review and completion. Data starts empty rather than pre-filling the example person's details. Continue saves progress through `PATCH /users/me/setup`. Review edits return directly to review. Final confirmation persists completion before showing the final screen. Failed saves keep the current screen and inputs with a retryable error. Back actions preserve the current in-memory draft; reopening resumes the last saved step.
 
+Completion displays the success illustration and message without an action button, then replaces the setup route with `/home` after 1.5 seconds. Leaving the screen clears the redirect timer. The welcome screen uses a single illustration without pagination dots.
+
 Shared primitives: `AuthCanvas`, `Button`, `TouchTarget`, `FormError`, existing theme fonts/colors; profile fields, progress, choice rows, unit selectors and selection dialogs live outside route files. Existing authentication styling and the incumbent design-system documents are preserved. Unit changes convert the entered value. Default system font scaling stays enabled, with canvas-aware control hit targets.
 
 Location and referral choices were not supplied as a catalog; their selectors accept free text. Notification controls persist preferences only; notification delivery is separate.

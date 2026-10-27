@@ -38,11 +38,15 @@ export function ProfileSetupScreen() {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => { back(); return true; });
     return () => subscription.remove();
   });
+  useEffect(() => {
+    if (step !== 7) return;
+    const timeout = setTimeout(() => router.replace('/home'), 1500);
+    return () => clearTimeout(timeout);
+  }, [step]);
   const openDialog = (key: typeof dialog) => { if (key) { Keyboard.dismiss(); setError(null); setDialogValue(draft[key]); setDialog(key); } };
   const next = async () => {
-    if (busyRef.current) return;
+    if (busyRef.current || step === 7) return;
     setError(null);
-    if (step === 7) { router.replace('/'); return; }
     let invalid: string | null = null;
     if (step === 1 || step === 6) invalid = validatePersonal(draft);
     if ((step === 2 || step === 6) && !draft.activityLevel) invalid = 'Choose your activity level.';
@@ -103,9 +107,9 @@ export function ProfileSetupScreen() {
         <View style={s.privacy}><View style={s.reviewIcon}><ProfileIcon name="shield" /></View><View style={s.reviewCopy}><Text style={s.privacyTitle}>Your information is private</Text><Text style={s.privacyCopy}>This information helps us give you personalized recommendations. You can update it anytime from your profile.</Text></View></View>
       </>}
     </View>}
-    <View style={s.footer}><FormError message={error} /><Button title={step === 0 ? 'Get Started' : step === 6 ? 'Looks Good' : step === 7 ? 'Continue to App' : 'Continue'} onPress={() => void next()} loading={busy} trailing={<AuthIcon name="arrow" />} />
+    {step !== 7 && <View style={s.footer}><FormError message={error} /><Button title={step === 0 ? 'Get Started' : step === 6 ? 'Looks Good' : 'Continue'} onPress={() => void next()} loading={busy} trailing={<AuthIcon name="arrow" />} />
       {step === 6 && <TouchTarget accessibilityRole="button" onPress={back} disabled={busy} style={s.goBack}><Text style={ps.link}>Go Back</Text></TouchTarget>}
-    </View>
+    </View>}
     {dialog === 'dateOfBirth' && <ProfileBirthDatePicker value={draft.dateOfBirth} onClose={() => setDialog(null)} onSelect={value => { set('dateOfBirth', value); setDialog(null); }} />}
     {dialog && dialog !== 'dateOfBirth' && <ProfileDialog title={dialogTitle} subtitle={dialog === 'gender' ? 'Optional. Choose the option you prefer.' : dialog === 'location' ? 'Optional. Enter the city where you live.' : 'Optional. Tell us where you found Arogio.'} placeholder={dialog === 'location' ? 'Enter your city' : 'e.g. a friend, Google or social media'} value={dialogValue} onChange={setDialogValue} options={dialog === 'gender' ? genders : undefined} onClose={() => setDialog(null)} onSave={() => {
       set(dialog, dialogValue.trim()); setDialog(null);

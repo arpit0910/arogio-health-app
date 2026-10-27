@@ -34,4 +34,8 @@ The compiled web app was tested in a fresh headless browser against the real dis
 
 Android API 34 rendered Home, Profile and Edit Profile through Expo Go with the local API. Native automation was interrupted during later transitions, so this is not a completed native release/photopicker verification. Expo Go's floating developer control is not part of the production UI. Native iOS and physical-device checks remain unverified.
 
-Deploy the updated backend `dist` and restart the hosting Node app **before** distributing a new APK with these profile URLs. Existing APKs retain compatibility through `/users/me*`; the new app uses `/profile/*` only. A new APK is needed for these screens and the photo-picker/manipulator native modules. No new APK was built for this change.
+Deploy the updated backend `dist` and restart the hosting Node app **before** distributing a new APK with these profile URLs. Existing APKs retain compatibility through `/users/me*`; the new app uses `/profile/*` only. A new APK is needed for these screens and the photo-picker/manipulator native modules. Build 11 now includes these screens and modules; see [testing-apk.md](./testing-apk.md).
+
+## Release verification follow-up
+
+The signed production build 11 was installed and verified on Android API 34 without Expo Go or Metro. Email login, Home/Profile, native photo picker/crop/JPEG save, production profile read-back, all tabs, Coming soon states and logout passed using a generated account. The production profile routes are deployed. Test sessions were revoked; Google account authorization, native iOS and physical-device checks remain unverified.
