@@ -1,11 +1,13 @@
+import { useFieldFocus } from '../../../components/ui/FocusScrollView';
 import {
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
   type TextInputProps,
 } from "react-native";
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AppIcon, type AppIconName } from "../../../components/app/AppIcon";
 import { TouchTarget } from "../../../components/ui/TouchTarget";
 import { appTheme as t } from "../../../theme/appTheme";
@@ -29,28 +31,30 @@ export function ProfileInput({
   suffix,
   ...input
 }: Props) {
+  const reveal = useFieldFocus();
+  const ref = useRef<import('react').ComponentRef<typeof TextInput>>(null);
   const [focused, setFocused] = useState(false);
   const content = (
     <>
-      {input.keyboardType !== 'decimal-pad' && <AppIcon
+      <AppIcon
         name={icon}
         size={21}
         color={icon === "user" && label === "Full name" ? "#7C85A4" : t.teal}
-      />}
+      />
       {onPress ? (
         <Text style={[s.value, !value && s.placeholder]}>
           {value || placeholder}
         </Text>
       ) : (
-        <TextInput
+        <TextInput ref={ref}
           accessibilityLabel={label}
           value={value}
           placeholder={placeholder}
           placeholderTextColor={t.muted}
           style={s.input}
           selectionColor={t.teal}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          onFocus={() => { setFocused(true); reveal(ref.current); }}
+          onBlur={() => { setFocused(false); reveal(null); }}
           {...input}
         />
       )}
@@ -72,7 +76,7 @@ export function ProfileInput({
           {content}
         </TouchTarget>
       ) : (
-        <View style={[s.field, focused && { borderColor: t.teal }]}>{content}</View>
+        <Pressable accessible={false} onPress={() => ref.current?.focus()} style={[s.field, focused && { borderColor: t.teal }]}>{content}</Pressable>
       )}
     </View>
   );

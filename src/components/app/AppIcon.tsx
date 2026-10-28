@@ -2,6 +2,13 @@ import Svg, { Circle, Path, Rect } from "react-native-svg";
 import { appTheme as t } from "../../theme/appTheme";
 
 const paths = {
+  glass: 'M5 3h14l-2 18H7ZM6 10h12',
+  bottle: 'M9 2h6v5l3 3v11H6V10l3-3ZM9 5h6M6 13h12',
+  smile: 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0ZM7 14c2 4 8 4 10 0M8 8h.01M16 8h.01',
+  calm: 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0ZM7 9h3m4 0h3m-8 6h6',
+  low: 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0ZM7 17c2-4 8-4 10 0M8 8h.01M16 8h.01',
+  bolt: 'M13 2 4 14h7l-1 8 10-13h-7Z',
+  clock: 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0ZM12 6v6l4 2',
   home: "M3 10 12 3l9 7v11h-6v-7H9v7H3Z",
   explore: "m16 8-3 5-5 3 3-5Z",
   heart:
@@ -59,8 +66,9 @@ export function AppIcon({
         strokeWidth={1.7}
         strokeLinecap="round"
         strokeLinejoin="round"
-        fill={filled && (name === "home" || name === "user") ? color : "none"}
+        fill={filled && (name === "home" || name === "user" || name === "heart" || name === "explore") ? color : "none"}
       />
+      {name === "heart" && filled && <Path d="M7 12h3l1-2 2 5 1-3h3" stroke={t.white} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />}
       {name === "report" && (
         <Rect x={8} y={8} width={2} height={1} fill={color} />
       )}

@@ -1,3 +1,4 @@
+import { CareIllustration } from '../../../components/app/CareIllustration';
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
@@ -21,7 +22,7 @@ export function AuthShell({ children, signup = false }: { children: ReactNode; s
           </Pressable>
           <AuthBrand />
         </View>
-        <View style={[styles.body, compact && styles.compactBody, signup && styles.signupBody, signup && compact && styles.compactSignupBody]}>{children}</View>
+        <View style={[styles.body, compact && styles.compactBody, signup && styles.signupBody, signup && compact && styles.compactSignupBody]}><View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[styles.illustration, compact && styles.compactIllustration]}><CareIllustration name={signup ? 'signup' : 'login'} width="100%" height="100%" /></View>{children}</View>
   </AuthCanvas>;
 }
 
@@ -37,12 +38,14 @@ export function AuthScreen({ initialTab = 'login' }: { initialTab?: 'login' | 's
 }
 
 const styles = StyleSheet.create({
+  illustration: { width: 220, maxWidth: '100%', aspectRatio: 294 / 215, alignSelf: 'center', marginBottom: 12 },
+  compactIllustration: { width: 164, marginBottom: 8 },
   loading: { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
   top: { paddingTop: 24, alignItems: 'center' },
   back: { position: 'absolute', top: 0, left: 12, minHeight: 48, minWidth: 48, alignItems: 'center', justifyContent: 'center' },
-  body: { flexGrow: 1, paddingHorizontal: 24, marginTop: 35.5, paddingBottom: 12 },
+  body: { flexGrow: 1, paddingHorizontal: 24, marginTop: 8, paddingBottom: 12 },
   signupBody: { flexGrow: 0, marginTop: 12, paddingBottom: 12 },
   compactTop: { paddingTop: 16 },
-  compactBody: { marginTop: 24 },
+  compactBody: { marginTop: 4 },
   compactSignupBody: { marginTop: 8 },
 });

@@ -1,3 +1,4 @@
+import { APP_TIMEZONE, formatClock, formatTime } from '../../lib/time';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,10 +15,10 @@ import { TouchTarget } from '../../components/ui/TouchTarget';
 import { colors, fonts } from '../../theme/tokens';
 import { profilePhoto } from '../profile/profileViewModel';
 
-const shortcuts: { title: string; icon: AppIconName; route: '/water' | '/cycle' | '/profile' | '/edit-health-goals' }[] = [
+const shortcuts: { title: string; icon: AppIconName; route: '/medicines' | '/water' | '/cycle' | '/profile' | '/edit-health-goals' }[] = [
   { title: 'Water', icon: 'drop', route: '/water' },
   { title: 'Cycle', icon: 'calendar', route: '/cycle' },
-  { title: 'My profile', icon: 'user', route: '/profile' },
+  { title: 'Medicines', icon: 'pill', route: '/medicines' },
   { title: 'My goals', icon: 'goal', route: '/edit-health-goals' },
 ];
 export function HomeScreen() {
@@ -39,7 +40,7 @@ export function HomeScreen() {
   if (!user) return null;
   const water = homeWater(data, now), plan = data.waterPlan;
   const name = user.fullName?.trim().split(/\s+/)[0] || user.username;
-  const time = (value: string) => new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZone: plan?.timezone }).format(new Date(value));
+  const time = formatTime;
   async function logDrink() {
     if (!plan || busy || logLock.current) return;
     logLock.current = true;
@@ -56,7 +57,7 @@ export function HomeScreen() {
     <View style={[s.appBar, expanded && s.expandedContent]}><CareBrand /><TouchTarget accessibilityRole="button" accessibilityLabel="Open your profile" onPress={() => router.navigate('/profile')} style={s.avatar}><Avatar photo={profilePhoto(user)} size={38} /></TouchTarget></View>
     <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={loading} onRefresh={() => void refresh()} tintColor={colors.primary} colors={[colors.primary]} />}>
       <View style={[s.content, expanded && s.expandedContent]}>
-        <View style={[s.greeting, compact && s.compactGreeting]}><Text accessibilityRole="header" numberOfLines={2} style={[s.heading, compact && s.compactHeading]}>{name ? `Hi, ${name}` : 'Your day'}</Text><Text style={s.body}>{now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short' })}</Text></View>
+        <View style={[s.greeting, compact && s.compactGreeting]}><Text accessibilityRole="header" numberOfLines={2} style={[s.heading, compact && s.compactHeading]}>{name ? `Hi, ${name}` : 'Your day'}</Text><Text style={s.body}>{now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'short', timeZone: APP_TIMEZONE })}</Text></View>
         <View style={expanded && s.columns}><View style={expanded && s.primaryColumn}>
         <Text accessibilityRole="header" style={s.sectionTitle}>Today</Text>
         {error && <View style={s.error} accessibilityLiveRegion="polite"><Text style={s.errorText}>{retryLog ? 'Your drink could not be confirmed. Retry the log to save it safely.' : plan ? 'Your latest updates could not be loaded. Pull down to refresh or retry.' : 'Your daily tracking could not be loaded.'}</Text><TouchTarget accessibilityRole="button" disabled={loading || busy} onPress={() => void refresh()} style={s.textAction}><Text style={s.actionText}>Refresh tracking</Text></TouchTarget></View>}
@@ -64,7 +65,7 @@ export function HomeScreen() {
           <View style={s.sectionHeader}><View style={s.labelRow}><AppIcon name="drop" size={22} /><Text style={s.title}>Water</Text></View><TouchTarget accessibilityRole="button" accessibilityLabel="View water plan" onPress={() => router.push('/water')} style={s.textAction}><Text style={s.actionText}>View plan</Text></TouchTarget></View>
           <View style={s.waterSummary}><Text style={s.amount}>{water.totalMl.toLocaleString()} <Text style={s.target}>/ {plan.targetMl.toLocaleString()} ml</Text></Text><Text style={s.body}>{water.complete ? 'Target reached' : `${water.completedTasks} of ${water.taskCount} tasks logged`}</Text></View>
           <View accessible accessibilityRole="progressbar" accessibilityLabel="Daily water target" accessibilityValue={{ min: 0, max: plan.targetMl, now: Math.min(water.totalMl, plan.targetMl), text: `${water.totalMl} of ${plan.targetMl} millilitres logged` }} style={s.progress}><View style={[s.progressFill, { width: `${water.progress * 100}%` }]} /></View>
-          <Text style={s.body}>{water.paused ? 'Reminders paused until bedtime' : !plan.remindersEnabled ? 'Reminders off · You can still log drinks' : water.beforeWake ? `Your plan starts at ${plan.wakeTime}` : water.afterBed ? 'Your waking day is finished' : water.complete ? 'Your drinks are saved for today' : water.next[0] ? `Next task at ${time(water.next[0].snoozedUntil ?? water.next[0].at)}` : 'No more scheduled tasks today'}</Text>
+          <Text style={s.body}>{water.paused ? 'Reminders paused until bedtime' : !plan.remindersEnabled ? 'Reminders off · You can still log drinks' : water.beforeWake ? `Your plan starts at ${formatClock(plan.wakeTime)}` : water.afterBed ? 'Your waking day is finished' : water.complete ? 'Your drinks are saved for today' : water.next[0] ? `Next task at ${time(water.next[0].snoozedUntil ?? water.next[0].at)}` : 'No more scheduled tasks today'}</Text>
           <Button title={retryLog ? 'Retry drink log' : `Log ${plan.servingMl} ml`} onPress={() => void logDrink()} loading={busy} disabled={loading} />
         </View> : !error && <View key="water-setup" style={s.water}><View style={s.labelRow}><AppIcon name="drop" size={22} /><Text style={s.title}>Water reminders</Text></View><Text style={s.body}>Choose your daily target and waking hours to get a drinking plan.</Text><Button title="Set up water reminders" onPress={() => router.push('/water')} /></View>}
         {feedback && <View style={s.feedback} accessibilityLiveRegion="polite"><Text style={[s.body, s.flex]}>{feedback.text}</Text>{feedback.logId && <TouchTarget accessibilityRole="button" accessibilityLabel="Undo the last water log" disabled={busy} style={s.textAction} onPress={() => void (async () => { if (await save(`water/logs/${feedback.logId}`, undefined, 'DELETE')) setFeedback({ text: 'Water log removed' }); })()}><Text style={s.actionText}>Undo</Text></TouchTarget>}<TouchTarget accessibilityRole="button" accessibilityLabel="Dismiss message" onPress={() => setFeedback(null)} style={s.dismiss}><AppIcon name="check" size={19} /></TouchTarget></View>}

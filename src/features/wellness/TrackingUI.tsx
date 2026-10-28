@@ -1,5 +1,7 @@
-import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
-import type { PropsWithChildren } from 'react';
+import { useFieldFocus } from '../../components/ui/FocusScrollView';
+import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useRef, useState, type PropsWithChildren } from 'react';
+import { AppIcon, type AppIconName } from '../../components/app/AppIcon';
 import { Button } from '../../components/ui/Button';
 import { Checkbox } from '../auth/components/AuthPrimitives';
 import { careStyles as c } from '../../components/app/CareUI';
@@ -11,12 +13,13 @@ export const trackingStyles = StyleSheet.create({
   panel: { backgroundColor: colors.subtle, padding: 20, borderRadius: 16, gap: 10, marginTop: 24 },
   error: { ...c.text, color: colors.error }, inline: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
 });
-export function Field({ label, value, onChange, numeric = false, multiline = false }: { label: string; value: string; onChange: (value: string) => void; numeric?: boolean; multiline?: boolean }) {
-  return <View style={{ gap: 7 }}><Text style={c.text}>{label}</Text><TextInput accessibilityLabel={label} value={value} onChangeText={onChange} keyboardType={numeric ? 'number-pad' : 'default'} multiline={multiline} maxLength={multiline ? 1000 : 80} style={trackingStyles.input} /></View>;
+export function Field({ label, value, onChange, numeric = false, multiline = false, placeholder, icon }: { label: string; value: string; onChange: (value: string) => void; numeric?: boolean; multiline?: boolean; placeholder?: string; icon?: AppIconName }) {
+  const reveal = useFieldFocus();
+  const ref = useRef<import('react').ComponentRef<typeof TextInput>>(null), [focused, setFocused] = useState(false);
+  const hint = placeholder ?? (label.includes('YYYY-MM-DD') ? 'e.g. 2026-10-28' : label.includes('target') ? 'e.g. 2000' : label.includes('serving') || label.includes('Amount') ? 'e.g. 250' : label.includes('cycle length') ? 'e.g. 28' : label.includes('period length') ? 'e.g. 5' : label.includes('days before') ? 'e.g. 2' : multiline ? 'Add anything you want to remember' : `Enter ${label.toLowerCase()}`);
+  return <View style={{ gap: 7 }}><Text style={c.text}>{label}</Text><Pressable accessible={false} onPress={() => ref.current?.focus()} style={[trackingStyles.input, { flexDirection: 'row', alignItems: multiline ? 'flex-start' : 'center', gap: 10, paddingVertical: 0, borderColor: focused ? colors.primary : colors.border }]}><View pointerEvents="none" style={{ paddingVertical: 14 }}><AppIcon name={icon ?? (label.includes('YYYY-MM-DD') ? 'calendar' : multiline ? 'report' : numeric ? 'trend' : 'pill')} size={21} /></View><TextInput ref={ref} accessibilityLabel={label} value={value} placeholder={hint} placeholderTextColor={colors.placeholder} selectionColor={colors.primary} onFocus={() => { setFocused(true); reveal(ref.current); }} onBlur={() => { setFocused(false); reveal(null); }} onChangeText={onChange} keyboardType={numeric ? 'number-pad' : 'default'} multiline={multiline} textAlignVertical={multiline ? 'top' : 'center'} maxLength={multiline ? 1000 : 80} style={{ flex: 1, minWidth: 0, minHeight: multiline ? 108 : 52, paddingVertical: 14, fontFamily: fonts.regular, fontSize: 16, color: colors.ink, outlineWidth: 0 }} /></Pressable></View>;
 }
 export function Check({ checked, onChange, label, disabled }: { checked: boolean; onChange: () => void; label: string; disabled?: boolean }) { return <Checkbox checked={checked} onChange={onChange} label={label} disabled={disabled}><Text style={c.text} onPress={disabled ? undefined : onChange}>{label}</Text></Checkbox>; }
 export function Group({ title, children }: PropsWithChildren<{ title: string }>) { return <View style={trackingStyles.group}><Text accessibilityRole="header" style={c.title}>{title}</Text>{children}</View>; }
 export function TrackingStatus() { const { loading, error, refresh } = useWellness(); return <View accessibilityLiveRegion="polite" style={{ gap: 10 }}>{loading && <ActivityIndicator accessibilityLabel="Loading tracking" color={colors.primary} />}{error && <><Text style={trackingStyles.error}>{error}</Text><Button title="Reload tracking" variant="secondary" onPress={() => void refresh()} /></>}</View>; }
 export function confirmDelete(title: string, message: string, action: () => void) { if (Platform.OS === 'web') { if (window.confirm(`${title}\n${message}`)) action(); } else Alert.alert(title, message, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: action }]); }
-export const deviceTimezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
-export const displayTime = (iso: string, timezone: string) => new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZone: timezone }).format(new Date(iso));

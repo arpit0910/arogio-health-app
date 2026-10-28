@@ -1,5 +1,6 @@
+import { FocusScrollView } from '../../../components/ui/FocusScrollView';
 import { useEffect, useRef, useState } from 'react';
-import { BackHandler, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useAuth } from '../../auth/context/AuthContext';
@@ -58,7 +59,7 @@ export function ProfileSetupScreen() {
   return <SafeAreaView style={s.safe}><KeyboardAvoidingView style={s.fill} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}><View style={s.container}>
     <View style={s.header}>{step > 0 ? <TouchTarget accessibilityRole="button" accessibilityLabel="Previous step" disabled={busy} onPress={() => { setError(null); setStep((step - 1) as SetupStep); }} style={s.back}><AppIcon name="back" size={21} /></TouchTarget> : <CareBrand />}<Text style={s.step}>Step {step + 1} of 3</Text></View>
     <View style={s.progress} accessibilityLabel={`Setup step ${step + 1} of 3`}>{[0, 1, 2].map(index => <View key={index} style={[s.segment, index <= step && s.segmentActive]} />)}</View>
-    <ScrollView keyboardShouldPersistTaps="handled" bounces={false} contentContainerStyle={s.body}>
+    <FocusScrollView keyboardShouldPersistTaps="handled" bounces={false} contentContainerStyle={s.body}>
       <Text accessibilityRole="header" style={c.heading}>{titles[step]}</Text><Text style={c.text}>{descriptions[step]}</Text>
       <View style={s.fields}>
         {step === 0 && primaryGoals.map(goal => <ChoiceCard key={goal.value} {...goal} multiple selected={draft.healthGoals.includes(goal.value)} onPress={busy ? undefined : () => set('healthGoals', draft.healthGoals.includes(goal.value) ? draft.healthGoals.filter(value => value !== goal.value) : [...draft.healthGoals, goal.value])} />)}
@@ -71,7 +72,7 @@ export function ProfileSetupScreen() {
         {step === 2 && <View accessibilityRole="radiogroup" style={s.fields}>{activities.map(activity => <ChoiceCard key={activity.value} {...activity} selected={draft.activityLevel === activity.value} onPress={busy ? undefined : () => set('activityLevel', activity.value)} />)}</View>}
       </View>
       <FormError message={error} />
-    </ScrollView>
+    </FocusScrollView>
     <View style={s.footer}><Button title={step === 2 ? 'Finish setup' : 'Continue'} onPress={() => void next()} loading={busy} /><Text style={s.note}>You can update these choices from your profile.</Text></View>
   </View></KeyboardAvoidingView>{pickingBirthday && <ProfileBirthDatePicker value={draft.dateOfBirth} onClose={() => setPickingBirthday(false)} onSelect={value => { set('dateOfBirth', value); setPickingBirthday(false); }} />}</SafeAreaView>;
 }
@@ -79,7 +80,7 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background }, fill: { flex: 1 }, container: { flex: 1, width: '100%', maxWidth: 440, alignSelf: 'center' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 24, paddingTop: 16, minHeight: 64 }, back: { width: 48, justifyContent: 'center' },
   step: { fontFamily: fonts.medium, fontSize: 13, color: colors.muted }, progress: { flexDirection: 'row', gap: 6, marginHorizontal: 24, marginTop: 20, marginBottom: 28 }, segment: { flex: 1, height: 3, backgroundColor: colors.border, borderRadius: 2 }, segmentActive: { backgroundColor: colors.primary },
-  body: { paddingHorizontal: 24, paddingBottom: 24, gap: 12 }, fields: { gap: 12, marginTop: 14 }, measurements: { flexDirection: 'row', gap: 16 }, measurement: { flex: 1, gap: 12 },
+  body: { paddingHorizontal: 24, paddingBottom: 24, gap: 12 }, fields: { gap: 12, marginTop: 14 }, measurements: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 }, measurement: { flex: 1, minWidth: 160, gap: 12 },
   footer: { paddingHorizontal: 24, paddingTop: 16, paddingBottom: 16, borderTopWidth: 1, borderColor: colors.border, gap: 12 }, note: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 18, color: colors.muted, textAlign: 'center' },
   success: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 20 },
 });

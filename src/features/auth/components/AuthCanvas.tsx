@@ -1,6 +1,7 @@
+import { FocusScrollView } from '../../../components/ui/FocusScrollView';
 import { SvgXml } from 'react-native-svg';
 import { useState, type ReactNode } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../../../theme/tokens';
 import { TouchTargetScale } from '../../../components/ui/TouchTarget';
@@ -31,14 +32,14 @@ export function AuthCanvas({ background, children, backgroundXml }: { background
           </View>
         </View>
         <KeyboardAvoidingView style={styles.fill} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-          <ScrollView style={styles.fill} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag"
+          <FocusScrollView style={styles.fill} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag"
             bounces={false} alwaysBounceVertical={false} overScrollMode="never"
             automaticallyAdjustContentInsets={false} automaticallyAdjustKeyboardInsets={false} contentInsetAdjustmentBehavior="never"
-            scrollEnabled={hasOverflow} showsVerticalScrollIndicator={hasOverflow} contentContainerStyle={styles.scroll}
+            scrollEnabled showsVerticalScrollIndicator={hasOverflow} contentContainerStyle={styles.scroll}
             onLayout={({ nativeEvent: { layout } }) => setViewportHeight(layout.height)}
             onContentSizeChange={(_, height) => setContentHeight(height)}>
             <View style={styles.content}><TouchTargetScale value={1}>{children}</TouchTargetScale></View>
-          </ScrollView>
+          </FocusScrollView>
         </KeyboardAvoidingView>
       </View>
     </SafeAreaView>

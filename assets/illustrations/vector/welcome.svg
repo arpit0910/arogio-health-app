@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="294" height="215" viewBox="0 0 294 215" fill="none"><g stroke-linecap="round" stroke-linejoin="round"><path d="M30 198H264" stroke="#DDEADC" stroke-width="3"/>
+<rect x="60" y="31" width="132" height="164" rx="15" fill="#DDEADC" transform="rotate(-5 60 31)"/>
+<rect x="73" y="24" width="129" height="169" rx="14" fill="#FFFDFA" stroke="#214F3D" stroke-width="2.5"/>
+<rect x="111" y="15" width="53" height="24" rx="8" fill="#214F3D"/>
+<rect x="93" y="63" width="21" height="21" rx="6" fill="#7DB7A1"/><path d="M99 73L103 77L109 69" stroke="#FFFDFA" stroke-width="2.5"/>
+<path d="M128 73H178M128 111H165M128 150H171" stroke="#DDEADC" stroke-width="6"/>
+<rect x="93" y="101" width="21" height="21" rx="6" fill="#7DB7A1"/><path d="M99 111L103 115L109 107" stroke="#FFFDFA" stroke-width="2.5"/>
+<rect x="93" y="139" width="21" height="21" rx="6" fill="#DDEADC"/>
+<circle cx="217" cy="91" r="34" fill="#214F3D"/>
+<path d="M217 107L202 93C190 81 207 70 217 82C227 70 244 81 232 93Z" fill="#FFFDFA"/>
+<path d="M227 145C227 145 211 162 211 173A16 16 0 0 0 243 173C243 162 227 145 227 145Z" fill="#7DB7A1"/>
+<path d="M34 85H48M41 78V92" stroke="#7DB7A1" stroke-width="3"/>
+</g></svg>

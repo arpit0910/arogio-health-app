@@ -1,3 +1,4 @@
+import { APP_TIMEZONE } from '../../lib/time';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import { AppState } from 'react-native';
 import { router } from 'expo-router';
@@ -22,7 +23,7 @@ function WellnessSession({ children, owner }: PropsWithChildren<{ owner: string 
   const revision = useRef(0);
   const refresh = useCallback(async () => {
     if (!owner || lock.current) return; const request = ++revision.current; setLoading(true); setError(null);
-    try { const next = await apiClient.request<WellnessData>({ path: '/wellness' }); if (active.current === owner && request === revision.current) setStored({ owner, data: next }); }
+    try { const next = await apiClient.request<WellnessData>({ path: '/wellness' }); if (active.current === owner && request === revision.current) setStored({ owner, data: { ...next, waterPlan: next.waterPlan ? { ...next.waterPlan, timezone: APP_TIMEZONE } : null, cycleSettings: next.cycleSettings ? { ...next.cycleSettings, timezone: APP_TIMEZONE } : null } }); }
     catch (e) { if (active.current === owner) setError(e instanceof Error ? e.message : 'Unable to load tracking. Try again.'); }
     finally { if (active.current === owner) setLoading(false); }
   }, [owner]);
@@ -36,7 +37,7 @@ function WellnessSession({ children, owner }: PropsWithChildren<{ owner: string 
   }, [owner, stored]);
   const save: Value['save'] = async (path, body, method = 'PUT') => {
     if (lock.current || !owner) return false; lock.current = true; ++revision.current; setBusy(true); setError(null);
-    try { const next = await apiClient.request<WellnessData>({ path: `/wellness/${path}`, method, body }); if (active.current !== owner) return false; setStored({ owner, data: next }); return true; }
+    try { const next = await apiClient.request<WellnessData>({ path: `/wellness/${path}`, method, body }); if (active.current !== owner) return false; setStored({ owner, data: { ...next, waterPlan: next.waterPlan ? { ...next.waterPlan, timezone: APP_TIMEZONE } : null, cycleSettings: next.cycleSettings ? { ...next.cycleSettings, timezone: APP_TIMEZONE } : null } }); return true; }
     catch (e) { if (active.current === owner) setError(e instanceof Error ? e.message : 'Unable to save. Check your connection and retry.'); return false; }
     finally { lock.current = false; if (active.current === owner) setBusy(false); }
   };

@@ -7,6 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "backgroundColor": "#FFFDFA",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.arogio.health"
@@ -26,7 +27,7 @@
     "plugins": [
       "expo-router",
       "expo-notifications",
-      ["expo-splash-screen", { "backgroundColor": "#F5F1E7", "image": "./assets/android-icon-foreground.png", "imageWidth": 160 }],
+      ["expo-splash-screen", { "backgroundColor": "#FFFDFA", "image": "./assets/android-icon-foreground.png", "imageWidth": 192, "resizeMode": "contain", "dark": { "backgroundColor": "#FFFDFA", "image": "./assets/android-icon-foreground.png" } }],
       "expo-secure-store",
       "expo-web-browser",
       "expo-font",

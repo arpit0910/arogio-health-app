@@ -8,14 +8,14 @@
         "role": "neutral",
         "displayName": "Background",
         "tonalRamp": [
-          "oklch(15% 0.0139 88.68)",
-          "oklch(26% 0.0139 88.68)",
-          "oklch(38% 0.0139 88.68)",
-          "oklch(49% 0.0139 88.68)",
-          "oklch(61% 0.0139 88.68)",
-          "oklch(72% 0.0139 88.68)",
-          "oklch(84% 0.0139 88.68)",
-          "oklch(95% 0.0139 88.68)"
+          "oklch(15% 0.0045 78.30)",
+          "oklch(26% 0.0045 78.30)",
+          "oklch(38% 0.0045 78.30)",
+          "oklch(49% 0.0045 78.30)",
+          "oklch(61% 0.0045 78.30)",
+          "oklch(72% 0.0045 78.30)",
+          "oklch(84% 0.0045 78.30)",
+          "oklch(95% 0.0045 78.30)"
         ]
       },
       "surface": {
@@ -191,7 +191,7 @@
       "Tonal ramps are synthesized OKLCH documentation previews with source-derived hue/chroma, not normative source colors.",
       "No responsive breakpoint tokens exist; app width is bounded to 440 logical units.",
       "HTML hover/focus states are documentation affordances; production native pressed and accessibility states remain authoritative.",
-      "Native initial splash is configured separately in app.json using expo-splash-screen, background #F5F1E7, existing assets/android-icon-foreground.png and imageWidth 160. The timed JavaScript sequence follows it. Development-build startup evidence does not establish standalone launch validation."
+      "Native initial splash is configured separately in app.json using expo-splash-screen, background #FFFDFA, existing assets/android-icon-foreground.png and imageWidth 192. One branded JavaScript surface follows it, without a timed second screen. Development-build startup evidence does not establish standalone launch validation."
     ]
   },
   "components": [
@@ -241,14 +241,14 @@
       "refersTo": "",
       "description": "Documentation translation of the implemented native pattern.",
       "html": "<nav class=\"ds-nav\"><button aria-current=\"page\">Home</button><button>Health</button><button>Explore</button><button>Profile</button></nav>",
-      "css": ".ds-nav{font-family:Inter, sans-serif;display:flex;background:#F5F1E7;border-top:1px solid #D8DCCF;padding-top:7px}.ds-nav button{flex:1;border:0;background:transparent;color:#586357;min-height:51px;font-size:12px;line-height:18px}.ds-nav button[aria-current]{background:#E7EDDF;border-radius:10px;color:#214F3D}.ds-nav button:hover{color:#214F3D}.ds-nav button:focus-visible{outline:2px solid #214F3D;outline-offset:-2px}"
+      "css": ".ds-nav{font-family:Inter, sans-serif;display:flex;background:#FFFDFA;border-top:1px solid #D8DCCF;padding-top:7px}.ds-nav button{flex:1;border:0;background:transparent;color:#586357;min-height:51px;font-size:12px;line-height:18px}.ds-nav button[aria-current]{background:#E7EDDF;border-radius:10px;color:#214F3D}.ds-nav button:hover{color:#214F3D}.ds-nav button:focus-visible{outline:2px solid #214F3D;outline-offset:-2px}"
     }
   ],
   "narrative": {
     "northStar": "Growing Well",
-    "overview": "Warm paper, forest-green actions and a restrained plum accent make everyday care feel approachable. Health management and daily wellness carry equal weight. Quiet grouped rows and progressive disclosure support one clear task at a time.",
+    "overview": "Cream white, forest-green actions and a restrained plum accent make everyday care feel approachable. Health management and daily wellness carry equal weight. Quiet grouped rows and progressive disclosure support one clear task at a time.",
     "keyCharacteristics": [
-      "Warm neutral canvas and flat tonal surfaces.",
+      "Cream-white canvas and flat tonal surfaces.",
       "Forest-green actions, dark green ink and restrained plum status accents.",
       "Crisp sans typography, grouped lists and modestly rounded controls.",
       "Original Arogio logo; code-led composition without new shipping raster artwork."

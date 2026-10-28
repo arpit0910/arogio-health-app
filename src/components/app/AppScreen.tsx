@@ -1,8 +1,8 @@
+import { FocusScrollView } from '../ui/FocusScrollView';
 import type { ReactNode } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -53,14 +53,14 @@ export function AppScreen({
             <View style={s.back}>{action}</View>
           </View>
         )}
-        <ScrollView
+        <FocusScrollView
           keyboardShouldPersistTaps="handled"
           bounces={false}
           overScrollMode="never"
           contentContainerStyle={s.scroll}
         >
           <View style={s.content}>{children}</View>
-        </ScrollView>
+        </FocusScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

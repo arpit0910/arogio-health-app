@@ -306,6 +306,6 @@ const s = StyleSheet.create({
     gap: 8,
     marginBottom: -4,
   },
-  body: { flexDirection: "row", gap: 20 },
-  measurement: { flex: 1, gap: 11, minWidth: 0 },
+  body: { flexDirection: "row", flexWrap: "wrap", gap: 20 },
+  measurement: { flex: 1, gap: 11, minWidth: 160 },
 });

@@ -8,7 +8,7 @@ describe('Water schedule',()=>{
   it('keeps after-midnight tasks in the overnight waking day',()=>{const p={...plan,wakeTime:'18:00',sleepTime:'06:00'};assert.equal(waterDay(p,new Date('2026-10-28T21:30:00Z')),'2026-10-28');assert.equal(waterDay(p,new Date('2026-10-29T01:30:00Z')),'2026-10-29');const tasks=waterSchedule(p,'2026-10-28');assert.ok(tasks.some(t=>localDay(new Date(t.at),p.timezone)==='2026-10-29'));});
   it('credits quick logs and preserves skips without claiming goal completion',()=>{const tasks=waterSchedule(plan,'2026-10-28',[{id:'1',amountMl:300,loggedAt:'2026-10-28T03:00:00Z',day:'2026-10-28',targetMl:2000,taskId:null}],[{taskId:'2026-10-28:test:2',day:'2026-10-28',status:'skipped',snoozedUntil:null}]);assert.equal(tasks[0].status,'done');assert.equal(tasks[1].remainingMl,200);assert.equal(tasks[2].status,'skipped');});
   it('handles daylight-saving gaps and folds deterministically',()=>{assert.equal(zonedInstant('2026-03-08','02:30','America/New_York').toISOString(),'2026-03-08T07:00:00.000Z');assert.equal(zonedInstant('2026-11-01','01:30','America/New_York').toISOString(),'2026-11-01T05:30:00.000Z');});
-  it('never schedules catch-up notifications, suppresses completed and paused tasks, bounds horizon',()=>{const data={...emptyWellness(),waterPlan:plan};const now=new Date('2026-10-28T08:00:00Z');const reminders=reminderPlan(data,now);assert.equal(reminders.length,55);assert.ok(reminders.every(r=>Date.parse(r.at)>+now));data.waterPlan={...plan,pausedUntil:'2026-11-30T00:00:00Z'};assert.equal(reminderPlan(data,now).length,0);data.waterPlan={...plan,remindersEnabled:false};assert.equal(reminderPlan(data,now).length,0);});
+  it('never schedules catch-up notifications, suppresses completed and paused tasks, bounds horizon',()=>{const data={...emptyWellness(),waterPlan:plan};const now=new Date('2026-10-28T08:00:00Z');const reminders=reminderPlan(data,now);assert.equal(reminders.length,60);assert.ok(reminders.every(r=>Date.parse(r.at)>+now));data.waterPlan={...plan,pausedUntil:'2026-11-30T00:00:00Z'};assert.equal(reminderPlan(data,now).length,0);data.waterPlan={...plan,remindersEnabled:false};assert.equal(reminderPlan(data,now).length,0);});
 });
 describe('Cycle estimates',()=>{
   it('validates actual dates including leap days',()=>{assert.equal(validDay('2026-02-29'),false);assert.equal(validDay('2024-02-29'),true);assert.equal(addDays('2024-02-28',2),'2024-03-01');});
@@ -16,3 +16,26 @@ describe('Cycle estimates',()=>{
   it('keeps reminder wording discreet and does not remind during ongoing periods',()=>{const settings={...defaultCycleSettings('UTC'),remindersEnabled:true};const data={...emptyWellness(),cycleSettings:settings,periods:[{id:'1',startDate:'2026-10-01',endDate:'2026-10-05'}]};const reminders=reminderPlan(data,new Date('2026-10-25T00:00:00Z'));assert.equal(reminders[0]?.title,'A moment for yourself');assert.ok(!reminders[0]?.body.includes('period'));data.periods[0].endDate=null as unknown as string;assert.equal(reminderPlan(data,new Date('2026-10-25T00:00:00Z')).length,0);});
 });
 
+
+describe('Medicine reminders', () => {
+  it('schedules each daily dose in IST, excludes past times and paused medicines', () => {
+    const data = { ...emptyWellness(), medicines: [{ id: 'm1', name: 'Example', notes: 'After food', enabled: true, doses: [{ time: '08:00', amount: '1 tablet' }, { time: '20:00', amount: '2 tablets' }] }] };
+    const now = new Date('2026-10-28T04:00:00Z');
+    const reminders = reminderPlan(data, now);
+    assert.equal(reminders.length, 15);
+    assert.equal(reminders[0].at, '2026-10-28T14:30:00.000Z');
+    assert.equal(reminders[0].route, '/medicines');
+    assert.ok(reminders[0].body.includes('2 tablets'));
+    assert.equal(new Set(reminders.map(r => r.id)).size, reminders.length);
+    data.medicines[0].enabled = false;
+    assert.equal(reminderPlan(data, now).length, 0);
+  });
+  it('keeps the nearest 60 reminders across water and multiple medicines', () => {
+    const data = { ...emptyWellness(), waterPlan: plan, medicines: Array.from({ length: 10 }, (_, i) => ({ id: String(i), name: 'Example', notes: '', enabled: true, doses: [{ time: '08:00', amount: '1 tablet' }] })) };
+    const reminders = reminderPlan(data, new Date('2026-10-28T00:00:00Z'));
+    assert.equal(reminders.length, 60);
+    assert.ok(reminders.some(r => r.route === '/water'));
+    assert.ok(reminders.some(r => r.route === '/medicines'));
+    assert.deepEqual(reminders.map(r => r.at), reminders.map(r => r.at).sort());
+  });
+});

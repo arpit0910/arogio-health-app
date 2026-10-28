@@ -1,3 +1,4 @@
+import { APP_TIMEZONE } from '../../lib/time.ts';
 /** Calendar dates are plain ISO dates, never UTC-serialized local midnights. */
 export type WaterPlan = { version: string; wakeTime: string; sleepTime: string; targetMl: number; servingMl: number; timezone: string; remindersEnabled: boolean; pausedUntil: string | null };
 export type CycleSettings = { cycleLength: number; periodLength: number; predictionsEnabled: boolean; remindersEnabled: boolean; discreet: boolean; reminderDaysBefore: number; reminderTime: string; timezone: string };
@@ -8,9 +9,10 @@ export const symptoms = ['cramps', 'bloating', 'headache', 'fatigue', 'back_pain
 export const moods = ['calm', 'happy', 'low', 'irritable', 'anxious'] as const;
 export const flows = ['none', 'spotting', 'light', 'medium', 'heavy'] as const;
 export type CycleEntry = { day: string; flow: typeof flows[number]; symptoms: string[]; mood: string | null; notes: string };
-export type WellnessData = { waterPlan: WaterPlan | null; cycleSettings: CycleSettings | null; waterLogs: WaterLog[]; waterTasks: WaterTaskState[]; periods: Period[]; cycleEntries: CycleEntry[] };
+export type Medicine = { id: string; name: string; notes: string; enabled: boolean; doses: { time: string; amount: string }[] };
+export type WellnessData = { medicines?: Medicine[]; waterPlan: WaterPlan | null; cycleSettings: CycleSettings | null; waterLogs: WaterLog[]; waterTasks: WaterTaskState[]; periods: Period[]; cycleEntries: CycleEntry[] };
 export type WaterTask = { id: string; day: string; at: string; amountMl: number; remainingMl: number; status: 'pending' | 'done' | 'skipped' | 'missed'; snoozedUntil: string | null };
-export const emptyWellness = (): WellnessData => ({ waterPlan: null, cycleSettings: null, waterLogs: [], waterTasks: [], periods: [], cycleEntries: [] });
+export const emptyWellness = (): WellnessData => ({ medicines: [], waterPlan: null, cycleSettings: null, waterLogs: [], waterTasks: [], periods: [], cycleEntries: [] });
 export const defaultCycleSettings = (timezone: string): CycleSettings => ({ cycleLength: 28, periodLength: 5, predictionsEnabled: true, remindersEnabled: false, discreet: true, reminderDaysBefore: 2, reminderTime: '09:00', timezone });
 export function validDay(day: string): boolean {
   return /^\d{4}-\d{2}-\d{2}$/.test(day) && Number.isFinite(Date.parse(day)) && new Date(day + 'T12:00:00Z').toISOString().slice(0, 10) === day;
@@ -25,7 +27,7 @@ function zonedParts(date: Date, timezone: string) {
   const get = (type: string) => parts.find(part => part.type === type)!.value;
   return { day: `${get('year')}-${get('month')}-${get('day')}`, time: `${get('hour')}:${get('minute')}` };
 }
-export function localDay(date = new Date(), timezone = Intl.DateTimeFormat().resolvedOptions().timeZone): string { return zonedParts(date, timezone).day; }
+export function localDay(date = new Date(), timezone = APP_TIMEZONE): string { return zonedParts(date, timezone).day; }
 export function clockMinutes(time: string): number { const [hours = 0, minutes = 0] = time.split(':').map(Number); return hours * 60 + minutes; }
 export function awakeMinutes(plan: Pick<WaterPlan, 'wakeTime' | 'sleepTime'>): number { return (clockMinutes(plan.sleepTime) - clockMinutes(plan.wakeTime) + 1440) % 1440; }
 /** Resolve DST folds to their first occurrence; move nonexistent spring times forward. */
@@ -57,12 +59,12 @@ export function zonedInstant(day: string, time: string, timezone: string): Date 
   return new Date(best.instant);
 }
 export function waterDay(plan: WaterPlan, now = new Date()): string {
-  const parts = zonedParts(now, plan.timezone);
+  const parts = zonedParts(now, APP_TIMEZONE);
   return clockMinutes(plan.sleepTime) < clockMinutes(plan.wakeTime) && clockMinutes(parts.time) < clockMinutes(plan.sleepTime) ? addDays(parts.day, -1) : parts.day;
 }
 export function waterWindow(plan: WaterPlan, day: string) {
   const endDay = plan.sleepTime <= plan.wakeTime ? addDays(day, 1) : day;
-  return { start: zonedInstant(day, plan.wakeTime, plan.timezone), end: zonedInstant(endDay, plan.sleepTime, plan.timezone) };
+  return { start: zonedInstant(day, plan.wakeTime, APP_TIMEZONE), end: zonedInstant(endDay, plan.sleepTime, APP_TIMEZONE) };
 }
 export function waterSchedule(plan: WaterPlan, day: string, logs: WaterLog[] = [], states: WaterTaskState[] = [], now = new Date()): WaterTask[] {
   const count = Math.min(16, Math.max(1, Math.ceil(plan.targetMl / plan.servingMl)));

@@ -26,9 +26,9 @@ export function syncNotifications(owner: string | null, reminders: Reminder[]): 
   });
   return queue;
 }
-export function listenForReminder(navigate: (route: '/water' | '/cycle') => void) {
+export function listenForReminder(navigate: (route: '/water' | '/cycle' | '/medicines') => void) {
   let last: string | undefined;
-  const handle = (response: Notifications.NotificationResponse | null) => { if (!response || response.notification.request.identifier === last) return; const data = response.notification.request.content.data; if (data?.wellness && (data.route === '/water' || data.route === '/cycle')) { last = response.notification.request.identifier; navigate(data.route); clearLastNotificationResponse(); } };
+  const handle = (response: Notifications.NotificationResponse | null) => { if (!response || response.notification.request.identifier === last) return; const data = response.notification.request.content.data; if (data?.wellness && (data.route === '/water' || data.route === '/cycle' || data.route === '/medicines')) { last = response.notification.request.identifier; navigate(data.route); clearLastNotificationResponse(); } };
   void Notifications.getLastNotificationResponseAsync().then(handle);
   const subscription = Notifications.addNotificationResponseReceivedListener(handle); return () => subscription.remove();
 }

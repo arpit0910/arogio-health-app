@@ -48,7 +48,7 @@ export function AppNavigation({
               }}
               style={[s.tab, expanded && s.railTab]}
             >
-              {tab.name === "jeeva" ? <Image source={require("../../assets/home/jeeva.png")} accessible={false} style={[s.jeeva, expanded && s.railJeeva, selected && s.activeJeeva]} /> : <View style={[s.icon, selected && s.activeIcon]}>
+              {tab.name === "jeeva" ? <Image source={require("../../assets/home/jeeva.png")} accessible={false} style={[s.jeeva, expanded && s.railJeeva, selected && s.activeJeeva]} /> : <View style={[s.icon]}>
                 <AppIcon
                   name={tab.icon}
                   size={24}
@@ -90,7 +90,6 @@ const s = StyleSheet.create({
   },
   label: { fontFamily: t.fonts.medium, fontSize: 12, lineHeight: 18 },
   icon: { width: 52, height: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 10 },
-  activeIcon: { backgroundColor: t.mint },
   activeJeeva: { borderWidth: 2, borderColor: t.teal },
   rail: { width: 96, height: '100%', borderTopWidth: 0, borderRightWidth: 1 },
   railBar: { flexDirection: 'column', gap: 20, width: '100%', maxWidth: undefined, paddingTop: 0 },

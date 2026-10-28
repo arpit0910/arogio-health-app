@@ -2,7 +2,7 @@
 name: Arogio
 description: Growing Well ? a personal companion for health and wellbeing.
 colors:
-  background: "#F5F1E7"
+  background: "#FFFDFA"
   surface: "#FFFDFA"
   ink: "#203E32"
   muted: "#586357"
@@ -92,11 +92,11 @@ components:
 
 **Creative North Star: "Growing Well"**
 
-Warm paper, forest-green actions and a restrained plum accent make everyday care feel approachable. Health management and daily wellness carry equal weight. Quiet grouped rows and progressive disclosure support one clear task at a time.
+Cream white, forest-green actions and a restrained plum accent make everyday care feel approachable. Health management and daily wellness carry equal weight. Quiet grouped rows and progressive disclosure support one clear task at a time.
 
 **Key Characteristics:**
 
-- Warm neutral canvas and flat tonal surfaces.
+- Cream-white canvas and flat tonal surfaces.
 - Forest-green actions, dark green ink and restrained plum status accents.
 - Crisp sans typography, grouped lists and modestly rounded controls.
 - Original Arogio logo; code-led composition without new shipping raster artwork.
@@ -119,7 +119,7 @@ React Native measurements are logical units; portable frontmatter uses px notati
 
 App content is centered with a 440-unit maximum width and 24-unit horizontal padding. AppScreen supplies safe areas, keyboard avoidance and a growing ScrollView. Setup uses the same bounded width, a three-segment progress indicator and a separate footer action. Rows use 18-unit vertical padding, a flexible text column and a trailing icon.
 
-Bottom navigation is bounded to the same width, retains native bottom insets and exposes Home, Health, Jeeva AI, Explore and Profile. Jeeva AI retains its original raised centre artwork and label. The other selected tabs use a subtle rounded background. Authentication retains its reference-scaled AuthCanvas and original decorative backgrounds; welcome includes its original health illustration. Artwork scales without shrinking form controls or adding pagination dots.
+Bottom navigation is bounded to the same width, retains native bottom insets and exposes Home, Health, Jeeva AI, Explore and Profile. Jeeva AI retains its original raised centre artwork and label. The other selected tabs use a subtle rounded background. Authentication retains its reference-scaled AuthCanvas and original decorative backgrounds; welcome, login and signup each have a distinct content-specific flat-vector illustration. Water and cycle tracking use their own matching vector scenes. Sources live in assets/illustrations/vector; render through CareIllustration. Artwork scales without shrinking form controls or adding pagination dots.
 
 **The One Task Rule.** Group related information behind clear rows or disclosures; retain one personal Edit profile action and a separate Goals & preferences destination.
 
@@ -140,7 +140,7 @@ Fields and shared buttons use the field radius; the profile panel uses the panel
 - **Profile panel:** forest fill, white title and supporting light text; a separated action row leads to profile.
 - **Navigation:** five labeled tabs with an explicit selected state. Jeeva AI uses its original prominent centre artwork; the other tabs use 24-unit icons.
 - **Setup:** goals, essential basics and activity; validation and save feedback remain inline. Optional account details and updates belong in settings.
-- **Launch:** the native splash uses the warm background and existing Android foreground icon (configured image width 160), before the distinct JavaScript sequence of original SVG logo plus live text on warm paper, followed by a forest message panel. Motion honors reduced-motion preferences; see `docs/launch-screens.md`.
+- **Launch:** the native splash uses the warm background and existing Android foreground icon (configured image width 192), before a single JavaScript surface with the original SVG logo and live text on cream white. The native screen is held until fonts and the first layout are ready; the overlay exits when the session is restored. Motion honors reduced-motion preferences; see `docs/launch-screens.md`.
 
 The sidecar's isolated HTML/CSS snippets translate native visual patterns for documentation. They are not production web components. Native captures and finish review are separate evidence; this document makes no rendered QA or release verdict claim.
 

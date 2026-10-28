@@ -1,13 +1,20 @@
 # Launch screens
 
-The Growing Well launch uses two short branded screens built from the original `authAssets.brand` SVG and live text. The first shows Arogio and Your Health Companion; the second adds Healthy choices. Brighter tomorrows. and a forest-green message panel. No new shipping raster artwork is used by this sequence. Previously generated splash PNGs are not referenced by this component.
+Updated 28 October 2026. Launch uses one branded surface with the original Arogio SVG logo, live wordmark, and Your Health Companion on cream white (`#FFFDFA`). The previous timed second screen and forest message panel have been removed. There is no artificial minimum hold.
 
-`app.json` separately configures the operating system native splash through `expo-splash-screen`: warm background `#F5F1E7`, existing `assets/android-icon-foreground.png`, and image width 160. This reuses an incumbent raster asset; it does not add generated artwork. The SDK-compatible splash dependency also resolves the development client startup failure caused by a missing `SplashScreenManager`. The native splash precedes the JavaScript artwork and timed sequence below.
+The native splash uses cream white in light and system-dark appearance, the existing transparent Android foreground logo, `contain`, and image width 192. The app remains a light-themed app. Root navigation, loading, and screen backgrounds use the shared cream-white token to avoid a white or beige transition.
 
-`AppProviders` starts authentication restoration while fonts load. A static LaunchArtwork is shown until fonts are ready, then `LaunchSequence` mounts its router children underneath an opaque overlay. Incoming route destinations remain mounted; covered content cannot receive touches or accessibility focus. Font load failure remains an error, rather than silently releasing the gate.
+`src/app/_layout.tsx` calls `preventAutoHideAsync()` at module scope. `AppProviders` starts session restoration while bundled fonts load. After fonts are ready, `LaunchSequence` mounts the router under its opaque launch overlay; the overlay's first layout releases the native splash. The overlay exits when session restoration finishes, using a short fade that respects reduced motion. Content underneath cannot receive touches or accessibility focus while covered. Logo proportions are retained and live text supports system font scaling.
 
-The first hold is 650ms, crossfade 250ms, second hold 850ms and exit fade 150ms: about 1.9 seconds after the sequence mounts, plus any additional authentication wait. Font loading may extend the initial static artwork before that sequence starts. The exit waits for session restoration. Reduced motion removes animated durations, and timers/animations are stopped on unmount. The sequence runs per root mount, not ordinary navigation or background return; the operating system's initial native launch screen is separate.
+This sequence runs once per root mount. Navigation and background return do not replay it. Font loading failures retain the existing error behavior.
 
-SafeAreaView keeps the composition inside native safe areas. The artwork is centered with padding and live text; no mock status bar or phone hardware is drawn. The accessible label changes for the second message.
+## Authentication artwork
 
-This is source-based documentation. Startup investigation used a development build; it does not establish full standalone launch behavior. Native motion, safe-area, font-loading and reduced-motion verification require rendered evidence; this document claims no completed capture review or release verdict.
+Login and signup now use distinct flat-vector scenes: a returning profile with a sign-in arrow, and a new-profile form with an add badge. Welcome uses a separate daily-care checklist. Water and cycle tracking have measured hydration and private-calendar scenes. All are editable SVGs; see `content-illustrations.md`. These supersede the repeated welcome illustration in build 15. Artwork remains decorative and uses the existing responsive sizes and form scrolling.
+
+
+## Verification and delivery
+
+App lint, TypeScript, all 52 tests, and Android bundle export pass. Bundle: `dist/cream-auth-android`. No new image dependency or raster asset was added.
+
+Build 15 has since been verified on an Android emulator for cold launch, authentication artwork, standard/small/tablet layouts, and system-night appearance; see `apk-build-15.md`. A compact enlarged-text keyboard-focus issue remains open, and physical-device verification is pending. No whole-app release sign-off is claimed. Test a standalone release build, including cold launch, signed-in and signed-out users, slow font/session loading, enlarged text, small screens, reduced motion, and system-dark appearance. Native splash configuration requires a new app binary; an OTA update alone cannot deliver it. Nothing was published by this task.
