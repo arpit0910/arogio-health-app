@@ -1,4 +1,9 @@
-import { APP_TIMEZONE, formatClock, formatTime } from '../../lib/time';
+import {
+  APP_TIMEZONE,
+  formatClock,
+  formatDateTime,
+  formatTime,
+} from '../../lib/time';
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -15,6 +20,7 @@ import { router } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
 import { useAuth } from '../auth/context/AuthContext';
 import { useWellness } from '../wellness/WellnessContext';
+import { localDay } from '../wellness/domain';
 import { homeUpcoming, homeWater } from './homeModel';
 import { SidebarButton } from '../../navigation/AppSidebar';
 import { Avatar } from '../../components/app/Avatar';
@@ -67,6 +73,10 @@ export function HomeScreen() {
     plan = data.waterPlan,
     upcoming = homeUpcoming(data, now);
   const name = user.fullName?.trim().split(/\s+/)[0] || user.username;
+  const careTime = (at: string) =>
+    localDay(new Date(at)) === localDay(now)
+      ? formatTime(at)
+      : formatDateTime(at);
   async function logDrink() {
     if (!plan || busy || logLock.current) return;
     logLock.current = true;
@@ -372,7 +382,7 @@ export function HomeScreen() {
                       <TouchTarget
                         key={item.id}
                         accessibilityRole="button"
-                        accessibilityLabel={`${item.title}, ${formatTime(item.at)}, ${item.detail}`}
+                        accessibilityLabel={`${item.title}, ${careTime(item.at)}, ${item.detail}`}
                         onPress={() => router.push(item.route)}
                         style={({ pressed }) => [s.task, pressed && s.pressed]}
                       >
@@ -382,7 +392,7 @@ export function HomeScreen() {
                         <View style={s.flex}>
                           <Text style={s.rowTitle}>{item.title}</Text>
                           <Text style={s.caption}>{item.detail}</Text>
-                          <Text style={s.taskTime}>{formatTime(item.at)}</Text>
+                          <Text style={s.taskTime}>{careTime(item.at)}</Text>
                         </View>
                         <AppIcon name="right" size={18} />
                       </TouchTarget>
