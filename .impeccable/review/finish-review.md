@@ -1,0 +1,9 @@
+﻿disposition: recapture
+
+## recapture
+
+- `.impeccable/review/phone-current.png` is invalid: the 1080×2220 Android capture shows a blank white app area and the system gesture bar. Replace it with a direct emulator/device capture after the installed native app has rendered. The Home top viewport must visibly show the Arogio header, welcome, health-profile panel, wellness action and native navigation, with no blank launch surface or dev launcher obscuring content. Capture the changed Profile and three-step setup states too so their simplification can be reviewed.
+- Android tablet native evidence is missing. Supply a direct tablet emulator/device capture of the rendered app at its actual expanded viewport if tablets ship; include navigation and content edges so expanded layout and insets can be assessed. Identify the device, OS and viewport. If tablets are outside shipping scope, document that scope explicitly before the next review.
+- iOS native evidence is missing. Supply direct iPhone Simulator/device captures of the rendered changed screens, and iPad captures if iPad ships; identify device, OS and viewport. Capture real safe areas and navigation rather than recreating a phone frame in HTML.
+- Include native dark appearance and enlarged text evidence for each shipping OS: Android font scale 1.3 and iOS large Dynamic Type, with relevant labels, controls and navigation visible. Record which emulator, simulator or hardware produced each capture. Restore changed device settings after capture.
+- `.impeccable/review/arogio-mobile-preview.html` is a synthetic interactive mockup and cannot replace any native capture above. Build/export success, tests, quality boards and the decision sketch also cannot establish rendered native validity. Return the valid native evidence for a full finish review; no fidelity or craft verdict is issued from the blank capture.

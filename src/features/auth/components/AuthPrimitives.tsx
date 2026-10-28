@@ -42,8 +42,8 @@ export const authStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   heading: { alignItems: 'center', marginBottom: 20 },
-  title: { fontFamily: fonts.heading, fontSize: 28, lineHeight: 36, color: colors.ink, textAlign: 'center', includeFontPadding: false },
-  subtitle: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20, color: colors.muted, textAlign: 'center', marginTop: 6, includeFontPadding: false },
+  title: { fontFamily: fonts.semibold, fontSize: 28, lineHeight: 36, color: colors.ink, textAlign: 'center', includeFontPadding: false },
+  subtitle: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 23, color: colors.muted, textAlign: 'center', marginTop: 8, includeFontPadding: false },
   compactHeading: { marginBottom: 8 },
   compactSubtitle: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 17.4, marginTop: 4 },
   error: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 18, color: colors.error, marginVertical: 8 },

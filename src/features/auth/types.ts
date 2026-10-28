@@ -70,6 +70,9 @@ export const updateProfileSchema = registerSchema.pick({
   activityLevel: z.enum(['sedentary', 'lightly_active', 'moderately_active', 'very_active']).optional(),
   healthGoals: z.array(z.enum(['weight_management', 'fitness_activity', 'lose_weight', 'gain_weight', 'stay_fit', 'manage_condition', 'better_eating', 'improve_sleep', 'manage_stress'])).min(1, 'Choose at least one health goal.').optional(),
   photo: z.string().max(220000).regex(/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/).optional(),
+  healthReminders: z.boolean().optional(),
+  tipsAndInsights: z.boolean().optional(),
+  productUpdates: z.boolean().optional(),
 });
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 

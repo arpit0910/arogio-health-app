@@ -12,10 +12,10 @@ export function ProfilePreferences({ values, onChange, disabled = false }: {
   disabled?: boolean;
 }) {
   return <>
-    <ProfileHeading title="Stay on track" subtitle="Get helpful reminders and insights to reach your goals." />
+    <ProfileHeading title="Stay in the loop" subtitle="Choose the updates you would like. These choices are optional." />
     {([
-      { key: 'healthReminders', title: 'Health reminders', subtitle: 'Take medications, track habits and daily check-ins' },
-      { key: 'tipsAndInsights', title: 'Tips and insights', subtitle: 'Personalized health tips and recommendations' },
+      { key: 'healthReminders', title: 'Health reminders', subtitle: 'Reminders when this feature becomes available' },
+      { key: 'tipsAndInsights', title: 'Tips and insights', subtitle: 'Health and wellbeing updates' },
       { key: 'productUpdates', title: 'Product updates', subtitle: 'New features and important announcements' },
     ] as const).map(preference => {
       const toggle = () => onChange(preference.key, !values[preference.key]);
@@ -32,7 +32,7 @@ export function ProfilePreferences({ values, onChange, disabled = false }: {
 }
 
 const styles = StyleSheet.create({
-  preference: { borderWidth: 1, borderColor: colors.border, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 10 },
-  copy: { flex: 1, fontFamily: fonts.semibold, fontSize: 13, lineHeight: 21, color: colors.ink },
-  description: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 18, color: colors.muted },
+  preference: { borderBottomWidth: 1, borderColor: colors.border, paddingVertical: 12 },
+  copy: { flex: 1, fontFamily: fonts.semibold, fontSize: 15, lineHeight: 23, color: colors.ink },
+  description: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 21, color: colors.muted },
 });

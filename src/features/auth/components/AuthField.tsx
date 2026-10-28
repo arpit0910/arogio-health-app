@@ -27,10 +27,10 @@ export function AuthField({ icon, password, invalid, ref, ...props }: Props) {
 
 const styles = StyleSheet.create({
   field: { flexDirection: 'row', alignItems: 'center', minHeight: 48, paddingLeft: 14,
-    borderWidth: 1, borderColor: colors.border, borderRadius: 12, backgroundColor: colors.background },
+    borderWidth: 1, borderColor: colors.border, borderRadius: 12, backgroundColor: colors.surface },
   focused: { borderColor: colors.primary },
   invalid: { borderColor: colors.error },
-  input: { flex: 1, minWidth: 0, paddingHorizontal: 10, paddingVertical: 10, fontSize: 13,
+  input: { flex: 1, minWidth: 0, paddingHorizontal: 10, paddingVertical: 14, fontSize: 15,
     fontFamily: fonts.regular, color: colors.ink, outlineWidth: 0, includeFontPadding: false },
   visibility: { minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' },
 });

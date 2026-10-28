@@ -32,14 +32,13 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary',
 }
 
 const styles = StyleSheet.create({
-  base: { minHeight: 48, paddingVertical: 10, paddingHorizontal: 20, borderRadius: 999,
+  base: { minHeight: 52, paddingVertical: 14, paddingHorizontal: 20, borderRadius: 12,
     flexDirection: 'row', gap: 9, alignItems: 'center', justifyContent: 'center', width: '100%' },
-  primary: { backgroundColor: colors.primary, boxShadow: '0px 6px 12px rgba(9,110,100,0.22)' },
-  secondary: { backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border,
-    boxShadow: '0px 2px 4px rgba(15,31,46,0.05)' },
+  primary: { backgroundColor: colors.primary },
+  secondary: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
   primaryPressed: { backgroundColor: colors.primaryPressed },
   secondaryPressed: { backgroundColor: colors.subtle },
-  text: { color: colors.background, fontFamily: fonts.semibold, fontSize: 14, lineHeight: 21 },
-  secondaryText: { color: colors.ink, fontSize: 13 },
+  text: { color: '#FFFFFF', fontFamily: fonts.semibold, fontSize: 16, lineHeight: 23 },
+  secondaryText: { color: colors.ink, fontSize: 16 },
   disabled: { opacity: 0.55 },
 });

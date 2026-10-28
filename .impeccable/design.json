@@ -1,134 +1,279 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-25T17:52:35.944319+00:00",
-  "title": "Design System: Arogio Authentication",
+  "generatedAt": "2026-10-27T00:00:00Z",
+  "title": "Design System: Arogio",
   "extensions": {
     "colorMeta": {
-      "primary": {
-        "role": "primary",
-        "displayName": "Deep Teal"
-      },
-      "primary-pressed": {
-        "role": "primary",
-        "displayName": "Pressed Teal"
-      },
       "background": {
         "role": "neutral",
-        "displayName": "White Canvas"
+        "displayName": "Background",
+        "tonalRamp": [
+          "oklch(15% 0.0139 88.68)",
+          "oklch(26% 0.0139 88.68)",
+          "oklch(38% 0.0139 88.68)",
+          "oklch(49% 0.0139 88.68)",
+          "oklch(61% 0.0139 88.68)",
+          "oklch(72% 0.0139 88.68)",
+          "oklch(84% 0.0139 88.68)",
+          "oklch(95% 0.0139 88.68)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "tonalRamp": [
+          "oklch(15% 0.0045 78.30)",
+          "oklch(26% 0.0045 78.30)",
+          "oklch(38% 0.0045 78.30)",
+          "oklch(49% 0.0045 78.30)",
+          "oklch(61% 0.0045 78.30)",
+          "oklch(72% 0.0045 78.30)",
+          "oklch(84% 0.0045 78.30)",
+          "oklch(95% 0.0045 78.30)"
+        ]
       },
       "ink": {
         "role": "neutral",
-        "displayName": "Deep Ink"
+        "displayName": "Ink",
+        "tonalRamp": [
+          "oklch(15% 0.0422 166.23)",
+          "oklch(26% 0.0422 166.23)",
+          "oklch(38% 0.0422 166.23)",
+          "oklch(49% 0.0422 166.23)",
+          "oklch(61% 0.0422 166.23)",
+          "oklch(72% 0.0422 166.23)",
+          "oklch(84% 0.0422 166.23)",
+          "oklch(95% 0.0422 166.23)"
+        ]
       },
       "muted": {
         "role": "neutral",
-        "displayName": "Muted Slate"
+        "displayName": "Muted",
+        "tonalRamp": [
+          "oklch(15% 0.0232 142.91)",
+          "oklch(26% 0.0232 142.91)",
+          "oklch(38% 0.0232 142.91)",
+          "oklch(49% 0.0232 142.91)",
+          "oklch(61% 0.0232 142.91)",
+          "oklch(72% 0.0232 142.91)",
+          "oklch(84% 0.0232 142.91)",
+          "oklch(95% 0.0232 142.91)"
+        ]
       },
       "placeholder": {
         "role": "neutral",
-        "displayName": "Placeholder Slate"
+        "displayName": "Placeholder",
+        "tonalRamp": [
+          "oklch(15% 0.0208 135.02)",
+          "oklch(26% 0.0208 135.02)",
+          "oklch(38% 0.0208 135.02)",
+          "oklch(49% 0.0208 135.02)",
+          "oklch(61% 0.0208 135.02)",
+          "oklch(72% 0.0208 135.02)",
+          "oklch(84% 0.0208 135.02)",
+          "oklch(95% 0.0208 135.02)"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Primary",
+        "tonalRamp": [
+          "oklch(15% 0.0597 165.29)",
+          "oklch(26% 0.0597 165.29)",
+          "oklch(38% 0.0597 165.29)",
+          "oklch(49% 0.0597 165.29)",
+          "oklch(61% 0.0597 165.29)",
+          "oklch(72% 0.0597 165.29)",
+          "oklch(84% 0.0597 165.29)",
+          "oklch(95% 0.0597 165.29)"
+        ]
+      },
+      "primary-pressed": {
+        "role": "primary",
+        "displayName": "Primary Pressed",
+        "tonalRamp": [
+          "oklch(15% 0.0524 163.38)",
+          "oklch(26% 0.0524 163.38)",
+          "oklch(38% 0.0524 163.38)",
+          "oklch(49% 0.0524 163.38)",
+          "oklch(61% 0.0524 163.38)",
+          "oklch(72% 0.0524 163.38)",
+          "oklch(84% 0.0524 163.38)",
+          "oklch(95% 0.0524 163.38)"
+        ]
       },
       "border": {
         "role": "neutral",
-        "displayName": "Pale Border"
+        "displayName": "Border",
+        "tonalRamp": [
+          "oklch(15% 0.0180 120.71)",
+          "oklch(26% 0.0180 120.71)",
+          "oklch(38% 0.0180 120.71)",
+          "oklch(49% 0.0180 120.71)",
+          "oklch(61% 0.0180 120.71)",
+          "oklch(72% 0.0180 120.71)",
+          "oklch(84% 0.0180 120.71)",
+          "oklch(95% 0.0180 120.71)"
+        ]
       },
       "subtle": {
-        "role": "primary",
-        "displayName": "Mint Tint"
+        "role": "neutral",
+        "displayName": "Subtle",
+        "tonalRamp": [
+          "oklch(15% 0.0197 125.83)",
+          "oklch(26% 0.0197 125.83)",
+          "oklch(38% 0.0197 125.83)",
+          "oklch(49% 0.0197 125.83)",
+          "oklch(61% 0.0197 125.83)",
+          "oklch(72% 0.0197 125.83)",
+          "oklch(84% 0.0197 125.83)",
+          "oklch(95% 0.0197 125.83)"
+        ]
+      },
+      "accent": {
+        "role": "secondary",
+        "displayName": "Accent",
+        "tonalRamp": [
+          "oklch(15% 0.0863 13.12)",
+          "oklch(26% 0.0863 13.12)",
+          "oklch(38% 0.0863 13.12)",
+          "oklch(49% 0.0863 13.12)",
+          "oklch(61% 0.0863 13.12)",
+          "oklch(72% 0.0863 13.12)",
+          "oklch(84% 0.0863 13.12)",
+          "oklch(95% 0.0863 13.12)"
+        ]
+      },
+      "accent-surface": {
+        "role": "secondary",
+        "displayName": "Accent Surface",
+        "tonalRamp": [
+          "oklch(15% 0.0142 17.42)",
+          "oklch(26% 0.0142 17.42)",
+          "oklch(38% 0.0142 17.42)",
+          "oklch(49% 0.0142 17.42)",
+          "oklch(61% 0.0142 17.42)",
+          "oklch(72% 0.0142 17.42)",
+          "oklch(84% 0.0142 17.42)",
+          "oklch(95% 0.0142 17.42)"
+        ]
       },
       "error": {
-        "role": "error",
-        "displayName": "Error Red"
+        "role": "neutral",
+        "displayName": "Error",
+        "tonalRamp": [
+          "oklch(15% 0.1575 20.30)",
+          "oklch(26% 0.1575 20.30)",
+          "oklch(38% 0.1575 20.30)",
+          "oklch(49% 0.1575 20.30)",
+          "oklch(61% 0.1575 20.30)",
+          "oklch(72% 0.1575 20.30)",
+          "oklch(84% 0.1575 20.30)",
+          "oklch(95% 0.1575 20.30)"
+        ]
       }
     },
-    "typographyMeta": {
-      "headline": {
-        "displayName": "Authentication Heading",
-        "purpose": "Centered screen headings."
-      },
-      "subtitle": {
-        "displayName": "Authentication Subtitle",
-        "purpose": "DM Sans supporting line beneath headings."
-      }
-    },
-    "shadows": [
+    "shadows": [],
+    "motion": [
       {
-        "name": "primary-action",
-        "value": "0px 6px 12px rgba(9,110,100,0.22)",
-        "purpose": "Primary button depth."
+        "name": "launch-crossfade",
+        "value": "250ms ease-out cubic",
+        "purpose": "Transition after the 650ms first hold; zero duration with reduced motion."
       },
       {
-        "name": "secondary-action",
-        "value": "0px 2px 4px rgba(15,31,46,0.05)",
-        "purpose": "Secondary button depth."
+        "name": "launch-exit",
+        "value": "150ms",
+        "purpose": "After the 850ms second hold and authentication readiness; zero duration with reduced motion."
       }
     ],
-    "motion": [],
-    "breakpoints": []
+    "breakpoints": [],
+    "notes": [
+      "Tonal ramps are synthesized OKLCH documentation previews with source-derived hue/chroma, not normative source colors.",
+      "No responsive breakpoint tokens exist; app width is bounded to 440 logical units.",
+      "HTML hover/focus states are documentation affordances; production native pressed and accessibility states remain authoritative.",
+      "Native initial splash is configured separately in app.json using expo-splash-screen, background #F5F1E7, existing assets/android-icon-foreground.png and imageWidth 160. The timed JavaScript sequence follows it. Development-build startup evidence does not establish standalone launch validation."
+    ]
   },
   "components": [
     {
-      "name": "Primary Button",
+      "name": "Primary button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Main authentication action.",
-      "html": "<button class=\"ds-primary\">Sign In</button>",
-      "css": ".ds-primary{font-family:Inter,sans-serif;background:#096E64;color:#FFFFFF;font-size:14px;font-weight:600;line-height:21px;border:0;border-radius:999px;padding:10px 20px;min-height:48px;width:100%;box-shadow:0px 6px 12px rgba(9,110,100,0.22)}.ds-primary:hover,.ds-primary:active{background:#07574F}.ds-primary:focus-visible{outline:2px solid #096E64;outline-offset:3px}.ds-primary:disabled{opacity:.55}"
+      "description": "Documentation translation of the implemented native pattern.",
+      "html": "<button class=\"ds-primary\">Continue</button>",
+      "css": ".ds-primary{font-family:Inter, sans-serif;background:#214F3D;color:#FFFFFF;border:0;border-radius:12px;padding:14px 20px;font-size:16px;font-weight:600;min-height:48px}.ds-primary:hover,.ds-primary:active{background:#173D2D}.ds-primary:focus-visible{outline:2px solid #214F3D;outline-offset:3px}.ds-primary:disabled{opacity:.55}"
     },
     {
-      "name": "Secondary Button",
+      "name": "Secondary button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Alternative authentication action.",
-      "html": "<button class=\"ds-secondary\">Continue with Google</button>",
-      "css": ".ds-secondary{font-family:Inter,sans-serif;background:#FFFFFF;color:#0D1F33;font-size:13px;font-weight:600;border:1px solid #E5E9F0;border-radius:999px;padding:10px 20px;min-height:48px;width:100%;box-shadow:0px 2px 4px rgba(15,31,46,0.05)}.ds-secondary:hover,.ds-secondary:active{background:#EFF9F6}.ds-secondary:focus-visible{outline:2px solid #096E64;outline-offset:3px}"
+      "description": "Documentation translation of the implemented native pattern.",
+      "html": "<button class=\"ds-secondary\">Sign in</button>",
+      "css": ".ds-secondary{font-family:Inter, sans-serif;background:#FFFDFA;color:#203E32;border:1px solid #D8DCCF;border-radius:12px;padding:14px 20px;font-size:16px;font-weight:600;min-height:48px}.ds-secondary:hover,.ds-secondary:active{background:#E7EDDF}.ds-secondary:focus-visible{outline:2px solid #214F3D;outline-offset:3px}"
     },
     {
-      "name": "Authentication Field",
+      "name": "Field",
       "kind": "input",
       "refersTo": "field",
-      "description": "Reusable text entry with visible focus and invalid outline.",
-      "html": "<input class=\"ds-field\" aria-label=\"Email address\" placeholder=\"Email address\" type=\"email\">",
-      "css": ".ds-field{font-family:Inter,sans-serif;background:#FFFFFF;color:#0D1F33;font-size:13px;border:1px solid #E5E9F0;border-radius:12px;padding:10px 14px;min-height:48px}.ds-field::placeholder{color:#6C7A89}.ds-field:hover{border-color:#E5E9F0}.ds-field:focus-visible{outline:0;border-color:#096E64}.ds-field[aria-invalid=true]{border-color:#A42A36}"
+      "description": "Documentation translation of the implemented native pattern.",
+      "html": "<label class=\"ds-label\">Weight<input class=\"ds-field\" placeholder=\"Your weight\" /></label>",
+      "css": ".ds-label{font-family:Inter, sans-serif;color:#203E32;font-size:13px}.ds-field{display:block;font-family:Inter, sans-serif;background:#FFFDFA;color:#203E32;border:1px solid #D8DCCF;border-radius:12px;padding:14px;min-height:48px}.ds-field::placeholder{color:#687064}.ds-field:hover{border-color:#586357}.ds-field:focus-visible{outline:1px solid #214F3D;border-color:#214F3D}"
     },
     {
-      "name": "Consent Checkbox",
+      "name": "Care disclosure",
       "kind": "custom",
-      "refersTo": "field",
-      "description": "Compact square mark within an expanded touch target.",
-      "html": "<label class=\"ds-consent\"><input type=\"checkbox\"> I agree to the terms</label>",
-      "css": ".ds-consent{font-family:Inter,sans-serif;display:flex;align-items:center;gap:10px;min-height:48px;font-size:11.5px;color:#5E6D7E}.ds-consent input{accent-color:#096E64;width:18px;height:18px}.ds-consent:hover{color:#0D1F33}.ds-consent input:focus-visible{outline:2px solid #096E64;outline-offset:3px}"
+      "refersTo": "",
+      "description": "Documentation translation of the implemented native pattern.",
+      "html": "<details class=\"ds-disclosure\"><summary>Your focus</summary><p>Choose your health and wellness priorities.</p></details>",
+      "css": ".ds-disclosure{font-family:Inter, sans-serif;border-top:1px solid #D8DCCF;color:#203E32}.ds-disclosure summary{padding:18px 0;font-size:16px;font-weight:500;cursor:pointer}.ds-disclosure p{color:#586357;font-size:15px;line-height:23px}.ds-disclosure summary:hover{color:#214F3D}.ds-disclosure summary:focus-visible{outline:2px solid #214F3D}"
     },
     {
-      "name": "Legal Draft Notice",
-      "kind": "custom",
-      "refersTo": "legal-notice",
-      "description": "Supporting notice on Terms and Privacy pages.",
-      "html": "<div class=\"ds-notice\">Draft for review ? Not yet approved for public launch</div>",
-      "css": ".ds-notice{font-family:Inter,sans-serif;background:#EFF9F6;color:#096E64;font-size:13px;font-weight:500;line-height:20px;border-radius:12px;padding:14px}"
+      "name": "Profile panel",
+      "kind": "card",
+      "refersTo": "profile-panel",
+      "description": "Documentation translation of the implemented native pattern.",
+      "html": "<section class=\"ds-panel\"><h3>A clearer picture of you</h3><p>Your personal details, measurements and health priorities.</p></section>",
+      "css": ".ds-panel{font-family:Inter, sans-serif;background:#214F3D;color:#FFFFFF;border-radius:16px;padding:22px}.ds-panel h3{font-size:22px;line-height:29px;margin:0}.ds-panel p{font-size:14px;line-height:22px;color:#E2EBDD}"
+    },
+    {
+      "name": "Bottom navigation",
+      "kind": "nav",
+      "refersTo": "",
+      "description": "Documentation translation of the implemented native pattern.",
+      "html": "<nav class=\"ds-nav\"><button aria-current=\"page\">Home</button><button>Health</button><button>Explore</button><button>Profile</button></nav>",
+      "css": ".ds-nav{font-family:Inter, sans-serif;display:flex;background:#F5F1E7;border-top:1px solid #D8DCCF;padding-top:7px}.ds-nav button{flex:1;border:0;background:transparent;color:#586357;min-height:51px;font-size:12px;line-height:18px}.ds-nav button[aria-current]{background:#E7EDDF;border-radius:10px;color:#214F3D}.ds-nav button:hover{color:#214F3D}.ds-nav button:focus-visible{outline:2px solid #214F3D;outline-offset:-2px}"
     }
   ],
   "narrative": {
-    "northStar": "",
-    "overview": "The implemented authentication system follows the pinned Figma welcome, login, and signup screens: white surfaces, deep teal actions, centered identity, and restrained health-themed SVG artwork. The interface supports focused account tasks with reusable fields, actions, headings, and consent controls.\n\nScope is authentication, recovery, and supporting legal pages. The existing dashboard has not been fully migrated to this system. The intended large user base motivates reusable components; this document makes no backend capacity claim.",
+    "northStar": "Growing Well",
+    "overview": "Warm paper, forest-green actions and a restrained plum accent make everyday care feel approachable. Health management and daily wellness carry equal weight. Quiet grouped rows and progressive disclosure support one clear task at a time.",
     "keyCharacteristics": [
-      "White canvas with teal actions and dark ink text.",
-      "Rounded fields and pill-shaped buttons.",
-      "Original Figma SVG artwork preserved as assets.",
-      "Mobile-first scrolling forms with accessible control targets.",
-      "Canonical 326 by 678 composition with native chrome, a 420dp width cap, and scale-aware touch targets."
+      "Warm neutral canvas and flat tonal surfaces.",
+      "Forest-green actions, dark green ink and restrained plum status accents.",
+      "Crisp sans typography, grouped lists and modestly rounded controls.",
+      "Original Arogio logo; code-led composition without new shipping raster artwork."
     ],
-    "rules": [],
+    "rules": [
+      {
+        "name": "The Action Rule",
+        "body": "Use forest green for available primary actions and retain explicit text for unavailable services.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Task Rule",
+        "body": "Group related information behind clear rows or disclosures; retain one personal Edit profile action and a separate Goals & preferences destination.",
+        "section": "layout"
+      }
+    ],
     "dos": [
-      "Do reuse the shared tokens and authentication components when extending account flows.",
-      "Do preserve the original SVG assets and their proportions.",
-      "Do retain keyboard scrolling, default font scaling, and accessible touch areas.",
-      "Do keep legal drafts visibly labeled until approved content replaces them."
+      "Do preserve the Arogio name and original logo proportions.",
+      "Do reuse shared tokens, keyboard scrolling, font scaling and accessible control targets.",
+      "Do distinguish available actions from services labeled Coming soon."
     ],
     "donts": [
-      "Don't claim native device verification from browser previews.",
-      "Don't describe the unrelated dashboard as fully migrated.",
-      "Don't imply recovery delivery, Google native configuration, or backend scale has been verified."
+      "Don't return to decorative tile walls or repeated edit controls.",
+      "Don't treat documentation previews as native rendered verification.",
+      "Don't imply reminders, records or daily tracking are available before implementation."
     ]
   }
 }

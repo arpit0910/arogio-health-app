@@ -183,10 +183,10 @@ export function EditProfileScreen() {
           value={draft.location}
           placeholder="Enter your city"
           editable={!isSubmitting}
-          onPress={() => open("location")}
+          onChangeText={(value) => set('location', value)}
         />
         <Text accessibilityRole="header" style={a.sectionTitle}>
-          Body Details
+          Body details
         </Text>
         <View style={s.body}>
           <View style={s.measurement}>

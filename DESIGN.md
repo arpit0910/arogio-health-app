@@ -1,142 +1,154 @@
 ---
-name: Arogio Authentication
-description: Figma-derived mobile authentication components for Arogio.
+name: Arogio
+description: Growing Well ? a personal companion for health and wellbeing.
 colors:
-  background: "#FFFFFF"
-  ink: "#0D1F33"
-  muted: "#5E6D7E"
-  placeholder: "#6C7A89"
-  primary: "#096E64"
-  primary-pressed: "#07574F"
-  border: "#E5E9F0"
-  subtle: "#EFF9F6"
+  background: "#F5F1E7"
+  surface: "#FFFDFA"
+  ink: "#203E32"
+  muted: "#586357"
+  placeholder: "#687064"
+  primary: "#214F3D"
+  primary-pressed: "#173D2D"
+  border: "#D8DCCF"
+  subtle: "#E7EDDF"
+  accent: "#7B3D45"
+  accent-surface: "#EEE1E1"
   error: "#A42A36"
 typography:
   headline:
-    fontFamily: "PlusJakartaSans_600SemiBold"
-    fontSize: "28px"
+    fontFamily: "Inter_600SemiBold"
+    fontSize: "30px"
     fontWeight: 600
-    lineHeight: "36px"
-  subtitle:
-    fontFamily: "DMSans_400Regular"
-    fontSize: "14px"
-    fontWeight: 400
-    lineHeight: "20px"
+    lineHeight: "38px"
+  title:
+    fontFamily: "Inter_600SemiBold"
+    fontSize: "20px"
+    fontWeight: 600
+    lineHeight: "28px"
   body:
     fontFamily: "Inter_400Regular"
-    fontSize: "14px"
+    fontSize: "15px"
     fontWeight: 400
     lineHeight: "23px"
+  row-title:
+    fontFamily: "Inter_500Medium"
+    fontSize: "16px"
+    fontWeight: 500
+    lineHeight: "23px"
+  detail:
+    fontFamily: "Inter_400Regular"
+    fontSize: "13px"
+    fontWeight: 400
+    lineHeight: "20px"
   label:
     fontFamily: "Inter_600SemiBold"
-    fontSize: "14px"
+    fontSize: "16px"
     fontWeight: 600
-    lineHeight: "21px"
+    lineHeight: "23px"
+  navigation:
+    fontFamily: "Inter_500Medium"
+    fontSize: "12px"
+    fontWeight: 500
+    lineHeight: "18px"
 rounded:
-  checkbox: "4px"
   field: "12px"
-  pill: "999px"
+  panel: "16px"
+  navigation: "10px"
 spacing:
-  icon-gap: "8px"
-  form-gap: "12px"
-  divider: "16px"
-  heading: "20px"
+  compact: "8px"
+  field-gap: "12px"
+  row-gap: "14px"
+  group-gap: "16px"
+  panel: "22px"
   page: "24px"
+  section: "28px"
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
-    textColor: "{colors.background}"
+    textColor: "#FFFFFF"
     typography: "{typography.label}"
-    rounded: "{rounded.pill}"
-    padding: "10px 20px"
+    rounded: "{rounded.field}"
+    padding: "14px 20px"
   button-primary-pressed:
     backgroundColor: "{colors.primary-pressed}"
   button-secondary:
-    backgroundColor: "{colors.background}"
+    backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
-    rounded: "{rounded.pill}"
-    padding: "10px 20px"
+    rounded: "{rounded.field}"
+    padding: "14px 20px"
   field:
-    backgroundColor: "{colors.background}"
+    backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
     rounded: "{rounded.field}"
-  legal-notice:
-    backgroundColor: "{colors.subtle}"
-    textColor: "{colors.primary}"
-    rounded: "{rounded.field}"
-    padding: "14px"
+  profile-panel:
+    backgroundColor: "{colors.primary}"
+    textColor: "#FFFFFF"
+    rounded: "{rounded.panel}"
+    padding: "22px"
 ---
-
-# Design System: Arogio Authentication
+# Design System: Arogio
 
 ## Overview
 
-The implemented authentication system follows the pinned Figma welcome, login, and signup screens: white surfaces, deep teal actions, centered identity, and restrained health-themed SVG artwork. The interface supports focused account tasks with reusable fields, actions, headings, and consent controls.
+**Creative North Star: "Growing Well"**
 
-Scope is authentication, recovery, and supporting legal pages. The existing dashboard has not been fully migrated to this system. The intended large user base motivates reusable components; this document makes no backend capacity claim.
+Warm paper, forest-green actions and a restrained plum accent make everyday care feel approachable. Health management and daily wellness carry equal weight. Quiet grouped rows and progressive disclosure support one clear task at a time.
 
 **Key Characteristics:**
 
-- White canvas with teal actions and dark ink text.
-- Rounded fields and pill-shaped buttons.
-- Original Figma SVG artwork preserved as assets.
-- Mobile-first scrolling forms with accessible control targets.
+- Warm neutral canvas and flat tonal surfaces.
+- Forest-green actions, dark green ink and restrained plum status accents.
+- Crisp sans typography, grouped lists and modestly rounded controls.
+- Original Arogio logo; code-led composition without new shipping raster artwork.
 
-Source of visual authority: [Figma file](https://www.figma.com/design/HiE5MnlxledF8gAsJfy3kK?node-id=119-68936), welcome `119:68667`, signup `119:68809`, and login `119:68936`. The pinned local references are `C:/Users/arpit/Downloads/Container_align.png` and `Container_align.svg`; preserve their composition and original artwork. Implementation authority: `src/theme/tokens.ts`, `src/components/ui/Button.tsx`, `src/features/auth/components/`, and `src/features/legal/`. Original SVGs live in `assets/auth/`; their serialized counterparts are in `authAssets.ts`.
+This refresh supersedes the former authentication-only reference as the visual world. Source authority is `src/theme/tokens.ts`, `src/theme/appTheme.ts`, `CareUI`, `Button`, `AppScreen`, Home, Profile, setup and launch components. The selected first-surface contract remains in `.impeccable/surfaces/src-features-home-homescreen-tsx.md`.
 
 ## Colors
 
-The frontmatter records the actual source palette. Primary teal identifies actions, links, focused fields, and selected checkboxes; its darker companion is the pressed state. Subtle mint supports pressed secondary actions and legal draft notices.
+Primary forest green marks actions and focused/selected controls; its pressed companion supplies feedback. Warm background and off-white surface separate canvas from controls. Ink is for headings; muted and placeholder tones support secondary information. Border and subtle provide quiet divisions and selected navigation. Plum and its pale surface identify supporting status such as Coming soon; error remains reserved for invalid input.
 
-Neutral white forms the canvas. Ink supports headings and input text; muted slate supports secondary copy, and placeholder slate distinguishes empty fields. Pale borders separate controls and social sections. Error red identifies invalid fields and form feedback. Do not introduce additional accent families when extending authentication without a design requirement.
+**The Action Rule.** Use forest green for available primary actions and retain explicit text for unavailable services.
 
 ## Typography
 
-Plus Jakarta Sans semibold is the heading face. DM Sans regular supplies the authentication subtitle. Inter supplies controls, body copy, branding, links, and supporting labels; do not treat the token named `fonts.body` as the universal body face, because it currently names the subtitle font.
+The frontmatter records the reusable Inter roles currently used by CareUI and navigation. Headline tracking is -0.7 logical units. The compact brand wordmark uses Inter semibold at 24 with the same tracking; launch uses 44/56 with -1.2 tracking. Plus Jakarta Sans semibold remains the authentication heading font; DM Sans regular remains its subtitle font. Do not silently replace those existing font bindings.
 
-The frontmatter records headline, subtitle, legal body, and primary button label roles. Fields use Inter regular (13px); secondary buttons use Inter semibold (13px). Small links and consent copy use Inter (11.5px), with underline on inline links. Form errors use Inter regular (12px, 18px line height). The wordmark uses Inter bold (28px, 42px line height, -0.7px letter spacing). Legal section headings use Inter semibold (17px, 25px line height).
-
-Keep default system font scaling enabled. These measurements describe React Native logical units; frontmatter uses px notation for portable tooling.
+React Native measurements are logical units; portable frontmatter uses px notation. Keep default system font scaling enabled.
 
 ## Layout
 
-Authentication uses a canonical 326 by 678 content canvas, derived from the 326 by 714 Figma frame with its 36-unit mock status bar removed. Native safe areas and native system chrome sit outside that canvas; do not draw an iPhone status bar on Android. Canvas scale follows available width with a 420dp cap and a height constraint. Larger windows retain a centered, bounded phone composition.
+App content is centered with a 440-unit maximum width and 24-unit horizontal padding. AppScreen supplies safe areas, keyboard avoidance and a growing ScrollView. Setup uses the same bounded width, a three-segment progress indicator and a separate footer action. Rows use 18-unit vertical padding, a flexible text column and a trailing icon.
 
-AuthCanvas combines safe-area handling, keyboard avoidance, and a growing ScrollView. Its decorative SVG background is clipped separately into upper and lower regions. Content and artwork share the reference scale; touch targets compensate for it. Forms retain a 12-unit gap and 24-unit horizontal padding. Welcome actions follow the illustration and pagination as a group rather than stretching into tablet space.
+Bottom navigation is bounded to the same width, retains native bottom insets and exposes Home, Health, Jeeva AI, Explore and Profile. Jeeva AI retains its original raised centre artwork and label. The other selected tabs use a subtle rounded background. Authentication retains its reference-scaled AuthCanvas and original decorative backgrounds; welcome includes its original health illustration. Artwork scales without shrinking form controls or adding pagination dots.
 
-Keep native font scaling enabled. Headings may wrap at enlarged system font settings, footers wrap, and content can grow and scroll under large text or the keyboard. These canonical dimensions are reference coordinates rather than fixed physical text or touch sizes.
-
-Legal pages share the type and color system, with a maximum content width of 600, padding of 24, and bottom padding of 48. Recovery reuses the authentication shell. Navigation uses Expo Router and app routes for login, signup, recovery, Terms, and Privacy.
+**The One Task Rule.** Group related information behind clear rows or disclosures; retain one personal Edit profile action and a separate Goals & preferences destination.
 
 ## Elevation & Depth
 
-The canvas and fields remain flat. Buttons provide the small amount of depth: primary uses `0px 6px 12px rgba(9,110,100,0.22)`; secondary uses `0px 2px 4px rgba(15,31,46,0.05)`. Avoid promoting these action shadows to every surface. SVG artwork supplies the remaining visual atmosphere.
+The new app world is flat: appTheme.shadow is empty. Dividers, tonal differences and the forest profile panel establish hierarchy without a card-shadow stack. Do not introduce decorative elevation to every group.
 
 ## Shapes
 
-Fields and notice panels share gently rounded corners through the field radius. Buttons use the pill radius. Checkboxes have compact rounded square geometry (18 by 18), with their touch area extended beyond the visible mark. Fields have a single-unit outline; focus changes it to primary and invalid state changes it to error.
+Fields and shared buttons use the field radius; the profile panel uses the panel radius. Navigation selection uses the navigation radius. Borders are thin and quiet. Native controls retain at least 48dp touch targets through TouchTarget and the canvas-aware controls.
 
 ## Components
 
-- **Button:** shared primary and secondary variants, full width, canonical minimum height `max(44, 48 / canvasScale)`, optional leading/trailing content. Pressed backgrounds follow the palette. Loading replaces content with an activity indicator; loading and disabled states block activation and use opacity 0.55. Accessibility exposes button, busy, and disabled states.
-- **AuthField:** icon-led, canonical minimum height `max(44, 48 / canvasScale)`, left padding 14, and input padding 10. It accepts native input props and forwards focus/blur. Password visibility uses a labeled control with minimum dimensions `48 / canvasScale` plus hitSlop. Focus and invalid outlines remain visible; invalid styling takes precedence.
-- **AuthHeading:** centered title and subtitle, with subtitle spacing of 6. Titles expose heading semantics.
-- **Checkbox:** visible square with teal outline, teal checked fill, and white check. The control is 48 canonical units wide with a scale-aware `48 / canvasScale` minimum height; the visible mark stays compact. Expose checked and disabled state. Signup consent links remain independently navigable.
-- **SocialDivider:** two fine neutral rules around a small centered label. Social sign-in uses the secondary button language and original Google artwork.
-- **FormError:** error-colored text with alert semantics and a polite live region. Preserve error information through validation and submission.
-- **AuthShell:** owns identity, back action, decorative backgrounds, safe area, keyboard behavior, and centered scrolling content. Back actions use 48-unit targets; footer links use the shared scale-aware 48dp minimum height.
-- **LegalScreen:** scrollable heading, mint draft notice, and section text. Terms and Privacy are explicit drafts awaiting approved policy content.
+- **Button:** full width, 14 vertical/20 horizontal padding, primary and outlined secondary variants. Pressed colors come from source tokens. Busy and disabled states block activation and use opacity 0.55; busy replaces content with an indicator. The source base height is 52, with the actual minimum supplied by the touch-target context.
+- **Field:** off-white fill, rounded outline, primary focus and error outline. Preserve labeled input, keyboard behavior and password visibility affordances.
+- **CareRow:** medium title, optional smaller supporting copy and trailing chevron; whole row activates one destination.
+- **CareDisclosure:** thin top divider, expanded accessibility state and initially collapsed content; no nested decorative card frame.
+- **Profile panel:** forest fill, white title and supporting light text; a separated action row leads to profile.
+- **Navigation:** five labeled tabs with an explicit selected state. Jeeva AI uses its original prominent centre artwork; the other tabs use 24-unit icons.
+- **Setup:** goals, essential basics and activity; validation and save feedback remain inline. Optional account details and updates belong in settings.
+- **Launch:** the native splash uses the warm background and existing Android foreground icon (configured image width 160), before the distinct JavaScript sequence of original SVG logo plus live text on warm paper, followed by a forest message panel. Motion honors reduced-motion preferences; see `docs/launch-screens.md`.
 
-AuthCanvas supplies the scale context through `TouchTargetScale`; shared fields, buttons, visibility actions, consent controls, and footer links compensate to retain a physical 48dp minimum.
-
-The sidecar contains isolated HTML/CSS previews of these React Native visual patterns; it is documentation, not an additional production component source. Browser preview verification does not substitute for iOS/Android device testing. Native Google sign-in uses the shared Web client ID on Android and an additional iOS client ID on iPhone; live verification and Google Cloud registration remain pending (see `docs/google-sign-in.md`). Recovery has no available backend endpoint. Legal text remains unapproved for public launch.
+The sidecar's isolated HTML/CSS snippets translate native visual patterns for documentation. They are not production web components. Native captures and finish review are separate evidence; this document makes no rendered QA or release verdict claim.
 
 ## Do's and Don'ts
 
-- Do reuse the shared tokens and authentication components when extending account flows.
-- Do preserve the original SVG assets and their proportions.
-- Do retain keyboard scrolling, default font scaling, and accessible touch areas.
-- Do keep legal drafts visibly labeled until approved content replaces them.
-- Don't claim native device verification from browser previews.
-- Don't describe the unrelated dashboard as fully migrated.
-- Don't imply recovery delivery, Google native configuration, or backend scale has been verified.
+- Do preserve the Arogio name and original logo proportions.
+- Do reuse shared tokens, keyboard scrolling, font scaling and accessible control targets.
+- Do distinguish available actions from services labeled Coming soon.
+- Don't return to decorative tile walls or repeated edit controls.
+- Don't treat documentation previews as native rendered verification.
+- Don't imply reminders, records or daily tracking are available before implementation.

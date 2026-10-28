@@ -26,3 +26,8 @@ export const accountGoals = [
   },
   ...goals,
 ];
+
+// Use the same choices in setup and editing; preserve older saved goal values.
+export const primaryGoals = accountGoals.filter(goal =>
+  goal.value === 'manage_condition' || goals.some(option => option.value === goal.value),
+);

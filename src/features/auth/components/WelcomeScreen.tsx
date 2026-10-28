@@ -1,55 +1,28 @@
-import { TouchTarget } from '../../../components/ui/TouchTarget';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Button } from '../../../components/ui/Button';
 import { colors, fonts } from '../../../theme/tokens';
 import { AuthCanvas } from './AuthCanvas';
-import { AuthBrand } from './AuthBrand';
+import { CareBrand } from '../../../components/app/CareUI';
 import { AuthIcon } from './AuthIcon';
-import { SocialDivider, authStyles } from './AuthPrimitives';
+import { SocialDivider } from './AuthPrimitives';
 import { GoogleSignInButton } from './GoogleSignInButton';
 import { useAuth } from '../context/AuthContext';
-import { useScreenLayout } from '../../../components/ui/useScreenLayout';
 
 export function WelcomeScreen() {
-  const { compact } = useScreenLayout();
   const { isSubmitting, clearError } = useAuth();
   const navigate = (path: '/login' | '/signup') => { clearError(); router.push(path); };
-  return (
-    <AuthCanvas background="backgroundWelcome">
-      <View style={[styles.header, compact && styles.compactHeader]}>
-        <Pressable accessibilityRole="link" accessibilityLabel="Skip welcome" disabled={isSubmitting}
-          onPress={() => navigate('/login')} style={styles.skip}><Text style={styles.skipText}>Skip</Text></Pressable>
-        <AuthBrand />
-      </View>
-      <View style={[styles.introduction, compact && styles.compactIntroduction]}>
-        <Text accessibilityRole="header" style={styles.title}>A healthier{'\n'}<Text style={styles.accent}>you,</Text> every day</Text>
-        <Text style={styles.description}>Track, learn and take better care of your health with Arogio.</Text>
-      </View>
-      <View style={[styles.illustration, compact && styles.compactIllustration]} accessible={false}><AuthIcon name="welcomeIllustration" width="100%" height="100%" /></View>
-      <View style={styles.actions}>
-        <Button title="Get Started" disabled={isSubmitting} onPress={() => navigate('/signup')} trailing={<AuthIcon name="arrow" />} />
-        <SocialDivider /><GoogleSignInButton disabled={isSubmitting} />
-        <View style={authStyles.footer}>
-          <Text style={authStyles.small}>Already have an account?</Text>
-          <TouchTarget accessibilityRole="link" disabled={isSubmitting} onPress={() => navigate('/login')} style={authStyles.footerLink}>
-            <Text style={authStyles.footerLinkText}>Log In</Text>
-          </TouchTarget>
-        </View>
-      </View>
-    </AuthCanvas>
-  );
+  return <AuthCanvas background="backgroundWelcome"><View style={s.screen}>
+    <CareBrand />
+    <View style={s.intro}><Text accessibilityRole="header" style={s.title}>A little care.{'\n'}A healthier you.</Text><Text style={s.copy}>Make room for your health and wellbeing. Start with what matters to you.</Text></View>
+    <View style={s.illustration} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants"><AuthIcon name="welcomeIllustration" width="100%" height="100%" /></View>
+    <View style={s.actions}><Button title="Create account" disabled={isSubmitting} onPress={() => navigate('/signup')} /><Button title="I already have an account" variant="secondary" disabled={isSubmitting} onPress={() => navigate('/login')} /><SocialDivider /><GoogleSignInButton disabled={isSubmitting} /></View>
+  </View></AuthCanvas>;
 }
-
-const styles = StyleSheet.create({
-  header: { paddingTop: 30.75, alignItems: 'center' },
-  skip: { position: 'absolute', top: 0, right: 12, minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' },
-  skipText: { fontFamily: fonts.semibold, color: colors.primary, fontSize: 12.5 },
-  introduction: { marginTop: 19.5, paddingHorizontal: 24, alignItems: 'center' },
-  title: { color: colors.ink, fontFamily: fonts.heading, fontSize: 28, lineHeight: 36, textAlign: 'center', includeFontPadding: false },
-  accent: { color: colors.primary },
-  description: { maxWidth: 262, marginTop: 10, fontFamily: fonts.body, color: colors.muted, fontSize: 14, lineHeight: 20, textAlign: 'center', includeFontPadding: false },
-  illustration: { marginTop: 4, width: 294, maxWidth: '100%', aspectRatio: 294 / 215, alignSelf: 'center', overflow: 'hidden' },
-  actions: { paddingHorizontal: 24, paddingTop: 24, paddingBottom: 12 },
-  compactHeader: { paddingTop: 24 }, compactIntroduction: { marginTop: 12 }, compactIllustration: { width: 250 },
+const s = StyleSheet.create({
+  screen: { flexGrow: 1, padding: 24, paddingTop: 28 }, intro: { marginTop: 32, marginBottom: 20 },
+  title: { fontFamily: fonts.semibold, fontSize: 38, lineHeight: 45, letterSpacing: -1.1, color: colors.ink },
+  copy: { fontFamily: fonts.regular, fontSize: 16, lineHeight: 25, color: colors.muted, marginTop: 18 },
+  illustration: { width: 294, maxWidth: '100%', aspectRatio: 294 / 215, alignSelf: 'center', overflow: 'hidden' },
+  actions: { gap: 12, marginTop: 'auto', paddingTop: 32 },
 });

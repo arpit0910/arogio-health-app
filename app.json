@@ -25,6 +25,8 @@
     },
     "plugins": [
       "expo-router",
+      "expo-notifications",
+      ["expo-splash-screen", { "backgroundColor": "#F5F1E7", "image": "./assets/android-icon-foreground.png", "imageWidth": 160 }],
       "expo-secure-store",
       "expo-web-browser",
       "expo-font",

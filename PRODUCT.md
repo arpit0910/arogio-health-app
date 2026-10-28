@@ -1,8 +1,8 @@
 # Arogio
 
-Arogio is an Expo SDK 58 / React Native mobile health application. The current implementation work covers the welcome and account flows, with Android as the active native verification target. Broader health tracking and dashboard behavior is outside this reproduction review.
+Arogio is an Expo SDK 58 / React Native mobile health application. Current implementation work covers authentication, three-step profile setup, Home, Profile, account editors, settings and navigation, with Android as the active native verification target. Health management and daily wellness have equal priority. Medicine reminders, health records and daily tracking are presented as coming soon, not working capabilities.
 
-The approved visual direction is the supplied Figma composition and original SVG artwork, not a new identity. The authentication journey starts at welcome, offers account creation and sign-in, and includes Google sign-in entry points, recovery, and legal destinations. Preserve Inter, Plus Jakarta Sans, and DM Sans, a white canvas, deep teal actions, dark text, and the reference illustration.
+The user approved a full redesign under the Growing Well direction while retaining the Arogio name and original logo. Warm neutral surfaces, forest-green actions, restrained plum accents and crisp sans typography support clear tasks, grouped information and progressive disclosure. Setup asks for goals, essential basics and activity; optional data and consent preferences live in settings. Profile offers one personal Edit profile action and a separate Goals & preferences destination. New users start with updates opt-in false; stored consent for existing users is preserved.
 
 Account forms must remain usable with the native keyboard and enlarged system text. Loading, invalid inputs, authentication errors, password visibility, consent, and route switching need visible, accessible behavior. Native touch areas must remain at least 48dp after canvas scaling.
 

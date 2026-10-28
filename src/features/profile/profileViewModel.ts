@@ -16,8 +16,8 @@ export function profileDraft(user: SafeUser): SetupDraft {
       ? (p.healthGoals as string[])
       : [],
     referralSource: String(p.referralSource ?? ""),
-    healthReminders: p.healthReminders !== false,
-    tipsAndInsights: p.tipsAndInsights !== false,
+    healthReminders: p.healthReminders === true,
+    tipsAndInsights: p.tipsAndInsights === true,
     productUpdates: p.productUpdates === true,
   };
 }

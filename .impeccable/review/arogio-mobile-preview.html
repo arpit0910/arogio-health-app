@@ -1,0 +1,155 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+#arogio-preview .arogio-stage{display:flex;justify-content:center;padding:20px 8px 28px}
+#arogio-preview .arogio-phone{width:100%;max-width:390px;background:#F5F1E7;color:#203E32;border:1px solid #D8DCCF;border-radius:24px;overflow:hidden;font:15px/1.55 Inter,Arial,sans-serif}
+#arogio-preview .arogio-phone *{box-sizing:border-box}
+#arogio-preview .arogio-status{display:flex;justify-content:space-between;padding:15px 26px 0;font-size:12px;font-weight:600}
+#arogio-preview .arogio-content{padding:20px 24px 26px;min-height:650px}
+#arogio-preview .arogio-header{display:flex;align-items:center;justify-content:space-between;gap:14px}
+#arogio-preview .arogio-brand{display:flex;align-items:center;gap:7px;font-size:24px;font-weight:600;letter-spacing:-.7px}
+#arogio-preview .arogio-brand img{width:32px;height:29px}
+#arogio-preview .arogio-phone button{font:inherit;color:inherit;cursor:inherit}
+#arogio-preview .arogio-icon-button{border:0;background:transparent;min-width:48px;min-height:48px;display:grid;place-items:center;padding:8px;border-radius:10px}
+#arogio-preview .arogio-avatar{width:38px;height:38px;border-radius:50%;background:#E7EDDF;display:grid;place-items:center;font-size:12px;color:#214F3D;font-weight:600}
+#arogio-preview .arogio-phone h1{font-size:30px;line-height:1.27;letter-spacing:-.7px;font-weight:600;margin:28px 0 10px;color:#203E32}
+#arogio-preview .arogio-phone h2{font-size:20px;line-height:1.4;letter-spacing:-.35px;font-weight:600;margin:0;color:#203E32}
+#arogio-preview .arogio-phone p{font-size:15px;line-height:1.55;color:#586357;margin:0}
+#arogio-preview .arogio-profile-panel{padding:22px;margin-top:26px;border-radius:16px;background:#214F3D;color:white}
+#arogio-preview .arogio-profile-panel h2{color:white;font-size:22px;line-height:1.32}
+#arogio-preview .arogio-profile-panel p{font-size:14px;color:#E2EBDD;margin-top:10px;line-height:1.6}
+#arogio-preview .arogio-profile-panel button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;border-top:1px solid #64806B;background:transparent;color:white;text-align:left;padding:16px 0 0;margin-top:22px;min-height:48px;font-size:15px;font-weight:600}
+#arogio-preview .arogio-row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;border:0;background:transparent;text-align:left;padding:18px 0;min-height:56px}
+#arogio-preview .arogio-row strong{display:block;font-size:16px;font-weight:500}
+#arogio-preview .arogio-row small{display:block;font-size:13px;color:#586357;line-height:1.55;margin-top:3px}
+#arogio-preview .arogio-row .arogio-grow{flex:1}
+#arogio-preview .arogio-wellness{margin:8px 0;color:#214F3D}
+#arogio-preview .arogio-phone details{border-top:1px solid #D8DCCF}
+#arogio-preview .arogio-phone summary{list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:60px;font-size:16px;font-weight:500;cursor:inherit}
+#arogio-preview .arogio-phone summary::-webkit-details-marker{display:none}
+#arogio-preview .arogio-phone details p{padding-bottom:18px;font-size:14px}
+#arogio-preview .arogio-future{margin-top:28px}
+#arogio-preview .arogio-future-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap;font-size:16px;font-weight:500}
+#arogio-preview .arogio-soon{padding:4px 9px;border-radius:5px;color:#7B3D45;background:#EEE1E1;font-size:12px;font-weight:500}
+#arogio-preview .arogio-nav{border-top:1px solid #D8DCCF;padding:10px 10px 18px;display:flex;background:#F5F1E7}
+#arogio-preview .arogio-nav button{flex:1;min-height:52px;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;color:#586357}
+#arogio-preview .arogio-nav span{display:grid;place-items:center;width:52px;height:32px;border-radius:10px}
+#arogio-preview .arogio-nav [aria-current=page]{color:#214F3D}
+#arogio-preview .arogio-nav [aria-current=page] span{background:#E7EDDF}
+#arogio-preview .arogio-phone [data-lucide]{width:21px;height:21px;flex:none}
+#arogio-preview .arogio-phone .arogio-main-title{margin:0;font-size:30px;line-height:1.27}
+#arogio-preview .arogio-identity{display:flex;align-items:center;gap:18px;margin-top:28px}
+#arogio-preview .arogio-identity .arogio-avatar{width:72px;height:72px;font-size:20px;flex:none}
+#arogio-preview .arogio-identity h2{font-size:22px;margin-bottom:5px}
+#arogio-preview .arogio-outline{display:flex;align-items:center;justify-content:center;gap:14px;border:1px solid #D8DCCF;border-radius:10px;padding:12px 18px;min-height:48px;background:transparent;font-size:15px;font-weight:600;margin-top:20px}
+#arogio-preview .arogio-section{margin-top:28px}
+#arogio-preview .arogio-details{background:#FFFDFA;border-radius:12px;padding:0 16px;margin-top:12px}
+#arogio-preview .arogio-detail{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;padding:15px 0;border-bottom:1px solid #D8DCCF;font-size:15px}
+#arogio-preview .arogio-detail span:first-child{font-size:14px;color:#586357}
+#arogio-preview .arogio-detail span:last-child{font-weight:500}
+#arogio-preview .arogio-line{border-top:1px solid #D8DCCF}
+#arogio-preview .arogio-steps{display:flex;gap:6px;margin:20px 0 28px}
+#arogio-preview .arogio-steps span{height:3px;background:#D8DCCF;flex:1;border-radius:2px}
+#arogio-preview .arogio-steps span.is-active{background:#214F3D}
+#arogio-preview .arogio-step-label{font-size:13px;color:#586357;white-space:nowrap}
+#arogio-preview .arogio-choices{display:grid;gap:12px;margin-top:26px}
+#arogio-preview .arogio-choice{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid #D8DCCF;border-radius:12px;background:#FFFDFA;padding:16px;min-height:72px}
+#arogio-preview .arogio-choice:has(input:checked){border-color:#214F3D;background:#E7EDDF}
+#arogio-preview .arogio-choice strong{display:block;font-size:15px;font-weight:600;line-height:1.45}
+#arogio-preview .arogio-choice small{display:block;font-size:13px;line-height:1.5;color:#586357;margin-top:4px}
+#arogio-preview .arogio-phone input[type=checkbox],#arogio-preview .arogio-phone input[type=radio]{width:18px;height:18px;accent-color:#214F3D;flex:none}
+#arogio-preview .arogio-primary{width:100%;border:0;border-radius:12px;background:#214F3D!important;color:#FFFFFF!important;min-height:52px;padding:14px 20px;font-size:16px;font-weight:600}
+#arogio-preview .arogio-step-footer{border-top:1px solid #D8DCCF;margin-top:26px;padding-top:16px}
+#arogio-preview .arogio-note{font-size:12px!important;text-align:center;margin-top:12px!important}
+#arogio-preview .arogio-input-label{display:grid;gap:8px;font-size:14px;margin-bottom:18px}
+#arogio-preview .arogio-phone input[type=text],#arogio-preview .arogio-phone input[type=number],#arogio-preview .arogio-phone input[type=date],#arogio-preview .arogio-phone select{width:100%;min-width:0;min-height:50px;border:1px solid #D8DCCF;background:#FFFDFA;color:#203E32;border-radius:12px;padding:12px;font:16px Inter,Arial,sans-serif}
+#arogio-preview .arogio-measures{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+#arogio-preview .arogio-update{display:flex;gap:12px;align-items:flex-start;padding:16px 0;border-bottom:1px solid #D8DCCF;font-size:15px}
+#arogio-preview .arogio-update small{display:block;color:#586357;font-size:13px;margin-top:4px}
+#arogio-preview .arogio-error{color:#A42A36!important;font-size:13px!important;margin-top:14px!important}
+#arogio-preview .arogio-success{min-height:600px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:20px}
+#arogio-preview .arogio-success [data-lucide]{width:48px;height:48px;color:#214F3D}
+#arogio-preview [hidden]{display:none!important}
+</style>
+<div id="arogio-preview">
+  <div class="viz-row" aria-label="Preview screens"><button type="button" class="btn" data-open="home">Home</button><button type="button" class="btn" data-open="setup">Onboarding</button><button type="button" class="btn" data-open="profile">Profile</button></div>
+  <div class="arogio-stage viz-dotted-background"><div class="arogio-phone">
+    <div class="arogio-status"><span>9:41</span><span aria-label="Network and battery"><i data-lucide="wifi" aria-hidden="true"></i></span></div>
+    <main class="arogio-content" data-screen="home">
+      <div class="arogio-header"><div class="arogio-brand"><img src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyIgd2lkdGg9IjQwIiBoZWlnaHQ9IjM2IiB2aWV3Qm94PSIwIDAgNDAgMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJJY29uIj4KPHBhdGggaWQ9IlZlY3RvciIgZD0iTTIwIDExLjdDMjIuMzk0OSAxMS43IDI0LjMzNjQgOS43NTg1NCAyNC4zMzY0IDcuMzYzNjRDMjQuMzM2NCA0Ljk2ODczIDIyLjM5NDkgMy4wMjcyNyAyMCAzLjAyNzI3QzE3LjYwNTEgMy4wMjcyNyAxNS42NjM2IDQuOTY4NzMgMTUuNjYzNiA3LjM2MzY0QzE1LjY2MzYgOS43NTg1NCAxNy42MDUxIDExLjcgMjAgMTEuN1oiIGZpbGw9IiMyMThCODIiLz4KPHBhdGggaWQ9IlZlY3Rvcl8yIiBkPSJNNi45MDkwOSAxMS44NjM2QzExLjQwOTEgMTUuOTU0NSAxNS45MDkxIDE3LjE4MTggMjAgMTcuMTgxOEMyNC4wOTA5IDE3LjE4MTggMjguNTkwOSAxNS45NTQ1IDMzLjA5MDkgMTEuODYzNiIgc3Ryb2tlLXdpZHRoPSIzLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlPSJ1cmwoI3BhaW50MF9saW5lYXJfMF80MCkiLz4KPHBhdGggaWQ9IlZlY3Rvcl8zIiBkPSJNNi41IDI4LjIyNzNDMTAuNTkwOSAyMS4yNzI3IDE1LjA5MDkgMTkuNjM2NCAyMCAxOS42MzY0QzI0LjkwOTEgMTkuNjM2NCAyOS40MDkxIDIxLjI3MjcgMzMuNSAyOC4yMjczIiBzdHJva2Utd2lkdGg9IjMuNzYzNjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlPSJ1cmwoI3BhaW50MV9saW5lYXJfMF80MCkiLz4KPC9nPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDBfbGluZWFyXzBfNDAiIHgxPSI2LjkwOTA5IiB5MT0iMTEuNDU0NSIgeDI9IjMzLjA5MDkiIHkyPSIxNy4xODE4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiMxRThBODQiLz4KPHN0b3Agb2Zmc2V0PSIwLjU1IiBzdG9wLWNvbG9yPSIjNDNCNjdBIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzhCRDM1RSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MV9saW5lYXJfMF80MCIgeDE9IjYuNSIgeTE9IjI3LjgxODIiIHgyPSIzMy41IiB5Mj0iMjcuODE4MiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMTQ4NTgyIi8+CjxzdG9wIG9mZnNldD0iMC41IiBzdG9wLWNvbG9yPSIjM0RCMzdCIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzg2RDE1QyIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=" alt="">Arogio</div><button class="arogio-icon-button" data-open="profile" aria-label="Open profile"><span class="arogio-avatar">DU</span></button></div>
+      <h1>A little care, Demo.</h1><p>Your health and wellbeing, together.</p>
+      <section class="arogio-profile-panel"><h2>A clearer picture of you</h2><p>Your personal details, measurements and health priorities. All in one place.</p><button data-open="profile">View health profile<i data-lucide="chevron-right" aria-hidden="true"></i></button></section>
+      <button class="arogio-row arogio-wellness" data-open="preferences"><i data-lucide="leaf" aria-hidden="true"></i><span class="arogio-grow"><strong>Make space for wellbeing</strong><small>Choose the goals that matter to you</small></span><i data-lucide="chevron-right" aria-hidden="true"></i></button>
+      <details><summary>Your focus<i data-lucide="chevron-down" aria-hidden="true"></i></summary><p data-focus-summary>Improve Sleep · Fitness &amp; Activity</p></details>
+      <details><summary>Your health details<i data-lucide="chevron-down" aria-hidden="true"></i></summary><p>Keep your birthday, body measurements and personal information up to date in your profile.</p><button class="arogio-row" data-open="profile">Open profile<i data-lucide="chevron-right" aria-hidden="true"></i></button></details>
+      <section class="arogio-future"><div class="arogio-future-head">More ways to care<span class="arogio-soon">Coming soon</span></div><p>Medicine reminders, health records and daily tracking.</p></section>
+    </main>
+    <main class="arogio-content" data-screen="profile" hidden>
+      <div class="arogio-header"><h1 class="arogio-main-title">Your profile</h1><button class="arogio-icon-button" data-open="settings" aria-label="Settings"><i data-lucide="settings" aria-hidden="true"></i></button></div>
+      <div class="arogio-identity"><div class="arogio-avatar">DU</div><div><h2 data-profile-name>Demo User</h2><p>31 years</p></div></div>
+      <button class="arogio-outline" data-open="edit">Edit profile<i data-lucide="chevron-right" aria-hidden="true"></i></button>
+      <section class="arogio-section"><h2>Personal details</h2><div class="arogio-details"><div class="arogio-detail"><span>Date of birth</span><span data-birthday-summary>14 May 1995</span></div><div class="arogio-detail"><span>Gender</span><span>Not added</span></div><div class="arogio-detail"><span>Location</span><span data-location-summary>Not added</span></div></div></section>
+      <section class="arogio-section"><h2>Body details</h2><div class="arogio-details"><div class="arogio-detail"><span>Weight</span><span data-weight-summary>68 kg</span></div><div class="arogio-detail"><span>Height</span><span data-height-summary>170 cm</span></div><div class="arogio-detail"><span>BMI</span><span data-bmi-summary>23.5</span></div></div></section>
+      <section class="arogio-section"><h2>Your priorities</h2><p data-focus-summary style="margin-top:10px">Improve Sleep · Fitness &amp; Activity</p><p style="margin-top:6px" data-activity-summary>Lightly active</p></section>
+      <div class="arogio-section arogio-line"><button class="arogio-row" data-open="preferences"><span><strong>Goals &amp; preferences</strong><small>Wellness goals, activity and updates</small></span><i data-lucide="chevron-right" aria-hidden="true"></i></button></div>
+    </main>
+    <main class="arogio-content" data-screen="setup" hidden>
+      <div class="arogio-header"><button type="button" class="arogio-icon-button" id="arogio-previous" aria-label="Previous step" hidden><i data-lucide="arrow-left" aria-hidden="true"></i></button><div class="arogio-brand" id="arogio-setup-brand"><img src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyIgd2lkdGg9IjQwIiBoZWlnaHQ9IjM2IiB2aWV3Qm94PSIwIDAgNDAgMzYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJJY29uIj4KPHBhdGggaWQ9IlZlY3RvciIgZD0iTTIwIDExLjdDMjIuMzk0OSAxMS43IDI0LjMzNjQgOS43NTg1NCAyNC4zMzY0IDcuMzYzNjRDMjQuMzM2NCA0Ljk2ODczIDIyLjM5NDkgMy4wMjcyNyAyMCAzLjAyNzI3QzE3LjYwNTEgMy4wMjcyNyAxNS42NjM2IDQuOTY4NzMgMTUuNjYzNiA3LjM2MzY0QzE1LjY2MzYgOS43NTg1NCAxNy42MDUxIDExLjcgMjAgMTEuN1oiIGZpbGw9IiMyMThCODIiLz4KPHBhdGggaWQ9IlZlY3Rvcl8yIiBkPSJNNi45MDkwOSAxMS44NjM2QzExLjQwOTEgMTUuOTU0NSAxNS45MDkxIDE3LjE4MTggMjAgMTcuMTgxOEMyNC4wOTA5IDE3LjE4MTggMjguNTkwOSAxNS45NTQ1IDMzLjA5MDkgMTEuODYzNiIgc3Ryb2tlLXdpZHRoPSIzLjYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlPSJ1cmwoI3BhaW50MF9saW5lYXJfMF80MCkiLz4KPHBhdGggaWQ9IlZlY3Rvcl8zIiBkPSJNNi41IDI4LjIyNzNDMTAuNTkwOSAyMS4yNzI3IDE1LjA5MDkgMTkuNjM2NCAyMCAxOS42MzY0QzI0LjkwOTEgMTkuNjM2NCAyOS40MDkxIDIxLjI3MjcgMzMuNSAyOC4yMjczIiBzdHJva2Utd2lkdGg9IjMuNzYzNjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlPSJ1cmwoI3BhaW50MV9saW5lYXJfMF80MCkiLz4KPC9nPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDBfbGluZWFyXzBfNDAiIHgxPSI2LjkwOTA5IiB5MT0iMTEuNDU0NSIgeDI9IjMzLjA5MDkiIHkyPSIxNy4xODE4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiMxRThBODQiLz4KPHN0b3Agb2Zmc2V0PSIwLjU1IiBzdG9wLWNvbG9yPSIjNDNCNjdBIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzhCRDM1RSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MV9saW5lYXJfMF80MCIgeDE9IjYuNSIgeTE9IjI3LjgxODIiIHgyPSIzMy41IiB5Mj0iMjcuODE4MiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjMTQ4NTgyIi8+CjxzdG9wIG9mZnNldD0iMC41IiBzdG9wLWNvbG9yPSIjM0RCMzdCIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzg2RDE1QyIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=" alt="">Arogio</div><span class="arogio-step-label" id="arogio-step-label">Step 1 of 3</span></div>
+      <div class="arogio-steps" aria-label="Three setup steps"><span class="is-active"></span><span></span><span></span></div>
+      <div data-step="0"><h1 class="arogio-main-title">What matters to you?</h1><p style="margin-top:12px">Choose one or more goals. You can change them anytime.</p><div class="arogio-choices" id="arogio-setup-goals">
+        <label class="arogio-choice"><span><strong>Manage a health condition</strong><small>Support my existing condition</small></span><input type="checkbox" value="Manage a health condition"></label>
+        <label class="arogio-choice"><span><strong>Weight Management</strong><small>Lose, gain or maintain weight</small></span><input type="checkbox" value="Weight Management"></label>
+        <label class="arogio-choice"><span><strong>Fitness &amp; Activity</strong><small>Be more active and build strength</small></span><input type="checkbox" value="Fitness &amp; Activity" checked></label>
+        <label class="arogio-choice"><span><strong>Better Eating Habits</strong><small>Make healthier food choices</small></span><input type="checkbox" value="Better Eating Habits"></label>
+        <label class="arogio-choice"><span><strong>Improve Sleep</strong><small>Get better rest and more energy</small></span><input type="checkbox" value="Improve Sleep" checked></label>
+        <label class="arogio-choice"><span><strong>Manage Stress</strong><small>Feel calmer and more balanced</small></span><input type="checkbox" value="Manage Stress"></label>
+      </div></div>
+      <div data-step="1" hidden><h1 class="arogio-main-title">A little about you</h1><p style="margin:12px 0 26px">These details give your health profile a useful starting point.</p><label class="arogio-input-label">Date of birth<input id="arogio-birthday" type="date" value="1995-05-14" min="1900-01-01"></label><div class="arogio-measures"><label class="arogio-input-label">Weight (kg)<input id="arogio-weight" type="number" value="68" min="2" max="500" step="0.1"></label><label class="arogio-input-label">Height (cm)<input id="arogio-height" type="number" value="170" min="50" max="300" step="0.1"></label></div><p>Only the essentials for now. Add other personal details later in your profile.</p></div>
+      <div data-step="2" hidden><h1 class="arogio-main-title">Find your everyday rhythm</h1><p style="margin-top:12px">Choose the activity level that feels closest to your routine.</p><div class="arogio-choices">
+        <label class="arogio-choice"><span><strong>Sedentary</strong><small>Little to no exercise</small></span><input type="radio" name="arogio-activity" value="Sedentary"></label>
+        <label class="arogio-choice"><span><strong>Lightly active</strong><small>Light exercise 1–3 days/week</small></span><input type="radio" name="arogio-activity" value="Lightly active" checked></label>
+        <label class="arogio-choice"><span><strong>Moderately active</strong><small>Exercise 3–5 days/week</small></span><input type="radio" name="arogio-activity" value="Moderately active"></label>
+        <label class="arogio-choice"><span><strong>Very active</strong><small>Exercise 6+ days/week</small></span><input type="radio" name="arogio-activity" value="Very active"></label>
+      </div></div>
+      <p class="arogio-error" id="arogio-setup-error" role="alert" hidden></p><div class="arogio-step-footer"><button class="arogio-primary" id="arogio-continue">Continue</button><p class="arogio-note">You can update these choices from your profile.</p></div>
+    </main>
+    <main class="arogio-content" data-screen="preferences" hidden><div class="arogio-header"><button class="arogio-icon-button" data-open="profile" aria-label="Back to profile"><i data-lucide="arrow-left" aria-hidden="true"></i></button><h2>Goals &amp; preferences</h2></div><section class="arogio-section"><h2>Health goals</h2><p>Select your primary health goals. You can choose more than one.</p><div class="arogio-choices" id="arogio-edit-goals"></div></section><section class="arogio-section"><h2>Activity level</h2><div class="arogio-choices" id="arogio-edit-activity"></div></section><section class="arogio-section"><h2>Stay in the loop</h2><p style="margin-top:8px">Choose the updates you would like. These choices are optional.</p><label class="arogio-update"><input type="checkbox"><span>Health reminders<small>Reminders when this feature becomes available</small></span></label><label class="arogio-update"><input type="checkbox"><span>Tips and insights<small>Health and wellbeing updates</small></span></label><label class="arogio-update"><input type="checkbox"><span>Product updates<small>New features and important announcements</small></span></label></section><p id="arogio-preference-error" class="arogio-error" role="alert" hidden>Choose at least one goal.</p><button class="arogio-primary" id="arogio-save-preferences" style="margin-top:28px">Save changes</button></main>
+    <main class="arogio-content" data-screen="settings" hidden><div class="arogio-header"><button class="arogio-icon-button" data-open="profile" aria-label="Back to profile"><i data-lucide="arrow-left" aria-hidden="true"></i></button><h2>Settings</h2></div><section class="arogio-section"><h2>Account</h2><p>demo@example.test</p><details style="margin-top:24px"><summary>Terms of Service<i data-lucide="chevron-down" aria-hidden="true"></i></summary><p>The app’s Terms of Service are marked as a draft pending approval.</p></details><details><summary>Privacy Policy<i data-lucide="chevron-down" aria-hidden="true"></i></summary><p>The app’s Privacy Policy is marked as a draft pending approval.</p></details><button class="arogio-outline" data-open="home">Return to Home</button></section></main>
+    <main class="arogio-content" data-screen="edit" hidden><div class="arogio-header"><button class="arogio-icon-button" data-open="profile" aria-label="Cancel editing"><i data-lucide="arrow-left" aria-hidden="true"></i></button><h2>Edit profile</h2></div><div class="arogio-section"><label class="arogio-input-label">Full name<input type="text" id="arogio-name" value="Demo User" maxlength="100"></label><label class="arogio-input-label">Location<input type="text" id="arogio-location" placeholder="Enter your city" maxlength="100"></label><button class="arogio-primary" id="arogio-save-profile">Save changes</button></div></main>
+    <main class="arogio-content" data-screen="soon" hidden><button class="arogio-icon-button" data-open="home" aria-label="Back to Home"><i data-lucide="arrow-left" aria-hidden="true"></i></button><section class="arogio-success"><i data-lucide="heart" aria-hidden="true"></i><h1 id="arogio-soon-title">Health</h1><span class="arogio-soon">Coming soon</span><p>We’re working on this feature. You can continue managing your profile and health preferences.</p><button class="arogio-outline" data-open="profile">View profile</button></section></main>
+    <main class="arogio-content" data-screen="success" hidden><div class="arogio-success" aria-live="polite"><i data-lucide="check" aria-hidden="true"></i><h1>You’re ready.</h1><p>Your profile is saved. Let’s make room for a little care.</p></div></main>
+    <nav class="arogio-nav" aria-label="Main navigation"><button data-open="home" aria-current="page"><span><i data-lucide="house" aria-hidden="true"></i></span>Home</button><button data-open="soon" data-title="Health"><span><i data-lucide="heart" aria-hidden="true"></i></span>Health</button><button data-open="soon" data-title="Explore"><span><i data-lucide="compass" aria-hidden="true"></i></span>Explore</button><button data-open="profile"><span><i data-lucide="user-round" aria-hidden="true"></i></span>Profile</button></nav>
+  </div></div>
+</div>
+<script>
+(() => {
+  const root=document.getElementById('arogio-preview');
+  const screens=['home','profile','setup','preferences','edit','settings','soon','success'];
+  let current='home', step=0, timer;
+  const query=selector=>root.querySelector(selector);
+  function remember(){if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{screen:current},privateContent:{step}}).catch(()=>{});}
+  function show(screen,persist=true){
+    if(!screens.includes(screen))return;
+    clearTimeout(timer);current=screen;
+    root.querySelectorAll('[data-screen]').forEach(panel=>panel.hidden=panel.dataset.screen!==screen);
+    query('.arogio-nav').hidden=['setup','success','edit','preferences','settings'].includes(screen);
+    root.querySelectorAll('.arogio-nav button').forEach(button=>{const selected=screen==='soon'?button.dataset.title===query('#arogio-soon-title').textContent:button.dataset.open===screen;if(selected)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
+    if(screen==='setup')renderStep();
+    if(persist)remember();
+  }
+  function renderStep(){root.querySelectorAll('[data-step]').forEach(panel=>panel.hidden=Number(panel.dataset.step)!==step);root.querySelectorAll('.arogio-steps span').forEach((bar,index)=>bar.classList.toggle('is-active',index<=step));query('#arogio-step-label').textContent=`Step ${step+1} of 3`;query('#arogio-previous').hidden=step===0;query('#arogio-setup-brand').hidden=step!==0;query('#arogio-continue').textContent=step===2?'Finish setup':'Continue';query('#arogio-setup-error').hidden=true;}
+  function updateSummary(){const goals=[...root.querySelectorAll('#arogio-setup-goals input:checked')].map(input=>input.value);root.querySelectorAll('[data-focus-summary]').forEach(node=>node.textContent=goals.join(' · '));query('[data-weight-summary]').textContent=`${query('#arogio-weight').value} kg`;query('[data-height-summary]').textContent=`${query('#arogio-height').value} cm`;const weight=Number(query('#arogio-weight').value),height=Number(query('#arogio-height').value)/100;query('[data-bmi-summary]').textContent=height>0?(weight/(height*height)).toFixed(1):'Not available';const birthday=query('#arogio-birthday').value;query('[data-birthday-summary]').textContent=new Date(`${birthday}T12:00:00`).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});query('[data-activity-summary]').textContent=query('input[name="arogio-activity"]:checked')?.value||'Not added';}
+  root.querySelectorAll('[data-open]').forEach(button=>button.addEventListener('click',()=>{if(button.dataset.title)query('#arogio-soon-title').textContent=button.dataset.title;show(button.dataset.open);}));
+  query('#arogio-previous').addEventListener('click',()=>{step=Math.max(0,step-1);renderStep();remember();});
+  query('#arogio-continue').addEventListener('click',()=>{let error='';if(step===0&&!query('#arogio-setup-goals input:checked'))error='Choose at least one goal.';if(step===1){const birthday=query('#arogio-birthday').value,weight=Number(query('#arogio-weight').value),height=Number(query('#arogio-height').value);if(!birthday||birthday<'1900-01-01'||new Date(`${birthday}T00:00:00`)>new Date())error='Choose a valid birthday in the past.';else if(weight<2||weight>500||height<50||height>300)error='Check your weight and height.';}if(step===2&&!query('input[name="arogio-activity"]:checked'))error='Choose your activity level.';if(error){query('#arogio-setup-error').textContent=error;query('#arogio-setup-error').hidden=false;return;}if(step<2){step++;renderStep();remember();}else{updateSummary();show('success');step=0;timer=setTimeout(()=>show('home'),1000);}});
+  query('#arogio-save-profile').addEventListener('click',()=>{const name=query('#arogio-name').value.trim();if(name.length<2){query('#arogio-name').reportValidity();return;}query('[data-profile-name]').textContent=name;query('[data-location-summary]').textContent=query('#arogio-location').value.trim()||'Not added';show('profile');});
+  query('#arogio-name').minLength=2;query('#arogio-name').required=true;
+  query('#arogio-setup-goals').childNodes.forEach(node=>query('#arogio-edit-goals').appendChild(node.cloneNode(true)));
+  query('[data-step="2"] .arogio-choices').childNodes.forEach(node=>{const clone=node.cloneNode(true);if(clone.querySelectorAll)clone.querySelectorAll('input').forEach(input=>input.name='arogio-edit-activity');query('#arogio-edit-activity').appendChild(clone);});
+  query('#arogio-save-preferences').addEventListener('click',()=>{const selected=[...root.querySelectorAll('#arogio-edit-goals input:checked')].map(input=>input.value);if(!selected.length){query('#arogio-preference-error').hidden=false;return;}query('#arogio-preference-error').hidden=true;root.querySelectorAll('#arogio-setup-goals input').forEach(input=>input.checked=selected.includes(input.value));const activity=query('input[name="arogio-edit-activity"]:checked')?.value;root.querySelectorAll('input[name="arogio-activity"]').forEach(input=>input.checked=input.value===activity);updateSummary();show('profile');});
+  query('#arogio-birthday').max=new Date().toISOString().slice(0,10);
+  const saved=window.openai?.widgetState;
+  if(Number.isInteger(saved?.privateContent?.step))step=Math.min(2,Math.max(0,saved.privateContent.step));
+  show(saved?.modelContent?.screen||'home',false);
+  window.addEventListener('openai:set_globals',event=>{const state=event.detail?.globals?.widgetState;if(state?.modelContent?.screen)show(state.modelContent.screen,false);});
+})();
+</script>

@@ -1,6 +1,17 @@
 # Android test APK
 
-## Latest build - Arogio Health, Android 11
+## Latest build - Arogio Health, Android 12
+
+Version **1.0.1**, Android build **12**, includes the two launch screens and their crossfade, automatic navigation from profile success to Home, the welcome screen without pagination dots, and preference checkboxes matching the terms agreement. The temporary preference preview route is excluded. This is a signed standalone production APK using the hosted backend.
+
+- [Download build 12](https://expo.dev/artifacts/eas/HNgdRN-03W7M-FbS7OKtltsxknJSMLVvjORX7vmtkYc.apk)
+- [EAS build 12](https://expo.dev/accounts/arpit0910/projects/arogio-health-app/builds/da7d8b86-8ed9-492f-9fc9-61401f2d97ac)
+- Local copy: `dist/arogio-health-1.0.1-build-12.apk` (101,561,173 bytes).
+- SHA-256: `891ff5797d105fac37cff71fe7f32da35eed6ce08c7a1ac361d1e42d3e8d6579`.
+
+Lint, TypeScript and all 34 tests pass. EAS completed successfully. Android apksigner verifies the signature and unchanged release SHA-1 `CD:D6:E8:F9:74:AB:F3:E8:1E:65:32:D0:4C:AD:3E:96:6D:BF:EB:B6`; aapt confirms Arogio Health, package `com.arogio.health`, versionCode 12, minimum API 24 and target API 36. Installation and on-device visual verification of this build remain pending.
+
+## Previous build 11
 
 Version **1.0.1**, Android build **11**, is a signed standalone production APK with Home, Profile, shared five-tab navigation, personal/body/photo editing and health-goal/activity editing. It uses the production backend and the new profile URLs.
 

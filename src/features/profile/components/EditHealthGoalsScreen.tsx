@@ -8,8 +8,9 @@ import { AppScreen, appStyles as a } from "../../../components/app/AppScreen";
 import { TouchTarget } from "../../../components/ui/TouchTarget";
 import { activities } from "../model";
 import { profileDraft } from "../profileViewModel";
-import { accountGoals } from "../profileOptions";
+import { accountGoals, primaryGoals } from "../profileOptions";
 import { ChoiceCard } from "./ProfilePrimitives";
+import { ProfilePreferences } from './ProfilePreferences';
 
 export function EditHealthGoalsScreen() {
   const { user, updateProfile, isSubmitting } = useAuth();
@@ -17,13 +18,17 @@ export function EditHealthGoalsScreen() {
   const [error, setError] = useState<string | null>(null);
   const options = accountGoals.filter(
     (goal) =>
-      !["weight_management", "fitness_activity"].includes(goal.value) ||
+      primaryGoals.some(option => option.value === goal.value) ||
       draft.healthGoals.includes(goal.value),
   );
   const save = async () => {
+    if (isSubmitting) return;
     const parsed = updateProfileSchema.safeParse({
       healthGoals: draft.healthGoals,
       activityLevel: draft.activityLevel,
+      healthReminders: draft.healthReminders,
+      tipsAndInsights: draft.tipsAndInsights,
+      productUpdates: draft.productUpdates,
     });
     if (!parsed.success) {
       setError(parsed.error.issues[0].message);
@@ -41,7 +46,7 @@ export function EditHealthGoalsScreen() {
     }
   };
   return (
-    <AppScreen back title="Edit Health Goals">
+    <AppScreen back title="Goals & preferences">
       <View style={{ gap: 12, paddingBottom: 20 }}>
         <Text accessibilityRole="header" style={a.sectionTitle}>
           Health Goals
@@ -97,6 +102,7 @@ export function EditHealthGoalsScreen() {
             />
           ))}
         </View>
+        <View style={{ gap: 12, marginTop: 24 }}><ProfilePreferences values={draft} disabled={isSubmitting} onChange={(key, value) => { setDraft(current => ({ ...current, [key]: value })); setError(null); }} /></View>
         <FormError message={error} />
         <TouchTarget
           accessibilityRole="button"

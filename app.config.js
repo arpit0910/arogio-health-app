@@ -2,6 +2,9 @@
 module.exports = ({ config }) => {
   const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?.trim();
   const plugins = [...(config.plugins ?? [])];
+  if (process.env.AROGIO_LOCAL_QA === 'true' && process.env.EAS_BUILD !== 'true') {
+    plugins.push('./plugins/with-local-qa-network');
+  }
   if (process.env.AROGIO_LOCAL_DEBUG_KEYSTORE && process.env.EAS_BUILD !== 'true') {
     plugins.push('./plugins/with-local-debug-keystore');
   }

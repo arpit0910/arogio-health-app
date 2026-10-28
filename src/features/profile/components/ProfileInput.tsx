@@ -5,6 +5,7 @@ import {
   View,
   type TextInputProps,
 } from "react-native";
+import { useState } from 'react';
 import { AppIcon, type AppIconName } from "../../../components/app/AppIcon";
 import { TouchTarget } from "../../../components/ui/TouchTarget";
 import { appTheme as t } from "../../../theme/appTheme";
@@ -28,13 +29,14 @@ export function ProfileInput({
   suffix,
   ...input
 }: Props) {
+  const [focused, setFocused] = useState(false);
   const content = (
     <>
-      <AppIcon
+      {input.keyboardType !== 'decimal-pad' && <AppIcon
         name={icon}
         size={21}
         color={icon === "user" && label === "Full name" ? "#7C85A4" : t.teal}
-      />
+      />}
       {onPress ? (
         <Text style={[s.value, !value && s.placeholder]}>
           {value || placeholder}
@@ -47,6 +49,8 @@ export function ProfileInput({
           placeholderTextColor={t.muted}
           style={s.input}
           selectionColor={t.teal}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           {...input}
         />
       )}
@@ -68,7 +72,7 @@ export function ProfileInput({
           {content}
         </TouchTarget>
       ) : (
-        <View style={s.field}>{content}</View>
+        <View style={[s.field, focused && { borderColor: t.teal }]}>{content}</View>
       )}
     </View>
   );
@@ -81,25 +85,25 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 13,
-    gap: 13,
+    gap: 8,
     borderWidth: 1,
     borderColor: t.border,
     borderRadius: 12,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: t.white,
   },
   input: {
     flex: 1,
     minWidth: 0,
     fontFamily: t.fonts.regular,
     color: t.ink,
-    fontSize: 13,
+    fontSize: 15,
     paddingVertical: 12,
   },
   value: {
     flex: 1,
     fontFamily: t.fonts.regular,
     color: t.ink,
-    fontSize: 13,
+    fontSize: 15,
     paddingVertical: 12,
   },
   placeholder: { color: t.muted },

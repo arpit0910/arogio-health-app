@@ -1,5 +1,5 @@
 import type { BottomTabBarProps } from "expo-router/js-tabs";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TouchTarget } from "../components/ui/TouchTarget";
 import { AppIcon, type AppIconName } from "../components/app/AppIcon";
@@ -7,9 +7,9 @@ import { appTheme as t } from "../theme/appTheme";
 
 export const appTabs: { name: string; title: string; icon: AppIconName }[] = [
   { name: "home", title: "Home", icon: "home" },
-  { name: "explore", title: "Explore", icon: "explore" },
-  { name: "jeeva", title: "Jeeva AI", icon: "goal" },
   { name: "health", title: "Health", icon: "heart" },
+  { name: "jeeva", title: "Jeeva AI", icon: "goal" },
+  { name: "explore", title: "Explore", icon: "explore" },
   { name: "profile", title: "Profile", icon: "user" },
 ];
 export function AppNavigation({
@@ -17,10 +17,12 @@ export function AppNavigation({
   emitter,
   navigateToTab,
 }: BottomTabBarProps) {
-  const { bottom } = useSafeAreaInsets();
+  const { bottom, top } = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const expanded = width >= 768;
   return (
-    <View style={[s.container, { paddingBottom: Math.max(bottom, 10) }]}>
-      <View style={s.bar}>
+    <View style={[s.container, { paddingBottom: Math.max(bottom, 10) }, expanded && [s.rail, { paddingTop: top + 24 }]]}>
+      <View style={[s.bar, expanded && s.railBar]}>
         {appTabs.map((tab) => {
           const index = state.routes.findIndex(
             (route) => route.name === tab.name,
@@ -44,23 +46,18 @@ export function AppNavigation({
                 if (!selected && !event.defaultPrevented)
                   navigateToTab(route.key);
               }}
-              style={s.tab}
+              style={[s.tab, expanded && s.railTab]}
             >
-              {tab.name === "jeeva" ? (
-                <Image
-                  source={require("../../assets/home/jeeva.png")}
-                  style={s.jeeva}
-                />
-              ) : (
+              {tab.name === "jeeva" ? <Image source={require("../../assets/home/jeeva.png")} accessible={false} style={[s.jeeva, expanded && s.railJeeva, selected && s.activeJeeva]} /> : <View style={[s.icon, selected && s.activeIcon]}>
                 <AppIcon
                   name={tab.icon}
                   size={24}
-                  color={selected ? t.teal : "#7C85A4"}
+                  color={selected ? t.teal : t.muted}
                   filled={selected}
                 />
-              )}
+              </View>}
               <Text
-                style={[s.label, { color: selected ? "#007D77" : t.muted }]}
+                style={[s.label, { color: selected ? t.teal : t.muted }]}
               >
                 {tab.title}
               </Text>
@@ -73,9 +70,9 @@ export function AppNavigation({
 }
 const s = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: t.background,
     borderTopWidth: 1,
-    borderColor: "#F1F5F4",
+    borderColor: t.border,
   },
   bar: {
     flexDirection: "row",
@@ -91,7 +88,14 @@ const s = StyleSheet.create({
     gap: 5,
     minHeight: 51,
   },
-  label: { fontFamily: t.fonts.regular, fontSize: 10.5, lineHeight: 15 },
+  label: { fontFamily: t.fonts.medium, fontSize: 12, lineHeight: 18 },
+  icon: { width: 52, height: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 10 },
+  activeIcon: { backgroundColor: t.mint },
+  activeJeeva: { borderWidth: 2, borderColor: t.teal },
+  rail: { width: 96, height: '100%', borderTopWidth: 0, borderRightWidth: 1 },
+  railBar: { flexDirection: 'column', gap: 20, width: '100%', maxWidth: undefined, paddingTop: 0 },
+  railTab: { flex: 0, minHeight: 76, paddingHorizontal: 8, justifyContent: 'center' },
+  railJeeva: { width: 56, height: 56, borderRadius: 28, marginTop: 0, marginBottom: 0 },
   jeeva: {
     width: 61,
     height: 61,

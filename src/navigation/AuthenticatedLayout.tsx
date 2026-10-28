@@ -1,15 +1,16 @@
 import { Redirect, Tabs } from "expo-router";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, View, useWindowDimensions } from "react-native";
 import { useAuth } from "../features/auth/context/AuthContext";
 import { AppNavigation, appTabs } from "./AppNavigation";
 import type { ReactNode } from "react";
 
 export function AuthenticatedLayout() {
+  const { width } = useWindowDimensions();
   return (
     <AccountGuard>
       <Tabs
         tabBar={(props) => <AppNavigation {...props} />}
-        screenOptions={{ headerShown: false, animation: "none" }}
+        screenOptions={{ headerShown: false, animation: "none", tabBarPosition: width >= 768 ? 'left' : 'bottom' }}
       >
         {appTabs.map((tab) => (
           <Tabs.Screen
