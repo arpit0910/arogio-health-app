@@ -14,6 +14,9 @@ module.exports = function withLocalDebugKeystore(config) {
     }
     // Ninja on Windows can reject long generated JNI object paths. Ask CMake
     // to hash them earlier without changing machine-wide path/security settings.
+    if (process.platform === 'win32') {
+      mod.modResults.contents = mod.modResults.contents.replace(/CMAKE_OBJECT_PATH_MAX=160/g, 'CMAKE_OBJECT_PATH_MAX=240');
+    }
     if (process.platform === 'win32' && !mod.modResults.contents.includes('CMAKE_OBJECT_PATH_MAX')) {
       const defaultConfig = 'defaultConfig {';
       if (!mod.modResults.contents.includes(defaultConfig)) {
@@ -21,6 +24,9 @@ module.exports = function withLocalDebugKeystore(config) {
       }
       mod.modResults.contents = mod.modResults.contents.replace(defaultConfig,
         `${defaultConfig}\n        externalNativeBuild {\n            cmake {\n                arguments "-DCMAKE_OBJECT_PATH_MAX=240"\n            }\n        }`);
+    }
+    if (process.platform === 'win32' && !mod.modResults.contents.includes('buildStagingDirectory file("../../.c")')) {
+      mod.modResults.contents = mod.modResults.contents.replace('android {', 'android {\n    externalNativeBuild { cmake { buildStagingDirectory file("../../.c") } }');
     }
     return mod;
   });

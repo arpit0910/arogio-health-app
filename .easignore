@@ -67,3 +67,6 @@ coverage/
 client_secret*.json
 eslint.config.*
 
+
+# Local native compilation staging
+/.c/
