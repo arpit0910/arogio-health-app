@@ -2,6 +2,8 @@ import Svg, { Circle, Path, Rect } from "react-native-svg";
 import { appTheme as t } from "../../theme/appTheme";
 
 const paths = {
+  menu: 'M4 6h16M4 12h16M4 18h16',
+  close: 'm6 6 12 12M18 6 6 18',
   logout: 'M9 4H4v16h5M10 12h11m-4-4 4 4-4 4',
   pencil: 'm15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14Z',
   sync: 'M20 8a8 8 0 0 0-14-3L3 8m0-5v5h5M4 16a8 8 0 0 0 14 3l3-3m0 5v-5h-5',

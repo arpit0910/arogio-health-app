@@ -12,6 +12,7 @@ import { DMSans_400Regular } from '@expo-google-fonts/dm-sans/400Regular';
 import { queryClient } from '../lib/queryClient';
 import { AuthProvider } from '../features/auth/context/AuthContext';
 import { LaunchArtwork } from '../features/launch/LaunchSequence';
+import { SidebarProvider } from '../navigation/AppSidebar';
 import { WellnessProvider } from '../features/wellness/WellnessContext';
 
 export function AppProviders({ children }: PropsWithChildren) {
@@ -20,7 +21,7 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <SafeAreaProvider>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider><WellnessProvider>{fontsLoaded ? children : <LaunchArtwork />}</WellnessProvider></AuthProvider>
+      <AuthProvider><WellnessProvider>{fontsLoaded ? <SidebarProvider>{children}</SidebarProvider> : <LaunchArtwork />}</WellnessProvider></AuthProvider>
     </QueryClientProvider>
     </SafeAreaProvider>
   );
