@@ -2,6 +2,9 @@ import Svg, { Circle, Path, Rect } from "react-native-svg";
 import { appTheme as t } from "../../theme/appTheme";
 
 const paths = {
+  logout: 'M9 4H4v16h5M10 12h11m-4-4 4 4-4 4',
+  pencil: 'm15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14Z',
+  sync: 'M20 8a8 8 0 0 0-14-3L3 8m0-5v5h5M4 16a8 8 0 0 0 14 3l3-3m0 5v-5h-5',
   glass: 'M5 3h14l-2 18H7ZM6 10h12',
   bottle: 'M9 2h6v5l3 3v11H6V10l3-3ZM9 5h6M6 13h12',
   smile: 'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0ZM7 14c2 4 8 4 10 0M8 8h.01M16 8h.01',
@@ -58,15 +61,15 @@ export function AppIcon({
       importantForAccessibility="no"
     >
       {name === "explore" && (
-        <Circle cx={12} cy={12} r={10} stroke={color} strokeWidth={1.7} />
+        <Circle cx={12} cy={12} r={10} stroke={color} strokeWidth={1.7} fill={filled ? color : "none"} />
       )}
       <Path
         d={paths[name]}
-        stroke={color}
+        stroke={name === "explore" && filled ? t.white : color}
         strokeWidth={1.7}
         strokeLinecap="round"
         strokeLinejoin="round"
-        fill={filled && (name === "home" || name === "user" || name === "heart" || name === "explore") ? color : "none"}
+        fill={name === "explore" && filled ? t.white : filled && (name === "home" || name === "user" || name === "heart") ? color : "none"}
       />
       {name === "heart" && filled && <Path d="M7 12h3l1-2 2 5 1-3h3" stroke={t.white} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />}
       {name === "report" && (

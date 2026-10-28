@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Pressable, type PressableProps } from 'react-native';
+import { Pressable, StyleSheet, type PressableProps } from 'react-native';
 
 // Canvas transforms scale layout units; retain a physical 48dp minimum.
 export const TouchTargetScale = createContext(1);
@@ -10,5 +10,9 @@ export function useTouchTarget() {
 
 export function TouchTarget({ style, ...props }: PressableProps) {
   const { minimum } = useTouchTarget();
-  return <Pressable {...props} style={(state) => [typeof style === 'function' ? style(state) : style, { minHeight: minimum }]} />;
+  return <Pressable {...props} style={(state) => {
+    const resolved = typeof style === 'function' ? style(state) : style;
+    const requested = StyleSheet.flatten(resolved)?.minHeight;
+    return [resolved, { minHeight: Math.max(minimum, typeof requested === 'number' ? requested : 0) }];
+  }} />;
 }

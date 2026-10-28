@@ -7,7 +7,7 @@ export function AuthBrand() {
     <View style={styles.brand} accessibilityLabel="Arogio. Your Health Companion">
       <View style={styles.row}>
         <AuthIcon name="brand" />
-        <Text style={styles.wordmark}>Arogio</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={styles.wordmark}>Arogio</Text>
       </View>
       <Text style={styles.tagline}>Your Health Companion</Text>
     </View>
@@ -16,7 +16,7 @@ export function AuthBrand() {
 
 const styles = StyleSheet.create({
   brand: { alignItems: 'center' },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  wordmark: { fontFamily: fonts.bold, color: colors.ink, fontSize: 28, lineHeight: 42, letterSpacing: -0.7, includeFontPadding: false },
+  row: { maxWidth: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 12 },
+  wordmark: { flexShrink: 1, fontFamily: fonts.bold, color: colors.ink, fontSize: 28, lineHeight: 42, letterSpacing: 0, paddingRight: 6, includeFontPadding: true },
   tagline: { fontFamily: fonts.medium, fontSize: 11, lineHeight: 17, color: colors.muted, marginTop: 2, includeFontPadding: false },
 });

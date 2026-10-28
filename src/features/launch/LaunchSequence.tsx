@@ -10,7 +10,7 @@ import { colors, fonts } from '../../theme/tokens';
 export function LaunchArtwork() {
   return <View style={s.artwork} accessible accessibilityLabel="Arogio. Your Health Companion.">
     <SvgXml xml={authAssets.brand} width={112} height={101} />
-    <Text style={s.wordmark}>Arogio</Text>
+    <Text accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={s.wordmark}>Arogio</Text>
     <Text style={s.tagline}>Your Health Companion</Text>
   </View>;
 }
@@ -54,7 +54,7 @@ export function LaunchSequence({ children }: PropsWithChildren) {
 const s = StyleSheet.create({
   fill: { flex: 1, backgroundColor: colors.background },
   overlay: { backgroundColor: colors.background },
-  artwork: { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 8 },
-  wordmark: { textAlign: 'center', fontFamily: fonts.semibold, fontSize: 40, lineHeight: 54, color: colors.ink },
+  artwork: { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32, gap: 12 },
+  wordmark: { width: '100%', maxWidth: 320, paddingHorizontal: 12, paddingVertical: 4, textAlign: 'center', fontFamily: fonts.semibold, fontSize: 40, lineHeight: 60, letterSpacing: 0, color: colors.ink, includeFontPadding: true, flexShrink: 0 },
   tagline: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 23, color: colors.muted, textAlign: 'center' },
 });

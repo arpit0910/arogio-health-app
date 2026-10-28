@@ -38,3 +38,9 @@ Retain the debug registration. Do not change the Web client ID to an Android ID,
 The current exact on-device error and live Cloud registration are needed to confirm which path applies. No successful real Google authorization or Cloud change is claimed.
 
 Reference: [Google Sign-In library troubleshooting](https://react-native-google-signin.github.io/docs/troubleshooting).
+
+## Confirmed hosted audience mismatch
+
+The user subsequently supplied the hosted GOOGLE_CLIENT_IDS value: `987857172312-2lpo2lomjmfde8r0kr4k9doeqnkfeb17.apps.googleusercontent.com` (Android client). The app correctly uses the Web client `987857172312-fil8ani3esi0j9gsg095c6tg1utcbm2j.apps.googleusercontent.com` as its ID-token audience. Correct the hosting-panel variable to that Web client and restart the Node app. This correction does not require an APK rebuild. The panel's environment overrides environment files, so a correct local file alone does not change the live process.
+
+The user also confirmed the exact mobile message is Google authentication failed, consistent with the backend's previous catch-all verification response. Backend diagnostics now distinguish safe audience/expiry/clock/provider failure reasons; verification itself remains strict. 26 focused backend unit tests and six profile/auth HTTP journeys pass. The hosting environment change and successful real-account Google sign-in remain unverified from this workspace.

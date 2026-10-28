@@ -22,17 +22,16 @@ export function ProfilePreferences({ values, onChange, disabled = false }: {
       return <View key={preference.key} style={styles.preference}>
         <Checkbox checked={values[preference.key]} onChange={toggle} disabled={disabled}
           label={`${preference.title}. ${preference.subtitle}`}>
-          <Text style={styles.copy} onPress={disabled ? undefined : toggle}>
-            {preference.title}{'\n'}<Text style={styles.description}>{preference.subtitle}</Text>
-          </Text>
+          <Text style={styles.copy} onPress={disabled ? undefined : toggle}>{preference.title}</Text>
         </Checkbox>
+        <Text style={styles.description} onPress={disabled ? undefined : toggle}>{preference.subtitle}</Text>
       </View>;
     })}
   </>;
 }
 
 const styles = StyleSheet.create({
-  preference: { borderBottomWidth: 1, borderColor: colors.border, paddingVertical: 12 },
+  preference: { borderBottomWidth: 1, borderColor: colors.border, paddingTop: 4, paddingBottom: 16 },
   copy: { flex: 1, fontFamily: fonts.semibold, fontSize: 15, lineHeight: 23, color: colors.ink },
-  description: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 21, color: colors.muted },
+  description: { marginLeft: 28, fontFamily: fonts.regular, fontSize: 13, lineHeight: 21, color: colors.muted },
 });
