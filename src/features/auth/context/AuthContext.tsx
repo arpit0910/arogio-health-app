@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { tokenStore } from "../../../services/auth/tokenStore";
 import {
+  deleteCurrentAccount,
   applyReferralCode,
   getCurrentUserProfile,
   saveProfileSetup,
@@ -37,6 +38,7 @@ interface AuthContextType {
   register: (data: RegisterInput) => Promise<AuthResponse>;
   loginWithGoogle: (idToken: string, referralCode?: string) => Promise<AuthResponse>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
   refreshTokens: () => Promise<void>;
   reloadProfile: () => Promise<void>;
   updateProfile: (data: UpdateProfileInput) => Promise<SafeUser>;
@@ -295,6 +297,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const deleteAccount = useCallback(async () => {
+    if (authRequestRef.current || externalSignInRef.current) throw new Error('Another account request is in progress.');
+    authRequestRef.current = true; setIsSubmitting(true);
+    try {
+      await deleteCurrentAccount();
+      // The server has revoked this session. Clear UI even if local storage fails.
+      try { await tokenStore.clear(); } finally { setUser(null); setError(null); }
+    } finally { authRequestRef.current = false; setIsSubmitting(false); }
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
@@ -306,6 +318,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       register,
       loginWithGoogle,
       logout,
+      deleteAccount,
       refreshTokens,
       reloadProfile,
       updateProfile,
@@ -327,6 +340,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       register,
       loginWithGoogle,
       logout,
+      deleteAccount,
       refreshTokens,
       reloadProfile,
       updateProfile,

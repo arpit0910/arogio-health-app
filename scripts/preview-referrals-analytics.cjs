@@ -20,6 +20,7 @@ const React = require('react');
 const ReactDOM = require('react-dom/server');
 
 
+Module._extensions['.png'] = (module, file) => { module.exports = { uri: 'data:image/png;base64,' + fs.readFileSync(file).toString('base64') }; };
 const { AppRegistry, Dimensions, View, Text } = require('react-native-web');
 const { SafeAreaProvider } = require('react-native-safe-area-context');
 const width = Number(process.argv[2] || 390), mode = process.argv[3] || 'analytics', height = 1800, theme = process.argv[4] || 'light';
@@ -37,15 +38,21 @@ const load = Module._load;
 Module._load = function(request, parent, ...rest) {
   if (request.endsWith('/WellnessContext') || request === './WellnessContext') return { useWellness: () => wellness };
   if (request.endsWith('/HealthSyncProvider')) return { useHealthSync: () => health };
-  if (request.endsWith('/AuthContext')) return { useAuth: () => ({ user: { id: 'fixture', email: 'preview@example.test', referralCode: 'A1B2C3D4E5F6', profileCompletedAt: '2026-10-29T00:00:00Z' }, reloadProfile: async () => {} }) };
-  if (request.endsWith('/AppearanceProvider')) { const actual = load.call(this, request, parent, ...rest); const colors = theme === 'dark' ? actual.darkColors : require('../src/theme/tokens.ts').colors; return { ...actual, usePalette: () => colors, useAppearance: () => ({ colors, scheme: theme }) }; }
+  if (request.endsWith('/InboxProvider')) return { useInbox: () => ({ items: [], loading: false, error: '', markRead: async () => {} }) };
+  if (request.endsWith('/AuthContext')) return { useAuth: () => ({ user: { id: 'fixture', fullName: 'Aarav Sharma', weightValue: 68, weightUnit: 'kg', heightValue: 174, heightUnit: 'cm', bmi: 22.5, profileSetup: { location: 'Bengaluru', healthGoals: ['fitness'] }, email: 'preview@example.test', referralCode: 'A1B2C3D4E5F6', profileCompletedAt: '2026-10-29T00:00:00Z' }, reloadProfile: async () => {} }) };
+  if (request.endsWith('/AppearanceProvider')) { const actual = load.call(this, request, parent, ...rest); const colors = theme === 'dark' ? actual.darkColors : require('../src/theme/tokens.ts').colors; return { ...actual, useAppTheme: () => ({ onPrimary: colors.onPrimary, ink: colors.ink, muted: colors.muted, teal: colors.primary, border: colors.border, background: colors.background, mint: colors.subtle, white: colors.surface, accent: colors.accent, fonts: require('../src/theme/tokens.ts').fonts, shadow: {} }), usePalette: () => colors, useAppearance: () => ({ colors, scheme: theme }) }; }
   if (request.endsWith('/PhoneStepsProvider') || request === './PhoneStepsProvider') return { usePhoneSteps: () => ({ enabled: false, totals: {}, status: 'Phone step counting is off.', busy: false, ready: true, toggle: async () => {}, clear: async () => {} }) };
+  if (request === 'expo-blur') return { BlurTargetView: View, BlurView: View }; // Native effect is verified separately.
   if (request === 'expo-secure-store') return { getItemAsync: async () => null, setItemAsync: async () => {} };
   if (request === 'expo-crypto') return { randomUUID: () => 'example-only' };
-  if (request === 'expo-router') return { router: { push() {}, navigate() {}, replace() {}, canGoBack: () => true }, usePathname: () => '/settings' };
+  if (request === 'expo-router') return { router: { push() {}, navigate() {}, replace() {}, canGoBack: () => true }, useLocalSearchParams: () => ({}), usePathname: () => '/settings' };
   return load.call(this, request, parent, ...rest);
 };
 const screens = {
+  profile: () => require('../src/features/profile/components/AccountProfileScreen.tsx').AccountProfileScreen,
+  home: () => require('../src/features/home/HomeScreen.tsx').HomeScreen,
+  inbox: () => require('../src/features/notifications/NotificationsScreen.tsx').NotificationsScreen,
+  deletion: () => require('../src/features/profile/components/DeleteAccountScreen.tsx').DeleteAccountScreen,
   journal: () => require('../src/features/wellness/HealthScreen.tsx').HealthScreen,
   standalone: () => require('../src/features/health-sync/StandaloneHealthScreen.tsx').StandaloneHealthScreen,
   header: () => function HeaderFixture() { return React.createElement(require('../src/components/app/AppHeader.tsx').AppHeader, { title: 'Daily activity & targets', back: true }); },
@@ -71,5 +78,6 @@ const { element, getStyleElement } = AppRegistry.getApplication('DailyCareQA');
 const out = path.join(root, '.impeccable/review/referrals-analytics');
 fs.mkdirSync(out, { recursive: true });
 const fonts = ['400Regular', '500Medium', '600SemiBold'].map((font) => `@font-face{font-family:Inter_${font};src:url(data:font/ttf;base64,${fs.readFileSync(path.join(root, `node_modules/@expo-google-fonts/inter/${font}/Inter_${font}.ttf`)).toString('base64')})}`).join('');
-fs.writeFileSync(path.join(out, `${mode}-${theme}-${width}.html`), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+ReactDOM.renderToStaticMarkup(getStyleElement())+`<style>${fonts}body{margin:0;background:${theme === 'dark' ? '#121C17' : '#FFFDFA'}}</style></head><body>`+ReactDOM.renderToStaticMarkup(element)+'</body></html>');
+const markup = ReactDOM.renderToStaticMarkup(element);
+fs.writeFileSync(path.join(out, `${mode}-${theme}-${width}.html`), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+ReactDOM.renderToStaticMarkup(getStyleElement())+`<style>${fonts}body{margin:0;background:${theme === 'dark' ? '#121C17' : '#FFFDFA'}}</style></head><body>`+markup+'</body></html>');
 console.log(`Composition preview: ${mode}, width ${width}. Synthetic records; native behavior is not exercised.`);

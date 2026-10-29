@@ -7,12 +7,13 @@ import {
   useRef,
   useState,
   type PropsWithChildren,
+  type ComponentRef,
 } from 'react';
 import {
   AccessibilityInfo,
   ActivityIndicator,
   Animated,
-  Modal,
+  BackHandler,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -20,6 +21,7 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native';
+import { BlurTargetView, BlurView } from 'expo-blur';
 import { router, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../features/auth/context/AuthContext';
@@ -90,6 +92,7 @@ function SidebarSession({ children }: PropsWithChildren) {
     [reduceMotion, setReduceMotion] = useState(true),
     [error, setError] = useState('');
   const [position] = useState(() => new Animated.Value(-panelWidth));
+  const blurTarget = useRef<ComponentRef<typeof View> | null>(null);
   const closeLock = useRef(false),
     logoutLock = useRef(false);
   useEffect(() => {
@@ -126,6 +129,13 @@ function SidebarSession({ children }: PropsWithChildren) {
     animation.start();
     return () => animation.stop();
   }, [open, position, reduceMotion, panelWidth]);
+  useEffect(() => {
+    if (!open) return;
+    const back = BackHandler.addEventListener('hardwareBackPress', () => {
+      closeSidebar(); return true;
+    });
+    return () => back.remove();
+  });
   function closeSidebar(after?: () => void) {
     if (closeLock.current || logoutLock.current) return;
     closeLock.current = true;
@@ -155,17 +165,10 @@ function SidebarSession({ children }: PropsWithChildren) {
   }
   return (
     <SidebarContext.Provider value={{ openSidebar, isOpen: open }}>
-      {children}
-      <Modal
-        hardwareAccelerated
-        transparent
-        visible={open && Boolean(user)}
-        animationType="none"
-        onRequestClose={() => closeSidebar()}
-        statusBarTranslucent
-        navigationBarTranslucent
-      >
-        <View style={s.overlay}>
+      <View style={{ flex: 1 }}>
+      <BlurTargetView ref={blurTarget} style={{ flex: 1 }} pointerEvents={open ? 'none' : 'auto'} accessibilityElementsHidden={open} importantForAccessibility={open ? 'no-hide-descendants' : 'auto'}>{children}</BlurTargetView>
+      {open && Boolean(user) && <View style={s.overlay} accessibilityViewIsModal>
+          <BlurView blurTarget={blurTarget} intensity={45} blurMethod="dimezisBlurView" tint="dark" style={StyleSheet.absoluteFill} pointerEvents="none" />
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Close navigation menu"
@@ -280,8 +283,8 @@ function SidebarSession({ children }: PropsWithChildren) {
               </TouchTarget>
             </View>
           </Animated.View>
-        </View>
-      </Modal>
+        </View>}
+      </View>
     </SidebarContext.Provider>
   );
 }
@@ -305,7 +308,7 @@ export function SidebarButton() {
 const useStyles = () => {
   const colors = usePalette();
 return StyleSheet.create({
-  overlay: { flex: 1 },
+  overlay: { ...StyleSheet.absoluteFill, zIndex: 100 },
   backdrop: {
     ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(15, 30, 24, 0.36)',

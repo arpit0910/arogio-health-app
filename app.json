@@ -133,6 +133,12 @@
         {
           "enforceContrast": false
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Arogio to find your city during account setup. Only your city is saved."
+        }
       ]
     ],
     "extra": {

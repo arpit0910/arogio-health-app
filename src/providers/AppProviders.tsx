@@ -1,3 +1,4 @@
+import { InboxProvider } from '../features/notifications/InboxProvider';
 import { AppearanceProvider } from '../theme/AppearanceProvider';
 import { PhoneStepsProvider } from '../features/activity/PhoneStepsProvider';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -24,7 +25,7 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <AppearanceProvider><SafeAreaProvider>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider><HealthSyncProvider><WellnessProvider><PhoneStepsProvider>{fontsLoaded ? <SidebarProvider>{children}</SidebarProvider> : <LaunchArtwork />}</PhoneStepsProvider></WellnessProvider></HealthSyncProvider></AuthProvider>
+      <AuthProvider><InboxProvider><HealthSyncProvider><WellnessProvider><PhoneStepsProvider>{fontsLoaded ? <SidebarProvider>{children}</SidebarProvider> : <LaunchArtwork />}</PhoneStepsProvider></WellnessProvider></HealthSyncProvider></InboxProvider></AuthProvider>
     </QueryClientProvider>
     </SafeAreaProvider></AppearanceProvider>
   );

@@ -2,7 +2,7 @@ import { PhoneTrackingControl } from "./PhoneTrackingControl";
 import { usePalette } from "../../theme/AppearanceProvider";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { AppScreen } from "../../components/app/AppScreen";
 import { AppIcon, type AppIconName } from "../../components/app/AppIcon";
 import {
@@ -54,7 +54,8 @@ export function ActivityScreen() {
     today = localDay(now);
   const tracking = data.activityTracking ?? emptyActivity();
   const [day, setDay] = useState(today);
-  const [preferredMode, setMode] = useState<"manual" | "connected">("manual");
+  const params = useLocalSearchParams<{ source?: string }>();
+  const [preferredMode, setMode] = useState<"manual" | "connected">(() => params.source === "manual" ? "manual" : params.source === "connected" || health.connected ? "connected" : "manual");
   const mode =
     preferredMode === "connected" && health.connected ? "connected" : "manual";
   const [entryMetric, setEntryMetric] = useState<ActivityMetric | null>(null);

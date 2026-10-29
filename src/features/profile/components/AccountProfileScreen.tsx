@@ -1,83 +1,66 @@
 import { ReferralPanel } from '../../referrals/ReferralPanel';
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { useRef, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../auth/context/AuthContext';
 import { AppScreen } from '../../../components/app/AppScreen';
 import { Avatar } from '../../../components/app/Avatar';
 import { AppIcon } from '../../../components/app/AppIcon';
-import { CareRow, useCareStyles } from '../../../components/app/CareUI';
+import { CareDisclosure, CareRow, useCareStyles } from '../../../components/app/CareUI';
 import { TouchTarget } from '../../../components/ui/TouchTarget';
+import { Button } from '../../../components/ui/Button';
 import { fonts } from '../../../theme/tokens';
-import { ageLabel, formatBirthday, genderLabel, profileDraft, profileName, profilePhoto } from '../profileViewModel';
-import { activities } from '../model';
+import { formatBirthday, genderLabel, profileDraft, profileName, profilePhoto } from '../profileViewModel';
 import { accountGoals } from '../profileOptions';
-
 export function AccountProfileScreen() {
-  const c = useCareStyles();
-  const colors = usePalette();
-  const s = useStyles();
-
+  const c = useCareStyles(), colors = usePalette(), s = useStyles();
   const { user, logout, isSubmitting } = useAuth();
-  const [logoutError, setLogoutError] = useState<string | null>(null);
-  const logoutLock = useRef(false);
-  async function handleLogout() {
-    if (isSubmitting || logoutLock.current) return;
-    logoutLock.current = true;
-    setLogoutError(null);
-    try { await logout(); }
-    catch { setLogoutError('Unable to log out. Please try again.'); }
-    finally { logoutLock.current = false; }
+  const [error, setError] = useState(''), lock = useRef(false);
+  async function signOut() {
+    if (lock.current || isSubmitting) return;
+    lock.current = true; setError('');
+    try { await logout(); } catch { setError('Unable to log out. Please try again.'); } finally { lock.current = false; }
   }
   if (!user) return null;
   const draft = profileDraft(user);
   const goals = accountGoals.filter(goal => draft.healthGoals.includes(goal.value));
+  const measurements = [
+    { label: 'Weight', value: user.weightValue ? `${user.weightValue}` : '—', unit: user.weightValue ? user.weightUnit === 'lb' ? 'lb' : 'kg' : '' },
+    { label: 'Height', value: user.heightValue ? `${user.heightValue}` : '—', unit: user.heightValue ? user.heightUnit === 'in' ? 'in' : 'cm' : '' },
+    { label: 'BMI', value: user.bmi?.toFixed(1) ?? '—', unit: '' },
+  ];
   return <AppScreen>
-    <View style={s.header}><Text accessibilityRole="header" style={c.heading}>Your profile</Text><TouchTarget accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push('/settings')} style={s.settings}><AppIcon name="settings" /></TouchTarget></View>
-    <View style={s.identity}><Avatar photo={profilePhoto(user)} size={72} /><View style={s.flex}><View style={s.nameRow}><Text style={s.name}>{profileName(user)}</Text><TouchTarget accessibilityRole="button" accessibilityLabel="Edit profile" onPress={() => router.push('/edit-profile')} style={s.edit}><AppIcon name="pencil" size={22} /></TouchTarget></View><Text style={c.text}>{[ageLabel(draft.dateOfBirth), draft.gender ? genderLabel(draft.gender) : ''].filter(Boolean).join(' · ') || 'Your personal health companion'}</Text></View></View>
-    <View style={c.section}><Text accessibilityRole="header" style={c.title}>Personal details</Text><View style={s.details}>
-      <Detail label="Date of birth" value={formatBirthday(draft.dateOfBirth)} /><Detail label="Gender" value={genderLabel(draft.gender)} /><Detail label="Location" value={draft.location || 'Not added'} />
-    </View></View>
-    <View style={c.section}><Text accessibilityRole="header" style={c.title}>Body details</Text><View style={s.details}>
-      <Detail label="Weight" value={user.weightValue ? `${user.weightValue} ${user.weightUnit === 'lb' ? 'lbs' : 'kg'}` : 'Not added'} />
-      <Detail label="Height" value={user.heightValue ? `${user.heightValue} ${user.heightUnit === 'in' ? 'in' : 'cm'}` : 'Not added'} />
-      <Detail label="BMI" value={user.bmi?.toFixed(1) ?? 'Not available'} />
-    </View></View>
-    <View style={c.section}><Text accessibilityRole="header" style={c.title}>Your priorities</Text><Text style={[c.text, { marginTop: 10 }]}>{goals.map(goal => goal.title).join(' · ') || 'No goals added'}</Text><Text style={[c.text, { marginTop: 6 }]}>{activities.find(activity => activity.value === draft.activityLevel)?.title || 'Activity level not added'}</Text></View>
-    <View style={[c.section, c.line]}><CareRow icon="goal" title="Goals & preferences" detail="Wellness goals, activity and updates" onPress={() => router.push('/edit-health-goals')} /></View>
-    <ReferralPanel />
-    <View style={s.accountAction}>
-      <TouchTarget accessibilityRole="button" accessibilityLabel="Log out" accessibilityState={{ disabled: isSubmitting, busy: isSubmitting }} disabled={isSubmitting} onPress={() => void handleLogout()} style={({ pressed }) => [s.logout, pressed && s.logoutPressed, isSubmitting && { opacity: 0.6 }]}>
-        {isSubmitting ? <ActivityIndicator color={colors.primary} /> : <AppIcon name="logout" size={22} />}
-        <Text style={s.logoutText}>{isSubmitting ? 'Logging out...' : 'Log out'}</Text>
-      </TouchTarget>
-      {logoutError && <Text accessibilityRole="alert" style={s.logoutError}>{logoutError}</Text>}
+    <View style={s.identity}>
+      <Avatar photo={profilePhoto(user)} size={88} />
+      <Text accessibilityRole="header" style={[c.heading, s.center]}>{profileName(user)}</Text>
+      {!!user.email && <Text selectable style={[c.text, s.center]}>{user.email}</Text>}
+      {!!draft.location && <View style={s.city}><AppIcon name="location" size={16} /><Text style={c.text}>{draft.location}</Text></View>}
+      <View style={{ width: '100%', maxWidth: 220, marginTop: 10 }}><Button title="Edit profile" variant="secondary" leading={<AppIcon name="pencil" size={18} />} onPress={() => router.push('/edit-profile')} /></View>
     </View>
+    <View style={s.measurements}>{measurements.map(item => <View key={item.label} accessible accessibilityLabel={`${item.label}, ${item.value}${item.unit ? ` ${item.unit}` : ''}`} style={s.measurement}><Text style={c.text}>{item.label}</Text><Text style={s.measureValue}>{item.value}<Text style={s.unit}>{item.unit ? ` ${item.unit}` : ''}</Text></Text></View>)}</View>
+    <View style={s.group}><Text accessibilityRole="header" style={c.title}>Made for you</Text><CareRow icon="goal" title="Goals & preferences" detail={goals.map(goal => goal.title).join(' \u00b7 ') || 'Set your wellness priorities'} onPress={() => router.push('/edit-health-goals')} /><CareDisclosure title="Personal details"><Detail label="Date of birth" value={formatBirthday(draft.dateOfBirth)} /><Detail label="Gender" value={genderLabel(draft.gender)} /><Detail label="City" value={draft.location || 'Not added'} /></CareDisclosure></View>
+    <View style={s.group}><Text accessibilityRole="header" style={c.title}>Your account</Text><CareRow icon="settings" title="Settings" detail="Appearance and notifications" onPress={() => router.push('/settings')} /><View style={c.line}><CareRow icon="sync" title="Connected health" detail="Apps, permissions and last sync" onPress={() => router.push('/connected-health')} /></View></View>
+    <ReferralPanel />
+    <View style={s.footer}><Button title="Log out" variant="secondary" loading={isSubmitting} onPress={() => void signOut()} />{!!error && <Text accessibilityRole="alert" style={[c.text, { color: colors.error }]}>{error}</Text>}<TouchTarget accessibilityRole="button" onPress={() => router.push('/delete-account')} style={s.delete}><Text style={[c.text, { color: colors.error }]}>Delete account</Text></TouchTarget></View>
   </AppScreen>;
 }
 function Detail({ label, value }: { label: string; value: string }) {
-  const s = useStyles();
-
-  return <View style={s.detail}><Text style={s.label}>{label}</Text><Text style={s.value}>{value}</Text></View>;
+  const c = useCareStyles();
+  return <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12, paddingVertical: 10 }}><Text style={c.text}>{label}</Text><Text style={c.text}>{value}</Text></View>;
 }
 const useStyles = () => {
   const colors = usePalette();
-return StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  settings: { width: 48, alignItems: 'flex-end', justifyContent: 'center' },
-  identity: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 28 }, flex: { flex: 1, minWidth: 0 },
-  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
-  name: { flex: 1, fontFamily: fonts.semibold, fontSize: 22, lineHeight: 29, color: colors.ink },
-  edit: { width: 48, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
-  accountAction: { marginTop: 24, borderTopWidth: 1, borderColor: colors.border, paddingTop: 8, paddingBottom: 12 },
-  logout: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, paddingVertical: 16, borderRadius: 12 },
-  logoutPressed: { backgroundColor: colors.subtle },
-  logoutText: { fontFamily: fonts.semibold, fontSize: 16, lineHeight: 24, color: colors.ink },
-  logoutError: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 22, color: colors.error, marginTop: 8 },
-  details: { marginTop: 12, backgroundColor: colors.surface, paddingHorizontal: 16, borderRadius: 12 },
-  detail: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, paddingVertical: 15, borderBottomWidth: 1, borderColor: colors.border },
-  label: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 22, color: colors.muted },
-  value: { flexShrink: 1, fontFamily: fonts.medium, fontSize: 15, lineHeight: 22, color: colors.ink },
-});
+  return StyleSheet.create({
+    identity: { alignItems: 'center', paddingTop: 16, paddingBottom: 28, gap: 8 },
+    center: { textAlign: 'center', maxWidth: '100%' },
+    city: { flexDirection: 'row', alignItems: 'center', gap: 5, maxWidth: '100%', flexWrap: 'wrap', justifyContent: 'center' },
+    measurements: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, paddingVertical: 24, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.border },
+    measurement: { flex: 1, minWidth: 72, gap: 6, alignItems: 'center' },
+    measureValue: { fontFamily: fonts.semibold, fontSize: 23, lineHeight: 31, color: colors.ink, fontVariant: ['tabular-nums'] },
+    unit: { fontFamily: fonts.regular, fontSize: 13, color: colors.muted },
+    group: { marginTop: 32 },
+    footer: { marginTop: 32, paddingTop: 24, borderTopWidth: 1, borderColor: colors.border, gap: 12 },
+    delete: { alignItems: 'center', paddingVertical: 14 },
+  });
 };

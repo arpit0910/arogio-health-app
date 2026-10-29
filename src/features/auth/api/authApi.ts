@@ -140,3 +140,7 @@ export async function saveProfileSetup(
 export async function applyReferralCode(referralCode: string): Promise<SafeUser> {
   return safeUserSchema.parse(await apiClient.request<unknown>({ path: '/profile/referral', method: 'POST', body: { referralCode } }));
 }
+
+export async function deleteCurrentAccount(): Promise<void> {
+  await apiClient.request({ path: '/profile', method: 'DELETE', body: { confirm: true } });
+}

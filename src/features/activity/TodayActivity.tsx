@@ -1,3 +1,4 @@
+import { useHealthSync } from "../health-sync/HealthSyncProvider";
 import { Text, View } from "react-native";
 import { router } from "expo-router";
 import { AppIcon } from "../../components/app/AppIcon";
@@ -18,8 +19,10 @@ export function TodayActivity() {
     phone = usePhoneSteps();
   const day = localDay(useTrackingClock()),
     tracking = data.activityTracking ?? emptyActivity();
-  const mode = "manual" as const;
-  const steps = activityReading("Steps", day, mode, tracking, null, phone);
+  const health = useHealthSync();
+  const mode = health.connected ? "connected" : "manual";
+  const openActivity = () => router.push({ pathname: "/activity", params: { source: mode } });
+  const steps = activityReading("Steps", day, mode, tracking, health.snapshot, phone);
   const rows = [
     { key: "Steps", title: "Steps", unit: "steps", icon: "trend" },
     { key: "ExerciseSession", title: "Movement", unit: "min", icon: "clock" },
@@ -37,7 +40,7 @@ export function TodayActivity() {
       <TouchTarget
         accessibilityRole="button"
         accessibilityLabel="Open daily activity"
-        onPress={() => router.push("/activity")}
+        onPress={openActivity}
         style={{
           flexDirection: "row",
           alignItems: "center",
@@ -55,7 +58,7 @@ export function TodayActivity() {
           const reading =
             row.key === "Steps"
               ? steps
-              : activityReading(row.key, day, mode, tracking, null, phone);
+              : activityReading(row.key, day, mode, tracking, health.snapshot, phone);
           const usesPhone =
             mode === "manual" && row.key === "Steps" && phone.enabled;
           const unavailable =
@@ -65,7 +68,7 @@ export function TodayActivity() {
               key={row.key}
               accessibilityRole="button"
               accessibilityLabel={`${row.title}, ${unavailable ? "unavailable" : formatHealthValue(row.key, reading.value)}. Open activity`}
-              onPress={() => router.push("/activity")}
+              onPress={openActivity}
               style={({ pressed }) => ({
                 flexDirection: "row",
                 alignItems: "center",
@@ -93,7 +96,7 @@ export function TodayActivity() {
                 {unavailable
                   ? "—"
                   : reading.value == null
-                    ? "Not logged"
+                    ? mode === "connected" ? "Not shared" : "Not logged"
                     : formatHealthValue(row.key, reading.value)}
                 {!unavailable && reading.value != null && row.unit ? (
                   <Text style={c.text}> {row.unit}</Text>
@@ -104,7 +107,7 @@ export function TodayActivity() {
         })}
       </View>
       <Text style={[c.text, { fontSize: 12, marginTop: 8 }]}>
-        {phone.enabled
+        {mode === "connected" ? `From ${health.source?.name ?? "your connected app"} - View trends` : phone.enabled
           ? "Steps counted on this phone. Other totals entered by you"
           : "Your Arogio journal. Enter totals or enable phone steps"}
       </Text>

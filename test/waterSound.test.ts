@@ -23,6 +23,7 @@ function harness(platform = 'android') {
   };
   const dependencies: Record<string, unknown> = {
     'expo-notifications': notifications,
+    '../notifications/storage': { replacePending: async () => {} },
     'expo-constants': { __esModule: true, default: { expoConfig: { android: { package: 'com.arogio.health' } } } },
     'react-native': { Platform: { OS: platform }, Linking: { sendIntent: async (action: string, extras: { key: string; value: string }[]) => { intents.push({ action, extras }); }, openSettings: async () => {} } },
   };

@@ -20,20 +20,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
-import { useHealthSync } from '../health-sync/HealthSyncProvider';
-import { HealthChart } from '../health-sync/HealthCharts';
 import { useAuth } from '../auth/context/AuthContext';
 import { useWellness } from '../wellness/WellnessContext';
 import { localDay } from '../wellness/domain';
 import { homeUpcoming, homeWater } from './homeModel';
-import { SidebarButton } from '../../navigation/AppSidebar';
-import { Avatar } from '../../components/app/Avatar';
+import { AppHeader } from '../../components/app/AppHeader';
 import { AppIcon, type AppIconName } from '../../components/app/AppIcon';
-import { CareBrand } from '../../components/app/CareUI';
 import { Button } from '../../components/ui/Button';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { fonts } from '../../theme/tokens';
-import { profilePhoto } from '../profile/profileViewModel';
 
 const shortcuts: {
   title: string;
@@ -50,7 +45,6 @@ export function HomeScreen() {
   const s = useStyles();
 
   const { user } = useAuth();
-  const health = useHealthSync();
   const { data, loading, busy, error, refresh, save } = useWellness();
   const { fontScale, width } = useWindowDimensions();
   const expanded = width >= 768;
@@ -128,20 +122,7 @@ export function HomeScreen() {
   }
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={s.screen}>
-      <View style={[s.appBar, expanded && s.expandedContent]}>
-        <SidebarButton />
-        <View style={s.brand}>
-          <CareBrand />
-        </View>
-        <TouchTarget
-          accessibilityRole="button"
-          accessibilityLabel="Open your profile"
-          onPress={() => router.navigate('/profile')}
-          style={s.avatar}
-        >
-          <Avatar photo={profilePhoto(user)} size={36} />
-        </TouchTarget>
-      </View>
+      <AppHeader />
       <ScrollView
         contentContainerStyle={s.scroll}
         showsVerticalScrollIndicator={false}
@@ -356,13 +337,7 @@ export function HomeScreen() {
                   </TouchTarget>
                 </View>
               )}
-              {health.snapshot?.granted.includes('Steps') && (
-                <View style={{ gap: 12, marginTop: 28 }}>
-                  <Text style={s.rowTitle}>Steps &middot; Last 7 days</Text>
-                  <Text style={s.caption}>{health.source?.name}</Text>
-                  <HealthChart snapshot={health.snapshot} metric="Steps" />
-                </View>
-              )}
+
             </View>
             <View style={expanded ? s.secondaryColumn : undefined}>
               <View style={s.sectionHeader}>

@@ -1,3 +1,4 @@
+import { CityField } from './CityField';
 import { NotificationPermissionStep } from "../../onboarding/NotificationPermissionStep";
 import { normalizeInviteCode } from "../../referrals/model";
 import { referralCodeSchema } from "../../auth/types";
@@ -53,6 +54,7 @@ export function ProfileSetupScreen() {
   const [notificationBusy, setNotificationBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
+  const [locationAsked, setLocationAsked] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pickingBirthday, setPickingBirthday] = useState(false);
   const set = <K extends keyof SetupDraft>(key: K, value: SetupDraft[K]) => {
@@ -101,6 +103,7 @@ export function ProfileSetupScreen() {
       setNotificationStage(true);
       return;
     }
+    if (step === 1) setLocationAsked(true);
     Keyboard.dismiss();
     setError(null);
     busyRef.current = true;
@@ -298,6 +301,7 @@ export function ProfileSetupScreen() {
                       />
                     </View>
                   </View>
+                  <CityField value={draft.location} onChange={value => set('location', value)} disabled={busy} autoDetect={!locationAsked} />
                   <Text style={c.text}>
                     Only the essentials for now. Add other personal details
                     later in your profile.
