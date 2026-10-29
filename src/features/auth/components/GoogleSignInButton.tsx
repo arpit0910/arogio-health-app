@@ -11,7 +11,7 @@ import { GoogleIcon } from './GoogleIcon';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export function GoogleSignInButton({ disabled }: { disabled?: boolean }) {
+export function GoogleSignInButton({ disabled, referralCode }: { disabled?: boolean; referralCode?: string }) {
   const [configurationError, setConfigurationError] = useState(false);
   // Android and iOS use GoogleSignInButton.native.tsx via Metro resolution.
   const clientId = env.googleClientId;
@@ -20,10 +20,10 @@ export function GoogleSignInButton({ disabled }: { disabled?: boolean }) {
       onPress={() => setConfigurationError(true)} />
     <FormError message={configurationError ? 'Google sign-in is not available on this device yet. Please sign in with email.' : null} />
   </View>;
-  return <ConfiguredGoogleSignInButton disabled={disabled} clientId={clientId} />;
+  return <ConfiguredGoogleSignInButton disabled={disabled} clientId={clientId} referralCode={referralCode} />;
 }
 
-function ConfiguredGoogleSignInButton({ disabled, clientId }: { disabled?: boolean; clientId: string }) {
+function ConfiguredGoogleSignInButton({ disabled, clientId, referralCode }: { disabled?: boolean; clientId: string; referralCode?: string }) {
   const { loginWithGoogle, isSubmitting, beginExternalSignIn, endExternalSignIn } = useAuth();
   const mounted = useRef(true);
   const ownsOperation = useRef(false);
@@ -59,7 +59,7 @@ function ConfiguredGoogleSignInButton({ disabled, clientId }: { disabled?: boole
         }
         if (!mounted.current) return;
         if (!idToken) throw new Error('Google did not return a sign-in token. Please try again.');
-        await loginWithGoogle(idToken);
+        await loginWithGoogle(idToken, referralCode);
       } else if (result.type === 'error') {
         setError('Google sign-in could not complete. Please try again or use your email.');
       }

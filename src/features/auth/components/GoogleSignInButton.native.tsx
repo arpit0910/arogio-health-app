@@ -9,7 +9,7 @@ import { FormError } from './AuthPrimitives';
 import { GoogleIcon } from './GoogleIcon';
 
 /** Metro selects this implementation for Android/iOS, keeping native code off web. */
-export function GoogleSignInButton({ disabled }: { disabled?: boolean }) {
+export function GoogleSignInButton({ disabled, referralCode }: { disabled?: boolean; referralCode?: string }) {
   const { loginWithGoogle, isSubmitting, beginExternalSignIn, endExternalSignIn } = useAuth();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +61,7 @@ export function GoogleSignInButton({ disabled }: { disabled?: boolean }) {
         throw nativeError;
       }
       if (!mounted.current || !idToken) return;
-      await loginWithGoogle(idToken);
+      await loginWithGoogle(idToken, referralCode);
     } catch (signInError) {
       if (mounted.current) setError(signInError instanceof Error ? signInError.message : 'Unable to sign in with Google. Please try again.');
     } finally {

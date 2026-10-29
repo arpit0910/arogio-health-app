@@ -1,11 +1,13 @@
+import { ProfileInput } from '../../profile/components/ProfileInput';
+import { normalizeInviteCode } from '../../referrals/model';
 import { TouchTarget } from '../../../components/ui/TouchTarget';
 import { useScreenLayout } from '../../../components/ui/useScreenLayout';
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Button } from '../../../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
-import { registerSchema } from '../types';
+import { registerSchema, referralCodeSchema } from '../types';
 import { AuthField, type AuthFieldRef } from './AuthField';
 import { AuthIcon } from './AuthIcon';
 import { AuthHeading, Checkbox, FormError, SocialDivider, useAuthStyles } from './AuthPrimitives';
@@ -17,6 +19,8 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
 
   const { compact } = useScreenLayout();
   const { register, isSubmitting, error, clearError } = useAuth();
+  const params = useLocalSearchParams<{ ref?: string | string[] }>();
+  const [referralCode, setReferralCode] = useState(() => normalizeInviteCode(params.ref));
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +33,7 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
   const handleSubmit = async () => {
     if (isSubmitting) return;
     clearError();
-    const parsed = registerSchema.safeParse({ fullName: fullName.trim(), email: email.trim(), password });
+    const parsed = registerSchema.safeParse({ fullName: fullName.trim(), email: email.trim(), password, ...(referralCode.trim() ? { referralCode } : {}) });
     if (!fullName.trim()) { setValidationError('Please enter your full name.'); return; }
     if (!parsed.success) { setValidationError(parsed.error.issues[0].message); return; }
     if (password !== confirmation) { setValidationError('Your passwords do not match. Please check them.'); return; }
@@ -53,6 +57,7 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
         editable={!isSubmitting} autoCapitalize="none" autoCorrect={false} autoComplete="new-password" textContentType="newPassword"
         returnKeyType="go" onSubmitEditing={handleSubmit} />
     </View>
+    <View style={{ marginTop: 12 }}><ProfileInput label="Referral code (optional)" icon="users" placeholder="Code from a friend" value={referralCode} onChangeText={value => { setReferralCode(value.toUpperCase()); setValidationError(null); clearError(); }} editable={!isSubmitting} autoCapitalize="characters" autoCorrect={false} maxLength={12} /><Text style={[authStyles.small, { marginTop: 6 }]}>Enter a friend&apos;s code, or add it during account setup.</Text></View>
     <View style={styles.agreement}>
       <Checkbox checked={accepted} onChange={() => setAccepted(!accepted)} label="Agree to Terms of Service and Privacy Policy" disabled={isSubmitting}>
         <Text style={[authStyles.small, styles.legalCopy]}>I agree to the{' '}
@@ -64,7 +69,7 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
     <FormError message={validationError || error} />
     <View style={[styles.spacer, compact && styles.compactSpacer]} />
     <View style={styles.action}><Button title="Create Account" onPress={handleSubmit} loading={isSubmitting} trailing={<AuthIcon name="arrow" />} /></View>
-    <SocialDivider compact /><GoogleSignInButton disabled={isSubmitting || !accepted} />
+    <SocialDivider compact /><GoogleSignInButton disabled={isSubmitting || !accepted || (!!referralCode.trim() && !referralCodeSchema.safeParse(referralCode).success)} referralCode={referralCode.trim() || undefined} />
     <View style={[authStyles.footer, styles.footer]}><Text style={authStyles.small}>Already have an account?</Text>
       <TouchTarget accessibilityRole="link" disabled={isSubmitting} onPress={onSwitchToLogin} style={authStyles.footerLink}><Text style={authStyles.footerLinkText}>Log In</Text></TouchTarget>
     </View>

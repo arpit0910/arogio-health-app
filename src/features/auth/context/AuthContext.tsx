@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { tokenStore } from "../../../services/auth/tokenStore";
 import {
+  applyReferralCode,
   getCurrentUserProfile,
   saveProfileSetup,
   loginWithEmailPassword,
@@ -34,11 +35,12 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (data: LoginInput, remember?: boolean) => Promise<AuthResponse>;
   register: (data: RegisterInput) => Promise<AuthResponse>;
-  loginWithGoogle: (idToken: string) => Promise<AuthResponse>;
+  loginWithGoogle: (idToken: string, referralCode?: string) => Promise<AuthResponse>;
   logout: () => Promise<void>;
   refreshTokens: () => Promise<void>;
   reloadProfile: () => Promise<void>;
   updateProfile: (data: UpdateProfileInput) => Promise<SafeUser>;
+  applyReferral: (code: string) => Promise<SafeUser>;
   saveSetup: (data: Record<string, unknown>) => Promise<SafeUser>;
   clearError: () => void;
   beginExternalSignIn: () => boolean;
@@ -177,14 +179,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const loginWithGoogle = useCallback(
-    async (idToken: string): Promise<AuthResponse> => {
+    async (idToken: string, referralCode?: string): Promise<AuthResponse> => {
       if (authRequestRef.current)
         throw new Error("A sign-in request is already in progress.");
       authRequestRef.current = true;
       setIsSubmitting(true);
       setError(null);
       try {
-        const result = await loginWithGoogleIdToken({ idToken });
+        const result = await loginWithGoogleIdToken({ idToken, referralCode });
         await handleAuthSuccess(result);
         return result;
       } catch (err) {
@@ -261,6 +263,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const applyReferral = useCallback(async (code: string) => {
+    const profile = await applyReferralCode(code);
+    setUser(profile);
+    return profile;
+  }, []);
+
   const saveSetup = useCallback(
     async (data: Record<string, unknown>) => {
       const profile = await saveProfileSetup(data, !user?.profileSetup);
@@ -301,6 +309,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       refreshTokens,
       reloadProfile,
       updateProfile,
+      applyReferral,
       saveSetup,
       clearError,
       beginExternalSignIn,
@@ -321,6 +330,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       refreshTokens,
       reloadProfile,
       updateProfile,
+      applyReferral,
       saveSetup,
       clearError,
     ],

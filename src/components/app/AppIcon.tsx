@@ -3,6 +3,9 @@ import Svg, { Circle, Path, Rect } from "react-native-svg";
 
 
 const paths = {
+  users: 'M3 21v-3a6 6 0 0 1 12 0v3M13 4a4 4 0 0 1 0 8M18 14a5 5 0 0 1 3 4v3M12 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z',
+  share: 'M12 16V2m-5 5 5-5 5 5M5 12H3v10h18V12h-2',
+
   sun: 'M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2',
   moon: 'M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z',
   device: 'M6 2h12v20H6ZM10 18h4',

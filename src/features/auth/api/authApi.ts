@@ -21,6 +21,7 @@ export async function registerWithEmailPassword(
     email: input.email.trim().toLowerCase(),
     password: input.password,
   };
+  if (input.referralCode) payload.referralCode = input.referralCode.trim().toUpperCase();
   if (input.fullName && input.fullName.trim()) {
     payload.fullName = input.fullName.trim();
   }
@@ -67,6 +68,7 @@ export async function loginWithGoogleIdToken(
     method: "POST",
     body: {
       idToken: input.idToken,
+      ...(input.referralCode ? { referralCode: input.referralCode.trim().toUpperCase() } : {}),
     },
     signal,
   });
@@ -133,4 +135,8 @@ export async function saveProfileSetup(
       body: input,
     }),
   );
+}
+
+export async function applyReferralCode(referralCode: string): Promise<SafeUser> {
+  return safeUserSchema.parse(await apiClient.request<unknown>({ path: '/profile/referral', method: 'POST', body: { referralCode } }));
 }

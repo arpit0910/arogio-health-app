@@ -1,3 +1,4 @@
+import { ReferralPanel } from '../../referrals/ReferralPanel';
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
@@ -45,6 +46,7 @@ export function AccountProfileScreen() {
     </View></View>
     <View style={c.section}><Text accessibilityRole="header" style={c.title}>Your priorities</Text><Text style={[c.text, { marginTop: 10 }]}>{goals.map(goal => goal.title).join(' · ') || 'No goals added'}</Text><Text style={[c.text, { marginTop: 6 }]}>{activities.find(activity => activity.value === draft.activityLevel)?.title || 'Activity level not added'}</Text></View>
     <View style={[c.section, c.line]}><CareRow icon="goal" title="Goals & preferences" detail="Wellness goals, activity and updates" onPress={() => router.push('/edit-health-goals')} /></View>
+    <ReferralPanel />
     <View style={s.accountAction}>
       <TouchTarget accessibilityRole="button" accessibilityLabel="Log out" accessibilityState={{ disabled: isSubmitting, busy: isSubmitting }} disabled={isSubmitting} onPress={() => void handleLogout()} style={({ pressed }) => [s.logout, pressed && s.logoutPressed, isSubmitting && { opacity: 0.6 }]}>
         {isSubmitting ? <ActivityIndicator color={colors.primary} /> : <AppIcon name="logout" size={22} />}

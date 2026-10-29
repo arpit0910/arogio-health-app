@@ -21,7 +21,7 @@ type Props = {
   suffix?: string;
 } & Pick<
   TextInputProps,
-  "onChangeText" | "keyboardType" | "editable" | "maxLength"
+  "onChangeText" | "keyboardType" | "editable" | "maxLength" | "autoCapitalize" | "autoCorrect"
 >;
 export function ProfileInput({
   label,

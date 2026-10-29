@@ -4,6 +4,8 @@ import { validBirthDate } from '../profile/model.ts';
 export const safeUserSchema = z.object({
   profileCompletedAt: z.string().nullable().optional(),
   profileSetup: z.record(z.unknown()).nullable().optional(),
+  referralCode: z.string().optional(),
+  hasReferrer: z.boolean().optional(),
   id: z.string(),
   fullName: z.string().nullable().optional(),
   username: z.string().nullable().optional(),
@@ -39,7 +41,10 @@ export const loginSchema = z.object({
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 
+export const referralCodeSchema = z.string().trim().toUpperCase().regex(/^[A-F0-9]{12}$/, "Enter the 12-character code from your friend.");
+
 export const registerSchema = z.object({
+  referralCode: referralCodeSchema.optional(),
   email: z.string().email('Please enter a valid email address'),
   password: z
     .string()
@@ -78,5 +83,6 @@ export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 
 export type GoogleLoginInput = {
   idToken: string;
+  referralCode?: string;
 };
 

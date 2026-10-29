@@ -1,9 +1,11 @@
+import { normalizeInviteCode } from '../../referrals/model';
+import { referralCodeSchema } from '../../auth/types';
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { FocusScrollView } from '../../../components/ui/FocusScrollView';
 import { useEffect, useRef, useState } from 'react';
 import { BackHandler, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useAuth } from '../../auth/context/AuthContext';
 import { FormError } from '../../auth/components/AuthPrimitives';
 import { Button } from '../../../components/ui/Button';
@@ -23,7 +25,9 @@ export function ProfileSetupScreen() {
   const c = useCareStyles();
   const s = useStyles();
 
-  const { user, saveSetup } = useAuth();
+  const { user, saveSetup, applyReferral } = useAuth();
+  const params = useLocalSearchParams<{ ref?: string | string[] }>();
+  const [referralCode, setReferralCode] = useState(() => normalizeInviteCode(params.ref));
   const [draft, setDraft] = useState<SetupDraft>(() => profileDraft(user!));
   const [step, setStep] = useState<SetupStep>(() => resumeSetup(profileDraft(user!)));
   const [complete, setComplete] = useState(Boolean(user?.profileCompletedAt));
@@ -51,6 +55,11 @@ export function ProfileSetupScreen() {
     if (invalid) { setError(invalid); return; }
     Keyboard.dismiss(); setError(null); busyRef.current = true; setBusy(true);
     try {
+      if (step === 2 && referralCode.trim() && !user?.hasReferrer) {
+        const parsed = referralCodeSchema.safeParse(referralCode);
+        if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+        await applyReferral(parsed.data);
+      }
       await saveSetup(setupPayload(draft, step));
       if (step === 2) setComplete(true);
       else setStep((step + 1) as SetupStep);
@@ -75,6 +84,7 @@ export function ProfileSetupScreen() {
         </>}
         {step === 2 && <View accessibilityRole="radiogroup" style={s.fields}>{activities.map(activity => <ChoiceCard key={activity.value} {...activity} selected={draft.activityLevel === activity.value} onPress={busy ? undefined : () => set('activityLevel', activity.value)} />)}</View>}
       </View>
+      {step === 2 && <View style={{ marginTop: 24, gap: 10 }}><Text style={c.title}>Invited by a friend?</Text>{user?.hasReferrer ? <Text style={c.text}>Your friend&apos;s referral code has been recorded.</Text> : <><ProfileInput label="Referral code (optional)" icon="users" placeholder="Enter your friend's code" value={referralCode} onChangeText={value => { setReferralCode(value.toUpperCase()); setError(null); }} autoCapitalize="characters" autoCorrect={false} maxLength={12} editable={!busy} /><Text style={c.text}>Leave blank to skip. Your referrer is recorded when you tap Finish setup and cannot be changed.</Text></>}</View>}
       <FormError message={error} />
     </FocusScrollView>
     <View style={s.footer}><Button title={step === 2 ? 'Finish setup' : 'Continue'} onPress={() => void next()} loading={busy} /><Text style={s.note}>You can update these choices from your profile.</Text></View>

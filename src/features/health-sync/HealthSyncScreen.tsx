@@ -1,63 +1,36 @@
 import { usePalette } from '../../theme/AppearanceProvider';
-import { DailyTargetProgress } from '../activity/DailyTargetProgress';
-import { useWellness } from '../wellness/WellnessContext';
-import type { ActivityMetric } from '../activity/model';
+import { HealthOverview } from './HealthOverview';
 import { useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
   StyleSheet,
-  ScrollView,
   Text,
   View,
 } from 'react-native';
 import { router } from 'expo-router';
 import { AppScreen } from '../../components/app/AppScreen';
-import { AppIcon, type AppIconName } from '../../components/app/AppIcon';
+import { AppIcon } from '../../components/app/AppIcon';
 import { CareDisclosure, CareRow, useCareStyles } from '../../components/app/CareUI';
-import { TouchTarget } from '../../components/ui/TouchTarget';
 import { Button } from '../../components/ui/Button';
 import { HealthSourcePicker } from './HealthSourcePicker';
 import { useHealthSync } from './HealthSyncProvider';
-import { HealthChart, WeeklyShare } from './HealthCharts';
 import { fonts } from '../../theme/tokens';
 import { formatDateTime } from '../../lib/time';
 import {
   installHealthConnect,
 } from './healthConnect';
 import {
-  formatHealthValue,
   healthMetrics,
-  metricAverage,
-  type HealthMetric,
 } from './model';
 
-const icons: Record<HealthMetric, AppIconName> = {
-  Steps: 'trend',
-  SleepSession: 'clock',
-  HeartRate: 'heart',
-  Weight: 'weight',
-  Distance: 'location',
-  Nutrition: 'leaf',
-  ActiveCaloriesBurned: 'bolt',
-  TotalCaloriesBurned: 'bolt',
-  ExerciseSession: 'trend',
-  FloorsClimbed: 'trend',
-  RestingHeartRate: 'heart',
-  Hydration: 'drop',
-};
 export function HealthSyncScreen() {
   const c = useCareStyles();
   const colors = usePalette();
   const s = useStyles();
 
-  const { availability, snapshot, connected, hasConnected, ready, source, error: syncError, checkAvailability } = useHealthSync();
-  const { data: wellness } = useWellness();
+  const { availability, snapshot, connected, hasConnected, ready, source, error: syncError, busy, run, checkAvailability } = useHealthSync();
   const [error, setError] = useState('');
-  const [metric, setMetric] = useState<HealthMetric>('Steps');
-  const activeMetric = snapshot?.granted.includes(metric) ? metric : snapshot?.granted[0] ?? metric;
-  const metricInfo = healthMetrics.find((m) => m.key === activeMetric)!;
-  const today = snapshot?.days.at(-1);
   const connectionPanel = availability === 'available' ? (
     <View style={s.section}>{!ready ? <ActivityIndicator color={colors.primary} /> : !connected && !hasConnected ? <HealthSourcePicker /> :
       <CareRow title={source ? "Connected app" : "Choose your data source"} detail={source ? `${source.name} - ${connected ? 'automatic sync on' : 'manage access and sync'}` : 'Select one app in Settings to continue'} onPress={() => router.push('/connected-health-settings')} />}
@@ -76,7 +49,7 @@ export function HealthSyncScreen() {
           Your readings stay on this device. Arogio does not upload them, change
           your health profile, or write back to other apps.
         </Text>}
-        {connected && <Text style={s.small}>{source?.name ?? 'Selected health app'}. Automatic refresh is on.</Text>}
+        {connected && <View style={{ gap: 12 }}><View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}><AppIcon name="sync" size={18} /><Text style={[s.small, { flex: 1 }]}>{source?.name ?? 'Selected health app'} - Automatic sync</Text></View>{snapshot && <Text style={s.small}>Last refreshed {formatDateTime(snapshot.syncedAt)}</Text>}<Button title="Refresh readings" variant="secondary" loading={busy} onPress={() => void run()} /></View>}
       </View>
       {availability === null && (
         <ActivityIndicator
@@ -136,98 +109,7 @@ export function HealthSyncScreen() {
       )}
       {snapshot && snapshot.granted.length > 0 && (
         <>
-          <View style={s.section}>
-            <Text style={c.title}>Your latest overview</Text>
-            <Text style={s.small}>
-              Updated {formatDateTime(snapshot.syncedAt)}
-            </Text>
-            <Text style={s.small}>
-              Daily boundaries use IST. Sleep is the duration recorded within
-              each day.
-            </Text>
-            {healthMetrics
-              .filter((item) => item.key === activeMetric && snapshot.granted.includes(item.key))
-              .map((item) => {
-                const value =
-                  item.key === 'Weight'
-                    ? snapshot.latestWeight?.kg
-                    : today?.readings[item.key]?.value;
-                const average = metricAverage(snapshot, item.key);
-                return (
-                  <View key={item.key} style={s.reading}>
-                    <AppIcon name={icons[item.key]} size={22} />
-                    <View style={s.flex}>
-                      <Text style={s.label}>
-                        {item.key === 'Weight'
-                          ? 'Latest weight'
-                          : `${item.title} today`}
-                      </Text>
-                      <Text style={s.small}>
-                        {item.key === 'Weight'
-                          ? snapshot.latestWeight
-                            ? formatDateTime(snapshot.latestWeight.at)
-                            : 'No measurement in the last 30 days'
-                          : ['HeartRate', 'RestingHeartRate'].includes(item.key)
-                            ? 'Average of recorded measurements'
-                            : average
-                              ? `7-day daily average: ${formatHealthValue(item.key, average.value)} / ${average.days} recorded days`
-                              : 'No shared readings in the last 7 days'}
-                      </Text>
-                    </View>
-                    <Text style={s.number}>
-                      {formatHealthValue(item.key, value)}
-                      {value != null && item.key !== 'SleepSession'
-                        ? ` ${item.unit}`
-                        : ''}
-                    </Text>
-                  </View>
-                );
-              })}
-          </View>
-          <View style={s.section}>
-            <Text style={c.title}>Last 7 days</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator accessibilityRole="radiogroup" contentContainerStyle={s.tabs}>
-              {healthMetrics
-                .filter((item) => snapshot.granted.includes(item.key))
-                .map((item) => (
-                  <TouchTarget
-                    key={item.key}
-                    accessibilityRole="radio"
-                    accessibilityState={{ checked: activeMetric === item.key }}
-                    onPress={() => setMetric(item.key)}
-                    style={[s.tab, activeMetric === item.key && s.selected]}
-                  >
-                    <Text
-                      style={[
-                        s.label,
-                        activeMetric === item.key && { color: colors.surface },
-                      ]}
-                    >
-                      {item.title}
-                    </Text>
-                  </TouchTarget>
-                ))}
-            </ScrollView>
-            <Text style={s.small}>
-              {metricInfo.title} /{' '}
-              {['HeartRate', 'RestingHeartRate', 'Weight'].includes(metricInfo.key)
-                ? 'daily average'
-                : 'daily total'}{' '}
-              / {metricInfo.unit}
-            </Text>
-            {wellness.activityTracking?.goals[activeMetric as ActivityMetric] != null && <DailyTargetProgress value={today?.readings[activeMetric]?.value ?? null} goal={wellness.activityTracking.goals[activeMetric as ActivityMetric]} unit={metricInfo.unit} />}
-            <CareRow title="Daily targets" detail="Set or change your Arogio targets" onPress={() => router.push('/activity')} />
-            <HealthChart snapshot={snapshot} metric={activeMetric} />
-            <WeeklyShare snapshot={snapshot} metric={activeMetric} />
-            <CareDisclosure title="Daily readings">
-              {[...snapshot.days].reverse().map((day) => (
-                <View key={day.day} style={s.day}>
-                  <Text style={c.text}>{new Intl.DateTimeFormat('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' }).format(new Date(`${day.day}T12:00:00Z`))}</Text>
-                  <Text style={s.label}>{formatHealthValue(activeMetric, day.readings[activeMetric]?.value)} {day.readings[activeMetric]?.value != null ? metricInfo.unit : ''}</Text>
-                </View>
-              ))}
-            </CareDisclosure>
-          </View>
+          <HealthOverview snapshot={snapshot} />
           {snapshot.failed.length > 0 && (
             <Text style={[c.text, s.section]}>
               Some readings could not be refreshed:{' '}
@@ -241,12 +123,12 @@ export function HealthSyncScreen() {
           <View style={s.section}>
             <Text style={c.title}>Your data source</Text>
             <Text style={c.text}>{source?.name ?? 'Choose a health app in Settings'}</Text>
-            <Text style={s.small}>Only readings written by this app are included. Missing readings are shown as No data.</Text>
+            <Text style={s.small}>Only readings shared by your selected health app are included. Missing readings are shown as No data.</Text>
             <CareRow title="Change connected app" onPress={() => router.push('/connected-health-settings')} />
           </View>
         </>
       )}
-      {connected && connectionPanel}
+
       <View style={s.section}>
         <CareDisclosure title="Connect Samsung Health or Google Fit">
           <Text style={c.text}>
