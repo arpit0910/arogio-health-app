@@ -184,6 +184,16 @@
         "name": "launch-exit",
         "value": "150ms",
         "purpose": "After the 850ms second hold and authentication readiness; zero duration with reduced motion."
+      },
+      {
+        "name": "sidebar-open",
+        "value": "200ms",
+        "purpose": "Translate the navigation panel into place; zero duration with reduced motion."
+      },
+      {
+        "name": "sidebar-close",
+        "value": "160ms",
+        "purpose": "Translate the navigation panel out before removing the overlay; zero duration with reduced motion."
       }
     ],
     "breakpoints": [],
@@ -192,9 +202,15 @@
       "App content is bounded to 440 logical units; navigation becomes a 96-unit side rail at 768 logical units.",
       "Shared CareUI sections and tracking groups start 32 logical units apart; Home section headings use 32 above and 16 below, with nested water headings exempt.",
       "Setup has three required profile steps followed by optional reminders in a four-segment indicator. Explicit notification permission, skipping and denial preserve completion.",
-      "Arogio activity uses flat journal rows with focused Log actions and labeled recent-week date controls. Optional health connections sit behind disclosure; phone steps and entered totals remain separate from imported readings. Existing tokens are preserved.",
       "HTML hover/focus states are documentation affordances; production native pressed and accessibility states remain authoritative.",
-      "Native initial splash is configured separately in app.json using expo-splash-screen, background #FFFDFA, existing assets/android-icon-foreground.png and imageWidth 192. One branded JavaScript surface follows it, without a timed second screen. Development-build startup evidence does not establish standalone launch validation."
+      "Native initial splash is configured separately in app.json using expo-splash-screen, background #FFFDFA, existing assets/android-icon-foreground.png and imageWidth 192. One branded JavaScript surface follows it, without a timed second screen. Development-build startup evidence does not establish standalone launch validation.",
+      "Shared signed-in header keeps menu left, centered brand and notification bell right. Detail back/title controls occupy a second row. Home uses the same header; the profile shortcut is removed.",
+      "Sidebar uses a same-window Expo BlurTargetView, blur intensity 45 and dark dim layer. Main content is touch- and accessibility-hidden while open. Open/close animations use 200ms/160ms, or zero duration with reduced motion.",
+      "Profile uses an 88-unit avatar, one Edit profile action, a wrapping weight/height/BMI strip and flat grouped account controls. Delete account leads to an explicit unchecked acknowledgement before the destructive action enables.",
+      "Today's activity uses the connected source when available, otherwise entered totals or supported foreground phone steps; sources are not added together. Explicit Activity source navigation is honored. Home omits the duplicate seven-day steps plot.",
+      "City setup uses optional foreground permission and reverse geocoding with manual fallback. Only the city enters profile payloads; no coordinate upload or ongoing location tracking is implemented.",
+      "The on-device, account-scoped notification inbox retains up to 120 past reminders within 90 days plus 60 pending reminders, with monotonic read status. Due scheduled reminders do not establish delivery or completion.",
+      "October 29 extension preserves all existing token primitives and the Growing Well world. Synthetic React Native Web final previews support layout review only; Android blur, native permission prompts, large text and physical-device behavior remain unverified. See docs/profile-navigation-revamp.md."
     ]
   },
   "components": [

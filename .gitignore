@@ -46,3 +46,6 @@ yarn-error.*
 
 # Local native compilation staging
 /.c/
+
+# Disposable isolated preview browser profiles
+/.impeccable/review/chrome-*/

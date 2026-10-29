@@ -37,20 +37,20 @@ export function syncNotifications(owner: string | null, reminders: Reminder[]): 
   queue = queue.catch(() => null).then(async () => {
     if (turn !== generation) return null;
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-    for (const account of new Set(scheduled.filter(item => item.identifier.startsWith(prefix)).map(item => item.identifier.slice(prefix.length).split(':')[0]))) await replacePending(account, []);
+    for (const account of new Set(scheduled.filter(item => item.identifier.startsWith(prefix)).map(item => item.identifier.slice(prefix.length).split(':')[0]))) await replacePending(account, []).catch(() => {});
     for (const item of scheduled) if (item.identifier.startsWith(prefix)) await Notifications.cancelScheduledNotificationAsync(item.identifier);
     if (!owner || turn !== generation) return null;
     const permission = await Notifications.getPermissionsAsync();
     if (!permission.granted) return reminders.length ? 'Notifications are off. Enable them in your device settings, then reopen Arogio.' : null;
     await channel();
-    await replacePending(owner, []);
+    await replacePending(owner, []).catch(() => {});
     const planned: import('../notifications/model').InboxItem[] = [];
     for (const reminder of reminders) {
       if (turn !== generation) return null;
       await Notifications.scheduleNotificationAsync({ identifier: `${prefix}${owner}:${reminder.id}`, content: { title: reminder.title, body: reminder.body, sound: reminder.route === '/water' ? WATER_SOUND : 'default', data: { route: reminder.route, wellness: true } }, trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(reminder.at), channelId: reminder.route === '/water' ? WATER_CHANNEL : 'wellness' } });
       planned.push({ id: `${prefix}${owner}:${reminder.id}`, title: reminder.title, body: reminder.body, at: new Date(reminder.at).getTime(), route: reminder.route, read: false });
     }
-    await replacePending(owner, planned);
+    await replacePending(owner, planned).catch(() => {});
     return null;
   });
   return queue;
