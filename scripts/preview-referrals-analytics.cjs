@@ -37,15 +37,19 @@ const load = Module._load;
 Module._load = function(request, parent, ...rest) {
   if (request.endsWith('/WellnessContext') || request === './WellnessContext') return { useWellness: () => wellness };
   if (request.endsWith('/HealthSyncProvider')) return { useHealthSync: () => health };
-  if (request.endsWith('/AuthContext')) return { useAuth: () => ({ user: { id: 'fixture', email: 'preview@example.test', referralCode: 'A1B2C3D4E5F6' }, reloadProfile: async () => {} }) };
+  if (request.endsWith('/AuthContext')) return { useAuth: () => ({ user: { id: 'fixture', email: 'preview@example.test', referralCode: 'A1B2C3D4E5F6', profileCompletedAt: '2026-10-29T00:00:00Z' }, reloadProfile: async () => {} }) };
   if (request.endsWith('/AppearanceProvider')) { const actual = load.call(this, request, parent, ...rest); const colors = theme === 'dark' ? actual.darkColors : require('../src/theme/tokens.ts').colors; return { ...actual, usePalette: () => colors, useAppearance: () => ({ colors, scheme: theme }) }; }
   if (request.endsWith('/PhoneStepsProvider') || request === './PhoneStepsProvider') return { usePhoneSteps: () => ({ enabled: false, totals: {}, status: 'Phone step counting is off.', busy: false, ready: true, toggle: async () => {}, clear: async () => {} }) };
   if (request === 'expo-secure-store') return { getItemAsync: async () => null, setItemAsync: async () => {} };
   if (request === 'expo-crypto') return { randomUUID: () => 'example-only' };
-  if (request === 'expo-router') return { router: { push() {}, navigate() {}, replace() {}, canGoBack: () => true } };
+  if (request === 'expo-router') return { router: { push() {}, navigate() {}, replace() {}, canGoBack: () => true }, usePathname: () => '/settings' };
   return load.call(this, request, parent, ...rest);
 };
 const screens = {
+  journal: () => require('../src/features/wellness/HealthScreen.tsx').HealthScreen,
+  standalone: () => require('../src/features/health-sync/StandaloneHealthScreen.tsx').StandaloneHealthScreen,
+  header: () => function HeaderFixture() { return React.createElement(require('../src/components/app/AppHeader.tsx').AppHeader, { title: 'Daily activity & targets', back: true }); },
+  welcome: () => require('../src/features/auth/components/WelcomeScreen.tsx').WelcomeScreen,
   referral: () => require('../src/features/referrals/ReferralPanel.tsx').ReferralPanel,
   analytics: () => function FixtureAnalytics() { const Screen = require('../src/features/health-sync/HealthOverview.tsx').HealthOverview; const snapshot = { syncedAt: new Date().toISOString(), granted: ['Steps', 'SleepSession', 'HeartRate', 'Weight'], latestWeight: null, failed: [], days: [5100, 7200, null, 0, 9400, 6800, 3100].map((value, i) => ({ day: addDays(day, i-6), readings: { Steps: { value, sources: ['synthetic'] } } })) }; return React.createElement(Screen, { snapshot }); },
   activity: () => require('../src/features/activity/ActivityScreen.tsx').ActivityScreen,

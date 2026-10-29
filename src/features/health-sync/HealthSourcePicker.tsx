@@ -24,7 +24,7 @@ export function HealthSourcePicker({ inSettings = false }: { inSettings?: boolea
     <Text style={c.text}>{inSettings ? 'Select one app below to supply your charts. Apply the change to start using it.' : 'Only the selected app supplies your charts. You can change it later in Settings > Connected health.'}</Text>
     {appsLoading && <ActivityIndicator color={colors.primary} accessibilityLabel="Finding installed health apps" />}
     {!!appsError && <Text accessibilityRole="alert" style={[c.text, { color: colors.error }]}>{appsError}</Text>}
-    {!appsLoading && !appsError && apps.length === 0 && <Text style={c.text}>No compatible health apps found. Install an app that shares measurements with Health Connect, enable sharing in that app, then check again.</Text>}
+    {!appsLoading && !appsError && apps.length === 0 && <Text style={c.text}>No compatible health apps found. You can keep counting steps and logging totals directly in Arogio. This connection is optional.</Text>}
     <View accessibilityRole="radiogroup" accessibilityLabel="Installed health apps">
       {apps.map((app) => <TouchTarget key={app.id} accessibilityRole="radio" accessibilityLabel={app.name}
         accessibilityState={{ checked: chosen?.id === app.id, disabled: busy }} disabled={busy}

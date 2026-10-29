@@ -5,14 +5,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
-import { TouchTarget } from "../ui/TouchTarget";
 
-import { AppIcon } from "./AppIcon";
+import { AppHeader } from "./AppHeader";
 
 export function AppScreen({
   children,
@@ -25,7 +22,6 @@ export function AppScreen({
   back?: boolean;
   action?: ReactNode;
 }) {
-  const t = useAppTheme();
   const s = useStyles();
 
   return (
@@ -39,24 +35,7 @@ export function AppScreen({
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={s.safe}
       >
-        {back && (
-          <View style={s.header}>
-            <TouchTarget
-              accessibilityRole="button"
-              accessibilityLabel="Go back"
-              onPress={() =>
-                router.canGoBack() ? router.back() : router.replace("/profile")
-              }
-              style={s.back}
-            >
-              <AppIcon name="back" color={t.ink} size={22} />
-            </TouchTarget>
-            <Text accessibilityRole="header" style={s.headerTitle}>
-              {title}
-            </Text>
-            <View style={s.back}>{action}</View>
-          </View>
-        )}
+        <AppHeader back={back} title={title} action={action} />
         <FocusScrollView
           keyboardShouldPersistTaps="handled"
           bounces={false}
@@ -90,7 +69,7 @@ return StyleSheet.create({
     fontSize: 19,
     lineHeight: 26,
   },
-  section: { gap: 12, marginTop: 22 },
+  section: { gap: 12, marginTop: 32 },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -118,29 +97,13 @@ const useStyles = () => {
   const t = useAppTheme();
 return StyleSheet.create({
   safe: { flex: 1, backgroundColor: t.background },
-  scroll: { flexGrow: 1, paddingBottom: 26 },
+  scroll: { flexGrow: 1, paddingBottom: 32 },
   content: {
     width: "100%",
     maxWidth: 440,
     alignSelf: "center",
     paddingHorizontal: 24,
-    paddingTop: 20,
-  },
-  header: {
-    width: "100%",
-    maxWidth: 440,
-    alignSelf: "center",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-  },
-  back: { width: 48, alignItems: "center", justifyContent: "center" },
-  headerTitle: {
-    flex: 1,
-    textAlign: "center",
-    color: t.ink,
-    fontFamily: t.fonts.semibold,
-    fontSize: 18,
+    paddingTop: 16,
   },
 });
 };

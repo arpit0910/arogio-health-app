@@ -1,9 +1,8 @@
+import { AppHeader } from '../../components/app/AppHeader';
 import { usePalette } from '../../theme/AppearanceProvider';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { fonts, layout } from '../../theme/tokens';
-import { AuthIcon } from '../auth/components/AuthIcon';
 
 const documents = {
   terms: {
@@ -34,9 +33,8 @@ export function LegalScreen({ document }: { document: keyof typeof documents }) 
 
   const content = documents[document];
   return <SafeAreaView style={styles.safe}>
+    <AppHeader back title={content.title} />
     <ScrollView bounces={false} alwaysBounceVertical={false} overScrollMode="never" contentContainerStyle={styles.content}>
-      <Pressable accessibilityRole="button" accessibilityLabel="Go back" style={styles.back}
-        onPress={() => router.canGoBack() ? router.back() : router.replace('/signup')}><AuthIcon name="back" /></Pressable>
       <Text accessibilityRole="header" style={styles.title}>{content.title}</Text>
       <View style={styles.notice}><Text style={styles.noticeText}>Draft for review · Not yet approved for public launch</Text></View>
       {content.sections.map(([title, body]) => <View key={title} style={styles.section}>

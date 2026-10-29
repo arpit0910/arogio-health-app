@@ -8,8 +8,9 @@ import { TouchTarget, TouchTargetScale, useTouchTarget } from '../../../componen
 import { Button } from '../../../components/ui/Button';
 
 export function ProfileIcon({ name, white = false }: { name: string; white?: boolean }) {
+  const colors = usePalette();
   const key = name in profileAssets ? name as keyof typeof profileAssets : 'activity';
-  const xml = white ? profileAssets[key].replace(/#096E64|#168C80/gi, '#FFFFFF') : profileAssets[key];
+  const xml = white ? profileAssets[key].replace(/#096E64|#168C80|#FFFFFF|white/gi, colors.onPrimary) : profileAssets[key].replace(/#096E64|#168C80/gi, colors.primary);
   return <SvgXml xml={xml} width={16} height={16} />;
 }
 

@@ -127,6 +127,12 @@
         {
           "motionPermission": "Allow Arogio to count steps while you use the app."
         }
+      ],
+      [
+        "expo-navigation-bar",
+        {
+          "enforceContrast": false
+        }
       ]
     ],
     "extra": {

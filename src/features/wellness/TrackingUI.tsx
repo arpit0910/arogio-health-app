@@ -12,7 +12,7 @@ export const useTrackingStyles = () => {
   const c = useCareStyles();
   const colors = usePalette();
 return StyleSheet.create({
-  group: { gap: 12, marginTop: 28 }, row: { paddingVertical: 16, borderBottomWidth: 1, borderColor: colors.border, gap: 9 },
+  group: { gap: 12, marginTop: 32 }, row: { paddingVertical: 16, borderBottomWidth: 1, borderColor: colors.border, gap: 9 },
   input: { minHeight: 52, borderWidth: 1, borderColor: colors.border, borderRadius: 12, padding: 14, fontFamily: fonts.regular, fontSize: 16, color: colors.ink, backgroundColor: colors.surface },
   panel: { backgroundColor: colors.subtle, padding: 20, borderRadius: 16, gap: 10, marginTop: 24 },
   error: { ...c.text, color: colors.error }, inline: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },

@@ -1,4 +1,4 @@
-import { usePalette } from '../../../theme/AppearanceProvider';
+import { usePalette, useAppearance } from '../../../theme/AppearanceProvider';
 import { FocusScrollView } from '../../../components/ui/FocusScrollView';
 import { SvgXml } from 'react-native-svg';
 import { useState, type ReactNode } from 'react';
@@ -17,6 +17,7 @@ const DESIGN_WIDTH = 326;
  */
 export function AuthCanvas({ background, children, backgroundXml }: { background: AuthIconName; children: ReactNode; backgroundXml?: string }) {
   const styles = useStyles();
+  const { scheme } = useAppearance();
 
   const { contentWidth: artworkWidth } = useScreenLayout();
   const [viewportHeight, setViewportHeight] = useState(0);
@@ -28,12 +29,12 @@ export function AuthCanvas({ background, children, backgroundXml }: { background
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.fill}>
-        <View pointerEvents="none" accessible={false} style={styles.decoration}>
+        {scheme === 'light' && <View pointerEvents="none" accessible={false} style={styles.decoration}>
           <View style={[styles.artworkCanvas, { width: artworkWidth }]}>
             <View style={[styles.upperArtwork, { height: 300 * artworkScale }]}><View style={{ top: -36 * artworkScale }}>{artwork}</View></View>
             <View style={[styles.lowerArtwork, { height: 96 * artworkScale }]}><View style={{ top: -618 * artworkScale }}>{artwork}</View></View>
           </View>
-        </View>
+        </View>}
         <KeyboardAvoidingView style={styles.fill} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <FocusScrollView style={styles.fill} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag"
             bounces={false} alwaysBounceVertical={false} overScrollMode="never"

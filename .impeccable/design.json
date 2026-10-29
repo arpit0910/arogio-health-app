@@ -189,7 +189,10 @@
     "breakpoints": [],
     "notes": [
       "Tonal ramps are synthesized OKLCH documentation previews with source-derived hue/chroma, not normative source colors.",
-      "No responsive breakpoint tokens exist; app width is bounded to 440 logical units.",
+      "App content is bounded to 440 logical units; navigation becomes a 96-unit side rail at 768 logical units.",
+      "Shared CareUI sections and tracking groups start 32 logical units apart; Home section headings use 32 above and 16 below, with nested water headings exempt.",
+      "Setup has three required profile steps followed by optional reminders in a four-segment indicator. Explicit notification permission, skipping and denial preserve completion.",
+      "Arogio activity uses flat journal rows with focused Log actions and labeled recent-week date controls. Optional health connections sit behind disclosure; phone steps and entered totals remain separate from imported readings. Existing tokens are preserved.",
       "HTML hover/focus states are documentation affordances; production native pressed and accessibility states remain authoritative.",
       "Native initial splash is configured separately in app.json using expo-splash-screen, background #FFFDFA, existing assets/android-icon-foreground.png and imageWidth 192. One branded JavaScript surface follows it, without a timed second screen. Development-build startup evidence does not establish standalone launch validation."
     ]
@@ -239,9 +242,9 @@
       "name": "Bottom navigation",
       "kind": "nav",
       "refersTo": "",
-      "description": "Documentation translation of the implemented native pattern.",
+      "description": "Transparent, borderless navigation; selection uses icon and label color, with no pill. Native navigation contains five tabs including the original raised Jeeva AI artwork and becomes a side rail at 768 logical units.",
       "html": "<nav class=\"ds-nav\"><button aria-current=\"page\">Home</button><button>Health</button><button>Explore</button><button>Profile</button></nav>",
-      "css": ".ds-nav{font-family:Inter, sans-serif;display:flex;background:#FFFDFA;border-top:1px solid #D8DCCF;padding-top:7px}.ds-nav button{flex:1;border:0;background:transparent;color:#586357;min-height:51px;font-size:12px;line-height:18px}.ds-nav button[aria-current]{background:#E7EDDF;border-radius:10px;color:#214F3D}.ds-nav button:hover{color:#214F3D}.ds-nav button:focus-visible{outline:2px solid #214F3D;outline-offset:-2px}"
+      "css": ".ds-nav{font-family:Inter, sans-serif;display:flex;background:transparent;border:0;padding-top:7px}.ds-nav button{flex:1;border:0;background:transparent;color:#586357;min-height:51px;font-size:12px;line-height:18px}.ds-nav button[aria-current]{color:#214F3D}.ds-nav button:hover{color:#214F3D}.ds-nav button:focus-visible{outline:2px solid #214F3D;outline-offset:-2px}"
     }
   ],
   "narrative": {

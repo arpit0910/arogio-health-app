@@ -1,6 +1,10 @@
 import { useAppearance } from '../theme/AppearanceProvider';
 import '../features/health-sync/backgroundHealth';
-import { Stack } from 'expo-router';
+import { Stack, ThemeProvider, DefaultTheme, DarkTheme } from 'expo-router';
+import { useEffect } from 'react';
+import { View } from 'react-native';
+import { NavigationBar } from 'expo-navigation-bar';
+import * as SystemUI from 'expo-system-ui';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -21,6 +25,9 @@ export default function RootLayout() {
 
 function ThemedRoot() {
   const { colors, scheme, ready } = useAppearance();
+  useEffect(() => { if (ready) void SystemUI.setBackgroundColorAsync(colors.background).catch(() => {}); }, [colors.background, ready]);
   if (!ready) return null;
-  return <><StatusBar style={scheme === 'dark' ? 'light' : 'dark'} /><LaunchSequence><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} /></LaunchSequence></>;
+  const base = scheme === 'dark' ? DarkTheme : DefaultTheme;
+  const theme = { ...base, colors: { ...base.colors, background: colors.background, card: colors.background, text: colors.ink, primary: colors.primary, border: colors.border } };
+  return <ThemeProvider value={theme}><View style={{ flex: 1, backgroundColor: colors.background }}><NavigationBar style={scheme === 'dark' ? 'light' : 'dark'} /><StatusBar style={scheme === 'dark' ? 'light' : 'dark'} /><LaunchSequence><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} /></LaunchSequence></View></ThemeProvider>;
 }

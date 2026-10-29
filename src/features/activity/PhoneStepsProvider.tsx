@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useRef, useState, type PropsWithC
 import { AppState, Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '../auth/context/AuthContext';
-import { useHealthSync } from '../health-sync/HealthSyncProvider';
 import { addDays, localDay, validDay } from '../wellness/domain';
 import { phoneSensorState, watchPhoneSteps } from './stepSensor';
 import { stepDelta } from './model';
@@ -14,7 +13,6 @@ export function PhoneStepsProvider({ children }: PropsWithChildren) {
   return <PhoneSession key={user?.id ?? 'none'} owner={user?.id ? String(user.id) : null}>{children}</PhoneSession>;
 }
 function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | null }>) {
-  const health = useHealthSync();
   const [stored, setStored] = useState<Stored>({ enabled: false, totals: {} });
   const [ready, setReady] = useState(false), [busy, setBusy] = useState(false);
   const [active, setActive] = useState(AppState.currentState === 'active');
@@ -60,7 +58,6 @@ function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | n
     let subscription: { remove: () => void } | undefined;
     let previous = 0;
     if (!ready || !stored.enabled || !owner) return;
-    if (health.connected) return;
     if (!active) return;
     void (async () => {
       try {
@@ -85,7 +82,7 @@ function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | n
       } catch { if (valid) setStatus('Phone counting is unavailable. Install the latest app build or enter daily totals.'); }
     })();
     return () => { valid = false; subscription?.remove(); };
-  }, [ready, stored.enabled, active, health.connected, owner]);
+  }, [ready, stored.enabled, active, owner]);
   async function toggle() {
     if (lock.current || !owner || !ready) return;
     lock.current = true; setBusy(true);
@@ -99,6 +96,6 @@ function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | n
     finally { lock.current = false; if (alive.current) setBusy(false); }
   }
   async function clear() { if (!ready) throw new Error('Phone history is still loading.'); apply({ enabled: false, totals: {} }); await persist(); if (alive.current) setStatus('Phone step history cleared.'); }
-  return <Context.Provider value={{ ...stored, ready, status: !ready ? 'Checking phone step preferences...' : stored.enabled && health.connected ? 'Phone counting is paused while a health app is connected.' : status, busy, toggle, clear }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ ...stored, ready, status: !ready ? 'Checking phone step preferences...' : status, busy, toggle, clear }}>{children}</Context.Provider>;
 }
 export function usePhoneSteps() { const state = useContext(Context); if (!state) throw new Error('PhoneStepsProvider is missing.'); return state; }

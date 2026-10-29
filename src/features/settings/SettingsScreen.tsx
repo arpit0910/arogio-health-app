@@ -17,13 +17,13 @@ export function SettingsScreen() {
   const { colors, preference, scheme, setPreference, ready, saving, error } = useAppearance();
   const health = useHealthSync();
   return <AppScreen back title="Settings">
-    <View style={{ gap: 8 }}><Text style={c.heading}>Your app, your way.</Text><Text style={c.text}>A few thoughtful choices for your everyday care.</Text></View>
-    <View style={{ marginTop: 28 }}>
+    <View style={{ gap: 8 }}><Text style={c.heading}>Preferences</Text><Text style={c.text}>Choose how Arogio looks, reminds you and records your day.</Text></View>
+    <View style={{ marginTop: 32 }}>
       <Text accessibilityRole="header" style={c.title}>Reminders & connections</Text>
       <CareRow icon="bell" title="Notifications" detail="Reminder preferences, permissions and sounds" onPress={() => router.push('/notification-settings')} />
-      <CareRow icon="sync" title="Health app sync" detail={health.source ? `${health.source.name} · ${health.connected ? 'Connected' : 'Needs attention'}` : 'Connect a health app to bring your readings together'} onPress={() => router.push('/connected-health-settings')} />
+      <CareRow icon="sync" title="Health app connections" detail={health.source ? `${health.source.name} · ${health.connected ? 'Connected' : 'Needs attention'}` : 'Optional ? Arogio tracking works without another app'} onPress={() => router.push('/connected-health-settings')} />
     </View>
-    <View style={{ marginTop: 28, gap: 12 }}>
+    <View style={{ marginTop: 32, gap: 12 }}>
       <Text accessibilityRole="header" style={c.title}>Appearance</Text>
       <Text style={c.text}>Choose a look that feels comfortable. System follows your device.</Text>
       <View accessibilityRole="radiogroup" accessibilityLabel="Appearance" style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -34,12 +34,12 @@ export function SettingsScreen() {
       <Text accessibilityLiveRegion="polite" style={[c.text, { fontSize: 13 }]}>{saving ? 'Saving appearance…' : preference === 'system' ? `Currently using ${scheme} mode` : `${scheme === 'dark' ? 'Dark' : 'Light'} mode selected`}</Text>
       {!!error && <Text accessibilityRole="alert" style={[c.text, { color: colors.error }]}>{error}</Text>}
     </View>
-    <View style={{ marginTop: 28 }}>
+    <View style={{ marginTop: 32 }}>
       <Text accessibilityRole="header" style={c.title}>Your preferences</Text>
       <CareRow icon="goal" title="Daily targets" detail="Steps, activity, food and water goals" onPress={() => router.push('/activity')} />
       <CareRow icon="leaf" title="Goals & preferences" detail="Wellness priorities, activity level and updates" onPress={() => router.push('/edit-health-goals')} />
     </View>
-    <View style={{ marginTop: 28, paddingTop: 24, borderTopWidth: 1, borderColor: colors.border }}>
+    <View style={{ marginTop: 32, paddingTop: 24, borderTopWidth: 1, borderColor: colors.border }}>
       <Text accessibilityRole="header" style={c.title}>Privacy & information</Text>
       <CareRow icon="shield" title="Privacy policy" detail="How your information is handled" onPress={() => router.push('/privacy')} />
       <CareRow icon="book" title="Terms of service" onPress={() => router.push('/terms')} />

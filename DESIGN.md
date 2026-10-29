@@ -62,7 +62,7 @@ spacing:
   group-gap: "16px"
   panel: "22px"
   page: "24px"
-  section: "28px"
+  section: "32px"
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
@@ -106,7 +106,7 @@ This refresh supersedes the former authentication-only reference as the visual w
 
 ## Colors
 
-Primary forest green marks actions and focused/selected controls; its pressed companion supplies feedback. Warm background and off-white surface separate canvas from controls. Ink is for headings; muted and placeholder tones support secondary information. Border and subtle provide quiet divisions and selected navigation. Plum and its pale surface identify supporting status such as Coming soon; error remains reserved for invalid input.
+Primary forest green marks actions and focused/selected controls; its pressed companion supplies feedback. Warm background and off-white surface separate canvas from controls. Ink is for headings; muted and placeholder tones support secondary information. Border and subtle provide quiet divisions and grouped surfaces. Plum and its pale surface identify supporting status such as Coming soon; error remains reserved for invalid input.
 
 **The Action Rule.** Use forest green for available primary actions and retain explicit text for unavailable services.
 
@@ -118,9 +118,9 @@ React Native measurements are logical units; portable frontmatter uses px notati
 
 ## Layout
 
-App content is centered with a 440-unit maximum width and 24-unit horizontal padding. AppScreen supplies safe areas, keyboard avoidance and a growing ScrollView. Setup uses the same bounded width, a three-segment progress indicator and a separate footer action. Rows use 18-unit vertical padding, a flexible text column and a trailing icon.
+App content is centered with a 440-unit maximum width and 24-unit horizontal padding. AppScreen supplies safe areas, keyboard avoidance and a growing ScrollView. Setup uses the same bounded width, a four-segment progress indicator for three required profile steps followed by optional reminders, and a separate footer action. Rows use 18-unit vertical padding, a flexible text column and a trailing icon. Shared CareUI sections and tracking groups start 32 units apart. Home section headings use 32 units above and 16 below; nested water headings omit that outer spacing.
 
-Bottom navigation is bounded to the same width, retains native bottom insets and exposes Home, Health, Jeeva AI, Explore and Profile. Jeeva AI retains its original raised centre artwork and label. The other selected tabs use a subtle rounded background. Authentication retains its reference-scaled AuthCanvas and original decorative backgrounds; welcome, login and signup each have a distinct content-specific flat-vector illustration. Water and cycle tracking use their own matching vector scenes. Sources live in assets/illustrations/vector; render through CareIllustration. Artwork scales without shrinking form controls or adding pagination dots.
+Bottom navigation is bounded to the same width, retains native bottom insets and exposes Home, Health, Jeeva AI, Explore and Profile. Jeeva AI retains its original raised centre artwork and label. The navigation container is transparent, without a top border or selected-tab pill. Selected standard tabs use primary-colored filled icons and labels; Jeeva AI retains its selected artwork outline. At widths of 768 units and above, navigation becomes a 96-unit side rail. Authentication retains its reference-scaled AuthCanvas; original decorative backgrounds appear only in light mode, while monochrome icons follow the palette and action arrows use onPrimary; welcome, login and signup each have a distinct content-specific flat-vector illustration. Water and cycle tracking use their own matching vector scenes. Sources live in assets/illustrations/vector; render through CareIllustration. Artwork scales without shrinking form controls or adding pagination dots.
 
 **The One Task Rule.** Group related information behind clear rows or disclosures; retain one personal Edit profile action and a separate Goals & preferences destination.
 
@@ -130,7 +130,7 @@ The new app world is flat: appTheme.shadow is empty. Dividers, tonal differences
 
 ## Shapes
 
-Fields and shared buttons use the field radius; the profile panel uses the panel radius. Navigation selection uses the navigation radius. Borders are thin and quiet. Native controls retain at least 48dp touch targets through TouchTarget and the canvas-aware controls.
+Fields and shared buttons use the field radius; the profile panel uses the panel radius. Borders are thin and quiet. Native controls retain at least 48dp touch targets through TouchTarget and the canvas-aware controls.
 
 ## Components
 
@@ -139,8 +139,9 @@ Fields and shared buttons use the field radius; the profile panel uses the panel
 - **CareRow:** medium title, optional smaller supporting copy and trailing chevron; whole row activates one destination.
 - **CareDisclosure:** thin top divider, expanded accessibility state and initially collapsed content; no nested decorative card frame.
 - **Profile panel:** forest fill, white title and supporting light text; a separated action row leads to profile.
-- **Navigation:** five labeled tabs with an explicit selected state. Jeeva AI uses its original prominent centre artwork; the other tabs use 24-unit icons.
-- **Setup:** goals, essential basics and activity; validation and save feedback remain inline. Optional account details and updates belong in settings.
+- **Navigation:** five labeled tabs with an explicit accessible selected state, transparent canvas and no selected pill. Jeeva AI uses its original prominent centre artwork; the other tabs use 24-unit icons. Shared AppHeader keeps sidebar access on completed-profile signed-in destinations, including detail pages with a back action. Root navigation, native SystemUI canvas and screen content follow the active background; Android navigation and status icons follow the scheme, with navigation-bar contrast enforcement disabled.
+- **Setup:** three required steps for goals, essential basics and activity, then an optional reminders stage. Permission requires an explicit Allow notifications action; skipping or denying access leaves completion available. Validation and save feedback remain inline. Optional account details and updates belong in settings.
+- **Activity journal:** flat metric rows show value, units, source and a focused Log action. Recent-week dates use accessible radio controls, a selected underline and primary value color; an older-date calendar sits behind a disclosure. Home and Health lead with Arogio totals and phone steps; optional health connections use a disclosure and keep imported readings separate. Reuse existing tokens and shared controls; see `docs/standalone-tracking.md`.
 - **Launch:** the native splash uses the warm background and existing Android foreground icon (configured image width 192), before a single JavaScript surface with the original SVG logo and live text on cream white. The native screen is held until fonts and the first layout are ready; the overlay exits when the session is restored. Motion honors reduced-motion preferences; see `docs/launch-screens.md`.
 
 The sidecar's isolated HTML/CSS snippets translate native visual patterns for documentation. They are not production web components. Native captures and finish review are separate evidence; this document makes no rendered QA or release verdict claim.

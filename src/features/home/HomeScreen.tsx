@@ -1,3 +1,4 @@
+import { TodayActivity } from '../activity/TodayActivity';
 import { usePalette } from '../../theme/AppearanceProvider';
 import {
   APP_TIMEZONE,
@@ -20,7 +21,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
 import { useHealthSync } from '../health-sync/HealthSyncProvider';
-import { showHealthConnectionPrompt } from '../health-sync/connection';
 import { HealthChart } from '../health-sync/HealthCharts';
 import { useAuth } from '../auth/context/AuthContext';
 import { useWellness } from '../wellness/WellnessContext';
@@ -29,7 +29,7 @@ import { homeUpcoming, homeWater } from './homeModel';
 import { SidebarButton } from '../../navigation/AppSidebar';
 import { Avatar } from '../../components/app/Avatar';
 import { AppIcon, type AppIconName } from '../../components/app/AppIcon';
-import { CareBrand, CareRow } from '../../components/app/CareUI';
+import { CareBrand } from '../../components/app/CareUI';
 import { Button } from '../../components/ui/Button';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { fonts } from '../../theme/tokens';
@@ -38,12 +38,12 @@ import { profilePhoto } from '../profile/profileViewModel';
 const shortcuts: {
   title: string;
   icon: AppIconName;
-  route: '/water' | '/medicines' | '/cycle' | '/connected-health';
+  route: '/water' | '/medicines' | '/cycle' | '/activity';
 }[] = [
   { title: 'Water', icon: 'drop', route: '/water' },
   { title: 'Medicines', icon: 'pill', route: '/medicines' },
   { title: 'Cycle', icon: 'calendar', route: '/cycle' },
-  { title: 'Health sync', icon: 'sync', route: '/connected-health' },
+  { title: 'Activity', icon: 'trend', route: '/activity' },
 ];
 export function HomeScreen() {
   const colors = usePalette();
@@ -192,7 +192,7 @@ export function HomeScreen() {
               </TouchTarget>
             ))}
           </View>
-          <CareRow icon="trend" title="Daily activity & targets" detail="Track with Arogio or use your selected health app" onPress={() => router.push('/activity')} />
+          <TodayActivity />
           {error && (
             <View style={s.error} accessibilityLiveRegion="polite">
               <Text style={s.errorText}>
@@ -356,20 +356,8 @@ export function HomeScreen() {
                   </TouchTarget>
                 </View>
               )}
-              {showHealthConnectionPrompt(health.ready, health.hasConnected) && <TouchTarget
-                accessibilityRole="button"
-                onPress={() => router.push('/connected-health')}
-                style={({ pressed }) => [s.connected, pressed && s.pressed]}
-              >
-                <AppIcon name="sync" size={25} />
-                <View style={s.flex}>
-                  <Text style={s.rowTitle}>Connect your health apps</Text>
-                  <Text style={s.caption}>Activity, sleep, heart rate and more</Text>
-                </View>
-                <AppIcon name="right" size={18} />
-              </TouchTarget>}
               {health.snapshot?.granted.includes('Steps') && (
-                <View style={{ gap: 12 }}>
+                <View style={{ gap: 12, marginTop: 28 }}>
                   <Text style={s.rowTitle}>Steps &middot; Last 7 days</Text>
                   <Text style={s.caption}>{health.source?.name}</Text>
                   <HealthChart snapshot={health.snapshot} metric="Steps" />
@@ -487,7 +475,7 @@ return StyleSheet.create({
   },
   brand: { flex: 1, alignItems: 'center' },
   avatar: { width: 48, alignItems: 'center', justifyContent: 'center' },
-  scroll: { flexGrow: 1, paddingBottom: 32 },
+  scroll: { flexGrow: 1, paddingBottom: 40 },
   content: {
     width: '100%',
     maxWidth: 440,
@@ -495,7 +483,7 @@ return StyleSheet.create({
     paddingHorizontal: 24,
   },
   expandedContent: { maxWidth: 1100 },
-  greeting: { gap: 6, paddingTop: 24, paddingBottom: 16 },
+  greeting: { gap: 8, paddingTop: 24, paddingBottom: 24 },
   date: {
     fontFamily: fonts.regular,
     fontSize: 13,
@@ -518,7 +506,7 @@ return StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 4,
+    marginBottom: 16,
   },
   shortcut: {
     flex: 1,
@@ -553,8 +541,8 @@ return StyleSheet.create({
     justifyContent: 'space-between',
     gap: 8,
     flexWrap: 'wrap',
-    marginTop: 22,
-    marginBottom: 12,
+    marginTop: 32,
+    marginBottom: 16,
   },
   sectionTitle: {
     fontFamily: fonts.semibold,

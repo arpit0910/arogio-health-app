@@ -31,18 +31,18 @@ export function MedicineScreen() {
     }
     setSubmitting(true);
     try {
-      if (draft.enabled && !(await requestReminderPermission())) { setFeedback('Notifications are unavailable or not allowed. Enable them in device settings, or save with reminders turned off.'); return; }
+      const enabled = draft.enabled && await requestReminderPermission();
       const { id, ...body } = draft;
-      if (await save(`medicines/${id}`, body)) { setDraft(null); setFeedback(draft.enabled ? 'Medicine saved. Daily reminders follow your dose times.' : 'Medicine saved. Reminders are off.', 'success'); }
+      if (await save(`medicines/${id}`, { ...body, enabled })) { setDraft(null); setFeedback(draft.enabled && !enabled ? 'Medicine saved. Notifications are off; dose times are still kept in Arogio.' : enabled ? 'Medicine saved. Daily reminders follow your dose times.' : 'Medicine saved. Reminders are off.', draft.enabled && !enabled ? 'info' : 'success'); }
     } catch {
       setFeedback('Unable to check notification permissions. Try again, or save with reminders turned off.');
     } finally { setSubmitting(false); }
 
   }
-  return <AppScreen back title="Medicine reminders"><TrackingIntro name="medicine" title="Your medicines, on time." description="Keep each medicine and its daily doses together. All times use IST." /><TrackingStatus />
+  return <AppScreen back title="Medicine reminders"><TrackingIntro name="medicine" title="Medicines" description="Keep each medicine and its daily doses together. All times use IST." /><TrackingStatus />
     <TrackingFeedback value={feedback} />
     {!draft && !loading && <>
-      {medicines.length === 0 && <View style={s.panel}><Text style={c.title}>A routine that fits your day</Text><Text style={c.text}>Add a medicine, then set a time and amount for each dose. You can pause or edit it anytime.</Text></View>}
+      {medicines.length === 0 && <View style={s.panel}><Text style={c.title}>No medicines saved</Text><Text style={c.text}>Add a medicine, then set a time and amount for each dose. You can pause or edit it anytime.</Text></View>}
       <Group title="Your medicines">{medicines.map(m => <View key={m.id} style={s.row}><Text style={c.title}>{m.name}</Text><Text style={c.text}>{m.enabled ? 'Daily reminders on' : 'Reminders paused'}</Text>{[...m.doses].sort((a,b) => a.time.localeCompare(b.time)).map(d => <View key={d.time} style={[s.inline, { alignItems: 'center', gap: 8 }]}><AppIcon name="clock" size={18} /><Text style={c.text}>{formatClock(d.time)}</Text><Text style={c.text}>{d.amount}</Text></View>)}{!!m.notes && <Text style={c.text}>{m.notes}</Text>}<Button title={`Edit ${m.name}`} variant="secondary" disabled={busy} onPress={() => { setFeedback(''); setDraft({ ...m, doses: m.doses.map(d => ({ ...d })) }); }} /></View>)}<Button title="Add a medicine" disabled={busy || medicines.length >= 30} onPress={() => {setFeedback(''); setDraft({ id: Crypto.randomUUID(), name: '', notes: '', enabled: true, doses: [{ time: '08:00', amount: '' }] });}} /></Group>
     </>}
     {draft && <Group title={medicines.some(m => m.id === draft.id) ? 'Edit medicine' : 'Add medicine'}>

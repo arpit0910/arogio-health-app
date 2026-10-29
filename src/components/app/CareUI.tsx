@@ -33,7 +33,7 @@ return StyleSheet.create({
   heading: { fontFamily: fonts.semibold, fontSize: 30, lineHeight: 38, color: colors.ink, letterSpacing: -0.7 },
   title: { fontFamily: fonts.semibold, fontSize: 20, lineHeight: 28, color: colors.ink },
   text: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 23, color: colors.muted },
-  section: { marginTop: 28 },
+  section: { marginTop: 32 },
   line: { borderTopWidth: 1, borderColor: colors.border },
 });
 };
