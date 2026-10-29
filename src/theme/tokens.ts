@@ -11,6 +11,7 @@ export const colors = {
   accent: '#7B3D45',
   accentSurface: '#EEE1E1',
   error: '#A42A36',
+  errorSurface: '#F8E9E8',
 } as const;
 
 export const fonts = {

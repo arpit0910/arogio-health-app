@@ -104,9 +104,9 @@ class HealthDataRationaleActivity : Activity() {
     }
     paragraph("Arogio health data access", 24f)
     paragraph("Choose what you share", 19f)
-    paragraph("With your permission, Arogio reads steps, sleep, heart rate and weight from Health Connect to show your daily overview and seven-day history. You may allow only the data types you choose.", 16f)
+    paragraph("With your permission, Arogio reads steps, sleep, heart rate, weight, distance, energy, exercise, floors climbed and water intake from Health Connect from the one source app you select to show your daily overview and seven-day history. Other source apps are excluded. You may allow only the data types you choose.", 16f)
     paragraph("Your readings stay on this device", 19f)
-    paragraph("Readings are held in memory for the Connected health screen session. Arogio does not upload these readings to its API, use them for advertising, change your health profile or write back to Health Connect.", 16f)
+    paragraph("Readings are held in memory during your signed-in app session. Optional background refresh keeps a recent overview encrypted on this device. Disconnect or sign out to clear the cache and stop refreshes. Arogio does not upload these readings to its API, use them for advertising, change your health profile or write back to Health Connect.", 16f)
     paragraph("You control access", 19f)
     paragraph("Disconnect in Arogio clears displayed readings and stops refreshes. To revoke Android permissions, open Health Connect settings. This does not delete original records in Samsung Health, Google Fit or Health Connect.", 16f)
     content.addView(Button(this).apply {

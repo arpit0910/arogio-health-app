@@ -1,19 +1,12 @@
 import { useEffect, useState, type PropsWithChildren } from 'react';
-import { AccessibilityInfo, Animated, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Animated, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { SvgXml } from 'react-native-svg';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuth } from '../auth/context/AuthContext';
-import { authAssets } from '../auth/assets/authAssets';
-import { colors, fonts } from '../../theme/tokens';
+import { colors } from '../../theme/tokens';
+import { LaunchArtwork } from './LaunchArtwork';
 
-export function LaunchArtwork() {
-  return <View style={s.artwork} accessible accessibilityLabel="Arogio. Your Health Companion.">
-    <SvgXml xml={authAssets.brand} width={112} height={101} />
-    <Text accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={s.wordmark}>Arogio</Text>
-    <Text style={s.tagline}>Your Health Companion</Text>
-  </View>;
-}
+export { LaunchArtwork };
 
 /** One launch surface, released as soon as session restoration is ready. */
 export function LaunchSequence({ children }: PropsWithChildren) {
@@ -25,8 +18,14 @@ export function LaunchSequence({ children }: PropsWithChildren) {
 
   useEffect(() => {
     let active = true;
-    void AccessibilityInfo.isReduceMotionEnabled().then(value => { if (active) setReduceMotion(value); }).catch(() => {});
-    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    let receivedChange = false;
+    void AccessibilityInfo.isReduceMotionEnabled().then(value => {
+      if (active && !receivedChange) setReduceMotion(value);
+    }).catch(() => {});
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', (value) => {
+      receivedChange = true;
+      setReduceMotion(value);
+    });
     return () => { active = false; subscription.remove(); };
   }, []);
 
@@ -38,7 +37,7 @@ export function LaunchSequence({ children }: PropsWithChildren) {
 
   useEffect(() => {
     if (!laidOut || isLoading) return;
-    const exit = Animated.timing(opacity, { toValue: 0, duration: reduceMotion ? 0 : 150, useNativeDriver: true });
+    const exit = Animated.timing(opacity, { toValue: 0, duration: reduceMotion ? 0 : 200, useNativeDriver: true, isInteraction: false });
     exit.start(({ finished }) => { if (finished) setVisible(false); });
     return () => exit.stop();
   }, [laidOut, isLoading, opacity, reduceMotion]);
@@ -46,7 +45,7 @@ export function LaunchSequence({ children }: PropsWithChildren) {
   return <View style={s.fill}>
     <View style={s.fill} pointerEvents={visible ? 'none' : 'auto'} accessibilityElementsHidden={visible} importantForAccessibility={visible ? 'no-hide-descendants' : 'auto'}>{children}</View>
     {visible && <Animated.View onLayout={() => setLaidOut(true)} style={[StyleSheet.absoluteFill, s.overlay, { opacity }]}>
-      <SafeAreaView style={s.fill}><LaunchArtwork /></SafeAreaView>
+      <SafeAreaView style={s.fill}><LaunchArtwork motion={!reduceMotion && laidOut} /></SafeAreaView>
     </Animated.View>}
   </View>;
 }
@@ -54,7 +53,4 @@ export function LaunchSequence({ children }: PropsWithChildren) {
 const s = StyleSheet.create({
   fill: { flex: 1, backgroundColor: colors.background },
   overlay: { backgroundColor: colors.background },
-  artwork: { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32, gap: 12 },
-  wordmark: { width: '100%', maxWidth: 320, paddingHorizontal: 12, paddingVertical: 4, textAlign: 'center', fontFamily: fonts.semibold, fontSize: 40, lineHeight: 60, letterSpacing: 0, color: colors.ink, includeFontPadding: true, flexShrink: 0 },
-  tagline: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 23, color: colors.muted, textAlign: 'center' },
 });

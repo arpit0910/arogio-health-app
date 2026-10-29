@@ -16,6 +16,14 @@ export const healthMetrics = [
     unit: 'bpm',
   },
   { key: 'Weight', title: 'Weight', permission: 'READ_WEIGHT', unit: 'kg' },
+  { key: 'Nutrition', title: 'Food calories', permission: 'READ_NUTRITION', unit: 'kcal' },
+  { key: 'Distance', title: 'Distance', permission: 'READ_DISTANCE', unit: 'km' },
+  { key: 'ActiveCaloriesBurned', title: 'Active energy', permission: 'READ_ACTIVE_CALORIES_BURNED', unit: 'kcal' },
+  { key: 'TotalCaloriesBurned', title: 'Total energy', permission: 'READ_TOTAL_CALORIES_BURNED', unit: 'kcal' },
+  { key: 'ExerciseSession', title: 'Exercise', permission: 'READ_EXERCISE', unit: 'min' },
+  { key: 'FloorsClimbed', title: 'Floors climbed', permission: 'READ_FLOORS_CLIMBED', unit: 'floors' },
+  { key: 'RestingHeartRate', title: 'Resting heart rate', permission: 'READ_RESTING_HEART_RATE', unit: 'bpm' },
+  { key: 'Hydration', title: 'Water intake', permission: 'READ_HYDRATION', unit: 'L' },
 ] as const;
 export type HealthMetric = (typeof healthMetrics)[number]['key'];
 export type HealthAvailability =
@@ -27,6 +35,7 @@ export type DailyHealth = {
 };
 export type HealthSnapshot = {
   syncedAt: string;
+  source?: string;
   granted: HealthMetric[];
   days: DailyHealth[];
   latestWeight: { kg: number; at: string; source: string } | null;
@@ -63,6 +72,7 @@ export async function readHealthSnapshot(
   reader: HealthReader,
   selected: HealthMetric[],
   now = new Date(),
+  source?: string,
 ): Promise<HealthSnapshot> {
   const granted = (await reader.granted()).filter((metric) =>
     selected.includes(metric),
@@ -113,6 +123,7 @@ export async function readHealthSnapshot(
   if (!stillGranted.includes('Weight')) latestWeight = null;
   return {
     syncedAt: now.toISOString(),
+    ...(source ? { source } : {}),
     granted: stillGranted,
     days,
     latestWeight,
@@ -142,7 +153,7 @@ export function formatHealthValue(
   }
   return metric === 'Steps'
     ? Math.round(value).toLocaleString('en-IN')
-    : metric === 'Weight'
+    : ['Weight', 'Distance', 'Hydration'].includes(metric)
       ? value.toFixed(1)
       : String(Math.round(value));
 }

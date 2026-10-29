@@ -1,3 +1,4 @@
+import { PhoneStepsProvider } from '../features/activity/PhoneStepsProvider';
 import { QueryClientProvider } from '@tanstack/react-query';
 import type { PropsWithChildren } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -13,6 +14,7 @@ import { queryClient } from '../lib/queryClient';
 import { AuthProvider } from '../features/auth/context/AuthContext';
 import { LaunchArtwork } from '../features/launch/LaunchSequence';
 import { SidebarProvider } from '../navigation/AppSidebar';
+import { HealthSyncProvider } from '../features/health-sync/HealthSyncProvider';
 import { WellnessProvider } from '../features/wellness/WellnessContext';
 
 export function AppProviders({ children }: PropsWithChildren) {
@@ -21,7 +23,7 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <SafeAreaProvider>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider><WellnessProvider>{fontsLoaded ? <SidebarProvider>{children}</SidebarProvider> : <LaunchArtwork />}</WellnessProvider></AuthProvider>
+      <AuthProvider><HealthSyncProvider><WellnessProvider><PhoneStepsProvider>{fontsLoaded ? <SidebarProvider>{children}</SidebarProvider> : <LaunchArtwork />}</PhoneStepsProvider></WellnessProvider></HealthSyncProvider></AuthProvider>
     </QueryClientProvider>
     </SafeAreaProvider>
   );

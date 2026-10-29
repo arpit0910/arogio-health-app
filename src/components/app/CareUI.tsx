@@ -10,13 +10,13 @@ export function CareBrand() {
   return <View style={s.brand} accessible accessibilityLabel="Arogio"><SvgXml xml={authAssets.brand} width={32} height={29} /><Text style={s.wordmark}>Arogio</Text></View>;
 }
 export function CareRow({ title, detail, onPress, icon }: { title: string; detail?: string; onPress: () => void; icon?: AppIconName }) {
-  return <TouchTarget accessibilityRole="button" accessibilityLabel={`${title}${detail ? `. ${detail}` : ''}`} onPress={onPress} style={s.row}>
+  return <TouchTarget accessibilityRole="button" accessibilityLabel={`${title}${detail ? `. ${detail}` : ''}`} onPress={onPress} style={({ pressed }) => [s.row, pressed && s.pressed]}>
     {icon && <AppIcon name={icon} size={22} />}<View style={s.copy}><Text style={s.rowTitle}>{title}</Text>{detail && <Text style={s.detail}>{detail}</Text>}</View><AppIcon name="right" size={18} />
   </TouchTarget>;
 }
 export function CareDisclosure({ title, children }: { title: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  return <View style={s.disclosure}><TouchTarget accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={() => setOpen(value => !value)} style={s.row}>
+  return <View style={s.disclosure}><TouchTarget accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={() => setOpen(value => !value)} style={({ pressed }) => [s.row, pressed && s.pressed]}>
     <Text style={[s.rowTitle, s.copy]}>{title}</Text><AppIcon name={open ? 'down' : 'right'} size={18} />
   </TouchTarget>{open && <View style={s.disclosed}>{children}</View>}</View>;
 }
@@ -30,6 +30,7 @@ export const careStyles = StyleSheet.create({
 const s = StyleSheet.create({
   brand: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   wordmark: { fontFamily: fonts.semibold, fontSize: 24, color: colors.ink, letterSpacing: -0.7 },
+  pressed: { backgroundColor: colors.subtle, borderRadius: 12 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 18 },
   copy: { flex: 1 },
   rowTitle: { fontFamily: fonts.medium, fontSize: 16, lineHeight: 23, color: colors.ink },

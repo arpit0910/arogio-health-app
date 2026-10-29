@@ -48,7 +48,7 @@ export function AppNavigation({
               }}
               style={[s.tab, expanded && s.railTab]}
             >
-              {tab.name === "jeeva" ? <Image source={require("../../assets/home/jeeva.png")} accessible={false} style={[s.jeeva, expanded && s.railJeeva, selected && s.activeJeeva]} /> : <View style={[s.icon]}>
+              {tab.name === "jeeva" ? <Image source={require("../../assets/home/jeeva.png")} accessible={false} style={[s.jeeva, expanded && s.railJeeva, selected && s.activeJeeva]} /> : <View style={[s.icon, selected && { backgroundColor: t.mint }]}>
                 <AppIcon
                   name={tab.icon}
                   size={24}

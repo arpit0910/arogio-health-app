@@ -18,6 +18,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { randomUUID } from 'expo-crypto';
+import { useHealthSync } from '../health-sync/HealthSyncProvider';
+import { showHealthConnectionPrompt } from '../health-sync/connection';
+import { HealthChart } from '../health-sync/HealthCharts';
 import { useAuth } from '../auth/context/AuthContext';
 import { useWellness } from '../wellness/WellnessContext';
 import { localDay } from '../wellness/domain';
@@ -25,7 +28,7 @@ import { homeUpcoming, homeWater } from './homeModel';
 import { SidebarButton } from '../../navigation/AppSidebar';
 import { Avatar } from '../../components/app/Avatar';
 import { AppIcon, type AppIconName } from '../../components/app/AppIcon';
-import { CareBrand } from '../../components/app/CareUI';
+import { CareBrand, CareRow } from '../../components/app/CareUI';
 import { Button } from '../../components/ui/Button';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { colors, fonts } from '../../theme/tokens';
@@ -43,6 +46,7 @@ const shortcuts: {
 ];
 export function HomeScreen() {
   const { user } = useAuth();
+  const health = useHealthSync();
   const { data, loading, busy, error, refresh, save } = useWellness();
   const { fontScale, width } = useWindowDimensions();
   const expanded = width >= 768;
@@ -184,6 +188,7 @@ export function HomeScreen() {
               </TouchTarget>
             ))}
           </View>
+          <CareRow icon="trend" title="Daily activity & targets" detail="Track with Arogio or use your selected health app" onPress={() => router.push('/activity')} />
           {error && (
             <View style={s.error} accessibilityLiveRegion="polite">
               <Text style={s.errorText}>
@@ -347,7 +352,7 @@ export function HomeScreen() {
                   </TouchTarget>
                 </View>
               )}
-              <TouchTarget
+              {showHealthConnectionPrompt(health.ready, health.hasConnected) && <TouchTarget
                 accessibilityRole="button"
                 onPress={() => router.push('/connected-health')}
                 style={({ pressed }) => [s.connected, pressed && s.pressed]}
@@ -355,12 +360,17 @@ export function HomeScreen() {
                 <AppIcon name="sync" size={25} />
                 <View style={s.flex}>
                   <Text style={s.rowTitle}>Connect your health apps</Text>
-                  <Text style={s.caption}>
-                    View steps, sleep, heart rate and weight
-                  </Text>
+                  <Text style={s.caption}>Activity, sleep, heart rate and more</Text>
                 </View>
                 <AppIcon name="right" size={18} />
-              </TouchTarget>
+              </TouchTarget>}
+              {health.snapshot?.granted.includes('Steps') && (
+                <View style={{ gap: 12 }}>
+                  <Text style={s.rowTitle}>Steps &middot; Last 7 days</Text>
+                  <Text style={s.caption}>{health.source?.name}</Text>
+                  <HealthChart snapshot={health.snapshot} metric="Steps" />
+                </View>
+              )}
             </View>
             <View style={expanded ? s.secondaryColumn : undefined}>
               <View style={s.sectionHeader}>

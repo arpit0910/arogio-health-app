@@ -1,13 +1,36 @@
 import * as Notifications from 'expo-notifications';
 import { AndroidImportance, AndroidNotificationVisibility, clearLastNotificationResponse } from 'expo-notifications';
-import { Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
+import Constants from 'expo-constants';
 import type { Reminder } from './reminderPlan';
 Notifications.setNotificationHandler({ handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: true, shouldSetBadge: false }) });
 const prefix = 'arogio-wellness:';
 let generation = 0;
 let queue: Promise<string | null> = Promise.resolve(null);
-async function channel() { if (Platform.OS === 'android') await Notifications.setNotificationChannelAsync('wellness', { name: 'Wellness reminders', importance: AndroidImportance.DEFAULT, lockscreenVisibility: AndroidNotificationVisibility.PRIVATE }); }
-export async function requestReminderPermission() { await channel(); const current = await Notifications.getPermissionsAsync(); return current.granted || (await Notifications.requestPermissionsAsync()).granted; }
+export const WATER_SOUND = 'water_drop.wav';
+export const WATER_CHANNEL = 'water-reminders-v1';
+async function channel() {
+  if (Platform.OS !== 'android') return;
+  await Notifications.setNotificationChannelAsync('wellness', { name: 'Wellness reminders', importance: AndroidImportance.DEFAULT, lockscreenVisibility: AndroidNotificationVisibility.PRIVATE });
+  // New stable ID: Android cannot replace the sound of the existing wellness channel.
+  // Reusing this ID preserves the user's own mute and sound choices on later launches.
+  await Notifications.setNotificationChannelAsync(WATER_CHANNEL, { name: 'Water reminders', description: 'Drinking reminders with a short water-drop sound', importance: AndroidImportance.DEFAULT, sound: WATER_SOUND, lockscreenVisibility: AndroidNotificationVisibility.PRIVATE });
+}
+export async function requestReminderPermission() {
+  try { await channel(); const current = await Notifications.getPermissionsAsync(); return current.granted || (await Notifications.requestPermissionsAsync()).granted; }
+  catch { return false; }
+}
+export async function openReminderSettings(target: 'water' | 'all' = 'water') {
+  const packageName = Constants.expoConfig?.android?.package;
+  if (target === 'water' && Platform.OS === 'android' && packageName) {
+    await channel();
+    try { await Linking.sendIntent('android.settings.CHANNEL_NOTIFICATION_SETTINGS', [
+      { key: 'android.provider.extra.APP_PACKAGE', value: packageName },
+      { key: 'android.provider.extra.CHANNEL_ID', value: WATER_CHANNEL },
+    ]); return; } catch { /* Older device settings can fall back to app settings. */ }
+  }
+  await Linking.openSettings();
+}
 export function syncNotifications(owner: string | null, reminders: Reminder[]): Promise<string | null> {
   const turn = ++generation;
   queue = queue.catch(() => null).then(async () => {
@@ -20,7 +43,7 @@ export function syncNotifications(owner: string | null, reminders: Reminder[]): 
     await channel();
     for (const reminder of reminders) {
       if (turn !== generation) return null;
-      await Notifications.scheduleNotificationAsync({ identifier: `${prefix}${owner}:${reminder.id}`, content: { title: reminder.title, body: reminder.body, sound: 'default', data: { route: reminder.route, wellness: true } }, trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(reminder.at), channelId: 'wellness' } });
+      await Notifications.scheduleNotificationAsync({ identifier: `${prefix}${owner}:${reminder.id}`, content: { title: reminder.title, body: reminder.body, sound: reminder.route === '/water' ? WATER_SOUND : 'default', data: { route: reminder.route, wellness: true } }, trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(reminder.at), channelId: reminder.route === '/water' ? WATER_CHANNEL : 'wellness' } });
     }
     return null;
   });

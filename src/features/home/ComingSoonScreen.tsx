@@ -1,3 +1,5 @@
+import { router } from 'expo-router';
+import { Button } from '../../components/ui/Button';
 import { Text, View } from "react-native";
 import { AppScreen, appStyles as a } from "../../components/app/AppScreen";
 import { AppIcon, type AppIconName } from "../../components/app/AppIcon";
@@ -23,6 +25,7 @@ export function ComingSoonScreen({
           We&apos;re working on this feature. You can continue managing your
           profile and health preferences.
         </Text>
+        <Button title="Go to daily care" onPress={() => router.navigate('/health')} />
       </View>
     </AppScreen>
   );

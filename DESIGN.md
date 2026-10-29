@@ -14,6 +14,7 @@ colors:
   accent: "#7B3D45"
   accent-surface: "#EEE1E1"
   error: "#A42A36"
+  error-surface: "#F8E9E8"
 typography:
   headline:
     fontFamily: "Inter_600SemiBold"
@@ -152,3 +153,5 @@ The sidecar's isolated HTML/CSS snippets translate native visual patterns for do
 - Don't return to decorative tile walls or repeated edit controls.
 - Don't treat documentation previews as native rendered verification.
 - Don't imply reminders, records or daily tracking are available before implementation.
+
+Daily tracking uses the existing palette and grouped layout. Save feedback pairs an icon with text; destructive actions use the error color and error surface. Shared buttons wrap long labels and retain at least 52 logical units. Water progress represents saved logs against the user-selected target, not a recommended intake.

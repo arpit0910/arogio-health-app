@@ -1,3 +1,4 @@
+import '../features/health-sync/backgroundHealth';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';

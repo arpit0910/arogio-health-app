@@ -24,7 +24,16 @@
         "android.permission.health.READ_STEPS",
         "android.permission.health.READ_SLEEP",
         "android.permission.health.READ_HEART_RATE",
-        "android.permission.health.READ_WEIGHT"
+        "android.permission.health.READ_WEIGHT",
+        "android.permission.health.READ_DISTANCE",
+        "android.permission.health.READ_ACTIVE_CALORIES_BURNED",
+        "android.permission.health.READ_TOTAL_CALORIES_BURNED",
+        "android.permission.health.READ_EXERCISE",
+        "android.permission.health.READ_FLOORS_CLIMBED",
+        "android.permission.health.READ_RESTING_HEART_RATE",
+        "android.permission.health.READ_HYDRATION",
+        "android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND",
+        "android.permission.health.READ_NUTRITION"
       ]
     },
     "web": {
@@ -32,7 +41,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          "sounds": [
+            "./assets/sounds/water_drop.wav"
+          ]
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -102,6 +118,13 @@
           "android": {
             "minSdkVersion": 26
           }
+        }
+      ],
+      "expo-background-task",
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Allow Arogio to count steps while you use the app."
         }
       ]
     ],

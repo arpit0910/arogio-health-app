@@ -1,20 +1,23 @@
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 import * as Crypto from 'expo-crypto';
 import { AppScreen } from '../../components/app/AppScreen';
 import { careStyles as c } from '../../components/app/CareUI';
 import { Button } from '../../components/ui/Button';
-import { CareIllustration } from '../../components/app/CareIllustration';
+import { TrackingIntro } from './TrackingVisuals';
+import { TrackingFeedback, useTrackingFeedback } from './TrackingFeedback';
+import { AppIcon } from '../../components/app/AppIcon';
 import { useWellness } from './WellnessContext';
 import { type Medicine } from './domain';
 import { Check, Field, Group, TrackingStatus, confirmDelete, trackingStyles as s } from './TrackingUI';
 import { TimeField } from './TimeField';
-import { requestReminderPermission } from './notifications';
+import { openReminderSettings, requestReminderPermission } from './notifications';
 import { formatClock } from '../../lib/time';
 
 export function MedicineScreen() {
   const { data, loading, busy, save, notice } = useWellness();
-  const [draft, setDraft] = useState<Medicine | null>(null), [feedback, setFeedback] = useState('');
+  const [draft, setDraft] = useState<Medicine | null>(null);
+  const { feedback, setFeedback } = useTrackingFeedback();
   const [submitting, setSubmitting] = useState(false);
   const medicines = data.medicines ?? [];
   const change = (patch: Partial<Medicine>) => setDraft(current => current ? { ...current, ...patch } : null);
@@ -27,17 +30,17 @@ export function MedicineScreen() {
     try {
       if (draft.enabled && !(await requestReminderPermission())) { setFeedback('Notifications are unavailable or not allowed. Enable them in device settings, or save with reminders turned off.'); return; }
       const { id, ...body } = draft;
-      if (await save(`medicines/${id}`, body)) { setDraft(null); setFeedback('Medicine saved. Daily reminders follow your dose times.'); }
+      if (await save(`medicines/${id}`, body)) { setDraft(null); setFeedback(draft.enabled ? 'Medicine saved. Daily reminders follow your dose times.' : 'Medicine saved. Reminders are off.', 'success'); }
     } catch {
       setFeedback('Unable to check notification permissions. Try again, or save with reminders turned off.');
     } finally { setSubmitting(false); }
 
   }
-  return <AppScreen back title="Medicine reminders"><Text style={c.heading}>Your medicines, on time.</Text><Text style={c.text}>Keep each medicine and its daily doses together. All times use IST.</Text><TrackingStatus />
-    {!!feedback && <Text accessibilityLiveRegion="polite" style={[c.text, c.section]}>{feedback}</Text>}
+  return <AppScreen back title="Medicine reminders"><TrackingIntro name="medicine" title="Your medicines, on time." description="Keep each medicine and its daily doses together. All times use IST." /><TrackingStatus />
+    <TrackingFeedback value={feedback} />
     {!draft && !loading && <>
-      {medicines.length === 0 && <View style={s.panel}><CareIllustration name="medicine" width="100%" height={150} /><Text style={c.title}>A routine that fits your day</Text><Text style={c.text}>Add a medicine, then set a time and amount for each dose. You can pause or edit it anytime.</Text></View>}
-      <Group title="Your medicines">{medicines.map(m => <View key={m.id} style={s.row}><Text style={c.title}>{m.name}</Text><Text style={c.text}>{m.enabled ? 'Daily reminders on' : 'Reminders paused'}</Text>{m.doses.map(d => <Text key={d.time} style={c.text}>{formatClock(d.time)} / {d.amount}</Text>)}{!!m.notes && <Text style={c.text}>{m.notes}</Text>}<Button title={`Edit ${m.name}`} variant="secondary" disabled={busy} onPress={() => { setFeedback(''); setDraft({ ...m, doses: m.doses.map(d => ({ ...d })) }); }} /></View>)}<Button title="Add a medicine" disabled={busy || medicines.length >= 30} onPress={() => {setFeedback(''); setDraft({ id: Crypto.randomUUID(), name: '', notes: '', enabled: true, doses: [{ time: '08:00', amount: '' }] });}} /></Group>
+      {medicines.length === 0 && <View style={s.panel}><Text style={c.title}>A routine that fits your day</Text><Text style={c.text}>Add a medicine, then set a time and amount for each dose. You can pause or edit it anytime.</Text></View>}
+      <Group title="Your medicines">{medicines.map(m => <View key={m.id} style={s.row}><Text style={c.title}>{m.name}</Text><Text style={c.text}>{m.enabled ? 'Daily reminders on' : 'Reminders paused'}</Text>{[...m.doses].sort((a,b) => a.time.localeCompare(b.time)).map(d => <View key={d.time} style={[s.inline, { alignItems: 'center', gap: 8 }]}><AppIcon name="clock" size={18} /><Text style={c.text}>{formatClock(d.time)}</Text><Text style={c.text}>{d.amount}</Text></View>)}{!!m.notes && <Text style={c.text}>{m.notes}</Text>}<Button title={`Edit ${m.name}`} variant="secondary" disabled={busy} onPress={() => { setFeedback(''); setDraft({ ...m, doses: m.doses.map(d => ({ ...d })) }); }} /></View>)}<Button title="Add a medicine" disabled={busy || medicines.length >= 30} onPress={() => {setFeedback(''); setDraft({ id: Crypto.randomUUID(), name: '', notes: '', enabled: true, doses: [{ time: '08:00', amount: '' }] });}} /></Group>
     </>}
     {draft && <Group title={medicines.some(m => m.id === draft.id) ? 'Edit medicine' : 'Add medicine'}>
       <Field label="Medicine name" icon="pill" placeholder="e.g. Vitamin D" value={draft.name} onChange={name => change({ name })} />
@@ -47,8 +50,8 @@ export function MedicineScreen() {
       <Field label="Instructions (optional)" placeholder="e.g. After breakfast" icon="report" multiline value={draft.notes} onChange={notes => change({ notes })} />
       <Check label="Send daily dose reminders" checked={draft.enabled} disabled={busy} onChange={() => change({ enabled: !draft.enabled })} />
       <Button title="Save medicine" loading={busy || submitting} onPress={() => void submit()} /><Button title="Cancel" variant="secondary" disabled={busy || submitting} onPress={() => {setDraft(null);setFeedback('');}} />
-      {medicines.some(m => m.id === draft.id) && <Button title="Delete medicine" variant="secondary" disabled={busy} onPress={() => confirmDelete('Delete medicine?', 'This removes the medicine and its future reminders.', () => void (async () => { if (await save(`medicines/${draft.id}`, undefined, 'DELETE')) {setDraft(null);setFeedback('Medicine deleted.');} })())} />}
+      {medicines.some(m => m.id === draft.id) && <Button title="Delete medicine" variant="danger" disabled={busy} onPress={() => confirmDelete('Delete medicine?', 'This removes the medicine and its future reminders.', () => void (async () => { if (await save(`medicines/${draft.id}`, undefined, 'DELETE')) {setDraft(null);setFeedback('Medicine deleted.', 'success');} })())} />}
     </Group>}
-    {!!notice && <Text style={[c.text,c.section]}>{notice}</Text>}<Text style={[c.text,c.section]}>Device reminders are scheduled ahead. Reopen Arogio regularly to keep upcoming reminders scheduled.</Text>
+    {Platform.OS !== 'web' && <Button title="Manage device notifications" variant="secondary" onPress={() => void openReminderSettings('all').catch(() => setFeedback('Open Arogio in device settings to manage notifications.'))} />}{!!notice && <Text style={[c.text,c.section]}>{notice}</Text>}<Text style={[c.text,c.section]}>Device reminders are scheduled ahead. Reopen Arogio regularly to keep upcoming reminders scheduled.</Text>
   </AppScreen>;
 }

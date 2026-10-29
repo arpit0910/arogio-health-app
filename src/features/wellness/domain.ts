@@ -1,3 +1,4 @@
+import type { ActivityTracking } from '../activity/model.ts';
 import { APP_TIMEZONE } from '../../lib/time.ts';
 /** Calendar dates are plain ISO dates, never UTC-serialized local midnights. */
 export type WaterPlan = { version: string; wakeTime: string; sleepTime: string; targetMl: number; servingMl: number; timezone: string; remindersEnabled: boolean; pausedUntil: string | null };
@@ -10,7 +11,7 @@ export const moods = ['calm', 'happy', 'low', 'irritable', 'anxious'] as const;
 export const flows = ['none', 'spotting', 'light', 'medium', 'heavy'] as const;
 export type CycleEntry = { day: string; flow: typeof flows[number]; symptoms: string[]; mood: string | null; notes: string };
 export type Medicine = { id: string; name: string; notes: string; enabled: boolean; doses: { time: string; amount: string }[] };
-export type WellnessData = { medicines?: Medicine[]; waterPlan: WaterPlan | null; cycleSettings: CycleSettings | null; waterLogs: WaterLog[]; waterTasks: WaterTaskState[]; periods: Period[]; cycleEntries: CycleEntry[] };
+export type WellnessData = { activityTracking?: ActivityTracking; medicines?: Medicine[]; waterPlan: WaterPlan | null; cycleSettings: CycleSettings | null; waterLogs: WaterLog[]; waterTasks: WaterTaskState[]; periods: Period[]; cycleEntries: CycleEntry[] };
 export type WaterTask = { id: string; day: string; at: string; amountMl: number; remainingMl: number; status: 'pending' | 'done' | 'skipped' | 'missed'; snoozedUntil: string | null };
 export const emptyWellness = (): WellnessData => ({ medicines: [], waterPlan: null, cycleSettings: null, waterLogs: [], waterTasks: [], periods: [], cycleEntries: [] });
 export const defaultCycleSettings = (timezone: string): CycleSettings => ({ cycleLength: 28, periodLength: 5, predictionsEnabled: true, remindersEnabled: false, discreet: true, reminderDaysBefore: 2, reminderTime: '09:00', timezone });
