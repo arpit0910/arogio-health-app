@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
+  RefreshControl,
   StyleSheet,
   View,
 } from "react-native";
@@ -16,11 +17,15 @@ export function AppScreen({
   title,
   back = false,
   action,
+  onRefresh,
+  refreshing = false,
 }: {
   children: ReactNode;
   title?: string;
   back?: boolean;
   action?: ReactNode;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }) {
   const s = useStyles();
 
@@ -38,7 +43,8 @@ export function AppScreen({
         <AppHeader back={back} title={title} action={action} />
         <FocusScrollView
           keyboardShouldPersistTaps="handled"
-          bounces={false}
+          bounces={Boolean(onRefresh)}
+          refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={s.safe.backgroundColor === '#00291E' ? '#79E6BB' : '#126349'} /> : undefined}
           overScrollMode="never"
           contentContainerStyle={s.scroll}
         >
@@ -102,7 +108,7 @@ return StyleSheet.create({
     width: "100%",
     maxWidth: 440,
     alignSelf: "center",
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
     paddingTop: 16,
   },
 });

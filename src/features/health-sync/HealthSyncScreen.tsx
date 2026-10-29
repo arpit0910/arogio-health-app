@@ -31,7 +31,7 @@ export function HealthSyncScreen() {
   } = useHealthSync();
   if (!connected) return <StandaloneHealthScreen />;
   return (
-    <AppScreen back title="Connected health">
+    <AppScreen back title="Connected health" refreshing={busy} onRefresh={() => void run()}>
       <View style={{ gap: 12 }}>
         <Text style={c.heading}>Connected readings</Text>
         {connected && (
@@ -44,12 +44,7 @@ export function HealthSyncScreen() {
                 {source?.name ?? "Selected health app"} - Automatic sync
               </Text>
             </View>
-            <Button
-              title="Refresh readings"
-              variant="secondary"
-              loading={busy}
-              onPress={() => void run()}
-            />
+
           </View>
         )}
         {(source || snapshot || connected) && (

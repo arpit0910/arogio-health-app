@@ -4,11 +4,11 @@ import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '../auth/context/AuthContext';
 import { connectHealth, requestBackgroundHealth, grantedHealth, healthAvailability, syncHealth } from './healthConnect';
 import { installedHealthApps } from './healthApps';
-import { cachedBackgroundHealth, startBackgroundHealth, stopBackgroundHealth } from './backgroundHealth';
+import { startBackgroundHealth, stopBackgroundHealth } from './backgroundHealth';
 import { restoreHealthPreference, isHealthApp, type HealthApp, type HealthPreference } from './connection';
 import type { HealthAvailability, HealthMetric, HealthSnapshot } from './model';
 
-export const HEALTH_REFRESH_MS = 5 * 60 * 1000;
+export const HEALTH_REFRESH_MS = 30 * 1000;
 type HealthState = {
   availability: HealthAvailability | null;
   connected: boolean;
@@ -19,7 +19,7 @@ type HealthState = {
   appsLoading: boolean;
   appsError: string;
   refreshApps: () => Promise<HealthApp[]>;
-  connectSource: (app: HealthApp, selected: HealthMetric[]) => Promise<void>;
+  connectSource: (app: HealthApp, selected: HealthMetric[]) => Promise<boolean>;
   busy: boolean;
   ready: boolean;
   background: boolean;
@@ -104,27 +104,10 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
       if (valid()) setError('Health access is off. Manage access in Settings > Connected health.');
       return;
     }
-    // Legacy snapshots without a source and caches belonging to other sources are never shown.
     if (pref.background) {
       const enabled = await startBackgroundHealth(account!, pref.selected, source.id, () => valid() && preference.current.background).catch(() => false);
       if (!valid()) return;
       setBackground(enabled);
-      if (!enabled) await stopBackgroundHealth().catch(() => {});
-      if (enabled) {
-        const cached = await cachedBackgroundHealth(account!, source.id);
-        if (!valid()) return;
-        if (cached?.source === source.id && Date.now() >= Date.parse(cached.syncedAt) && Date.now() - Date.parse(cached.syncedAt) < HEALTH_REFRESH_MS) {
-          const current = await grantedHealth();
-          if (!valid()) return;
-          const permitted = current.filter((m) => allowed.includes(m));
-          const visible = { ...cached, granted: cached.granted.filter((m) => permitted.includes(m)),
-            days: cached.days.map((day) => ({ ...day, readings: Object.fromEntries(Object.entries(day.readings).filter(([key]) => permitted.includes(key as HealthMetric))) })),
-            latestWeight: permitted.includes('Weight') ? cached.latestWeight : null };
-          pendingRefresh.current = false;
-          setSnapshot(visible); setConnected(visible.granted.length > 0);
-          return;
-        }
-      }
     }
     const next = await syncHealth(pref.selected, source.id);
     if (!valid() || next.source !== source.id) return;
@@ -148,7 +131,10 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     } finally { release(request); }
   }
   async function connectSource(app: HealthApp, selected: HealthMetric[]) {
-    if (!account || !initialized.current || lock.current || !isHealthApp(app) || !selected.length) return;
+    if (!account || !initialized.current || !isHealthApp(app) || !selected.length) return false;
+    const waitingSince = Date.now();
+    while (lock.current && mounted.current && Date.now() - waitingSince < 20000) await new Promise(resolve => setTimeout(resolve, 100));
+    if (!mounted.current || lock.current) return false;
     lock.current = true;
     const request = ++revision.current;
     const valid = () => mounted.current && revision.current === request;
@@ -158,23 +144,25 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     apply({ ...previous, enabled: false });
     try {
       await Promise.all([stopBackgroundHealth(), persist({ ...previous, enabled: false })]);
-      if (!valid()) return;
+      if (!valid()) return false;
       const installed = await installedHealthApps();
       if (!installed.some((candidate) => candidate.id === app.id)) throw new Error('Source app unavailable');
-      if (!valid()) return;
+      if (!valid()) return false;
       const existing = await grantedHealth();
       const granted = !previous.hasConnected || selected.some((m) => !previous.selected.includes(m)) || !existing.some((m) => selected.includes(m)) ? await connectHealth(selected) : existing;
-      if (!valid()) return;
+      if (!valid()) return false;
       if (!granted.some((m) => selected.includes(m))) {
         setError('No health data access was granted. Allow the data types you want to read in Health Connect.');
-        return;
+        return false;
       }
       await persist({ enabled: true, source: app, selected, background: previous.background, hasConnected: true });
-      if (!valid()) return;
+      if (!valid()) return false;
       setConnected(true);
       await readCurrent(request);
+      return valid();
     } catch {
       if (valid()) setError('This health app could not connect. Check that it is installed and sharing data with Health Connect, then try again.');
+      return false;
     } finally { release(request); }
   }
   const actions = useRef({ run, refreshApps });
@@ -217,7 +205,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     const timer = setInterval(() => { if (AppState.currentState === 'active') void actions.current.run(); }, HEALTH_REFRESH_MS);
     const listener = AppState.addEventListener('change', (state) => {
       if (state === 'active') { void actions.current.refreshApps(); void actions.current.run(); }
-      else setSnapshot(null);
+
     });
     return () => { mounted.current = false; clearInterval(timer); listener.remove(); };
   }, [account, key]);

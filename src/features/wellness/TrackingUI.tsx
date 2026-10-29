@@ -3,7 +3,6 @@ import { useFieldFocus } from '../../components/ui/FocusScrollView';
 import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRef, useState, type PropsWithChildren } from 'react';
 import { AppIcon, type AppIconName } from '../../components/app/AppIcon';
-import { Button } from '../../components/ui/Button';
 import { Checkbox } from '../auth/components/AuthPrimitives';
 import { useCareStyles } from '../../components/app/CareUI';
 import { fonts } from '../../theme/tokens';
@@ -36,7 +35,8 @@ export function Group({ title, children }: PropsWithChildren<{ title: string }>)
   const trackingStyles = useTrackingStyles();
  return <View style={trackingStyles.group}><Text accessibilityRole="header" style={c.title}>{title}</Text>{children}</View>; }
 export function TrackingStatus() {
+  const c = useCareStyles();
   const colors = usePalette();
   const trackingStyles = useTrackingStyles();
- const { loading, error, refresh } = useWellness(); return <View accessibilityLiveRegion="polite" style={{ gap: 10 }}>{loading && <ActivityIndicator accessibilityLabel="Loading tracking" color={colors.primary} />}{error && <><Text style={trackingStyles.error}>{error}</Text><Button title="Reload tracking" variant="secondary" onPress={() => void refresh()} /></>}</View>; }
+ const { loading, error } = useWellness(); return <View accessibilityLiveRegion="polite" style={{ gap: 10 }}>{loading && <ActivityIndicator accessibilityLabel="Loading tracking" color={colors.primary} />}{error && <><Text style={trackingStyles.error}>{error}</Text><Text style={c.text}>Arogio will retry automatically. Pull down on Home to check now.</Text></>}</View>; }
 export function confirmDelete(title: string, message: string, action: () => void) { if (Platform.OS === 'web') { if (window.confirm(`${title}\n${message}`)) action(); } else Alert.alert(title, message, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: action }]); }

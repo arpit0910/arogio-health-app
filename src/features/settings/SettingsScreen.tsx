@@ -20,6 +20,7 @@ export function SettingsScreen() {
     <View style={{ gap: 8 }}><Text style={c.heading}>Preferences</Text><Text style={c.text}>Choose how Arogio looks, reminds you and records your day.</Text></View>
     <View style={{ marginTop: 32 }}>
       <Text accessibilityRole="header" style={c.title}>Reminders & connections</Text>
+      <CareRow icon="shield" title="App access" detail="Notifications, motion, location and health source" onPress={() => router.push('/app-access')} />
       <CareRow icon="bell" title="Notifications" detail="Reminder preferences, permissions and sounds" onPress={() => router.push('/notification-settings')} />
       <CareRow icon="sync" title="Health app connections" detail={health.source ? `${health.source.name} · ${health.connected ? 'Connected' : 'Needs attention'}` : 'Optional ? Arogio tracking works without another app'} onPress={() => router.push('/connected-health-settings')} />
     </View>

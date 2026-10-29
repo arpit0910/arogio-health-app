@@ -1,5 +1,3 @@
-import { CityField } from './CityField';
-import { NotificationPermissionStep } from "../../onboarding/NotificationPermissionStep";
 import { normalizeInviteCode } from "../../referrals/model";
 import { referralCodeSchema } from "../../auth/types";
 import { usePalette } from "../../../theme/AppearanceProvider";
@@ -50,11 +48,9 @@ export function ProfileSetupScreen() {
     resumeSetup(profileDraft(user!)),
   );
   const [complete, setComplete] = useState(Boolean(user?.profileCompletedAt));
-  const [notificationStage, setNotificationStage] = useState(false);
-  const [notificationBusy, setNotificationBusy] = useState(false);
+  const notificationStage = false, notificationBusy = false;
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
-  const [locationAsked, setLocationAsked] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pickingBirthday, setPickingBirthday] = useState(false);
   const set = <K extends keyof SetupDraft>(key: K, value: SetupDraft[K]) => {
@@ -71,10 +67,6 @@ export function ProfileSetupScreen() {
       "hardwareBackPress",
       () => {
         if (busyRef.current || notificationBusy || complete) return true;
-        if (notificationStage) {
-          setNotificationStage(false);
-          return true;
-        }
         if (step === 0) return false;
         setError(null);
         setStep((current) => (current - 1) as SetupStep);
@@ -94,16 +86,9 @@ export function ProfileSetupScreen() {
       const referral = referralCodeSchema.safeParse(referralCode);
       if (!referral.success) {
         setError(referral.error.issues[0].message);
-        setNotificationStage(false);
         return;
       }
     }
-    if (step === 2 && !notificationStage) {
-      Keyboard.dismiss();
-      setNotificationStage(true);
-      return;
-    }
-    if (step === 1) setLocationAsked(true);
     Keyboard.dismiss();
     setError(null);
     busyRef.current = true;
@@ -168,8 +153,7 @@ export function ProfileSetupScreen() {
                 disabled={busy || notificationBusy}
                 onPress={() => {
                   setError(null);
-                  if (notificationStage) setNotificationStage(false);
-                  else setStep((step - 1) as SetupStep);
+                  setStep((step - 1) as SetupStep);
                 }}
                 style={s.back}
               >
@@ -178,13 +162,13 @@ export function ProfileSetupScreen() {
             ) : (
               <CareBrand />
             )}
-            <Text style={s.step}>Step {activeStep + 1} of 4</Text>
+            <Text style={s.step}>Step {activeStep + 1} of 3</Text>
           </View>
           <View
             style={s.progress}
-            accessibilityLabel={`Setup step ${activeStep + 1} of 4`}
+            accessibilityLabel={`Setup step ${activeStep + 1} of 3`}
           >
-            {[0, 1, 2, 3].map((index) => (
+            {[0, 1, 2].map((index) => (
               <View
                 key={index}
                 style={[s.segment, index <= activeStep && s.segmentActive]}
@@ -301,7 +285,7 @@ export function ProfileSetupScreen() {
                       />
                     </View>
                   </View>
-                  <CityField value={draft.location} onChange={value => set('location', value)} disabled={busy} autoDetect={!locationAsked} />
+                  <ProfileInput label="City (optional)" icon="location" value={draft.location} placeholder="Detected during access setup, or enter city" onChangeText={value => set('location',value)} editable={!busy} maxLength={100} />
                   <Text style={c.text}>
                     Only the essentials for now. Add other personal details
                     later in your profile.
@@ -356,17 +340,11 @@ export function ProfileSetupScreen() {
                 )}
               </View>
             )}
-            {notificationStage && (
-              <NotificationPermissionStep
-                disabled={busy}
-                onBusyChange={setNotificationBusy}
-              />
-            )}
             <FormError message={error} />
           </FocusScrollView>
           <View style={s.footer}>
             <Button
-              title={notificationStage ? "Finish setup" : "Continue"}
+              title={step === 2 ? "Finish profile" : "Continue"}
               onPress={() => void next()}
               loading={busy}
               disabled={notificationBusy}

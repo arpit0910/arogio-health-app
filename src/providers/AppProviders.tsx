@@ -1,3 +1,4 @@
+import { AppAccessGate } from '../features/onboarding/AppAccess';
 import { InboxProvider } from '../features/notifications/InboxProvider';
 import { AppearanceProvider } from '../theme/AppearanceProvider';
 import { PhoneStepsProvider } from '../features/activity/PhoneStepsProvider';
@@ -25,7 +26,7 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <AppearanceProvider><SafeAreaProvider>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider><InboxProvider><HealthSyncProvider><WellnessProvider><PhoneStepsProvider>{fontsLoaded ? <SidebarProvider>{children}</SidebarProvider> : <LaunchArtwork />}</PhoneStepsProvider></WellnessProvider></HealthSyncProvider></InboxProvider></AuthProvider>
+      <AuthProvider><InboxProvider><HealthSyncProvider><WellnessProvider><PhoneStepsProvider>{fontsLoaded ? <AppAccessGate><SidebarProvider>{children}</SidebarProvider></AppAccessGate> : <LaunchArtwork />}</PhoneStepsProvider></WellnessProvider></HealthSyncProvider></InboxProvider></AuthProvider>
     </QueryClientProvider>
     </SafeAreaProvider></AppearanceProvider>
   );

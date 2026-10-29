@@ -1,176 +1,136 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-27T00:00:00Z",
+  "generatedAt": "2026-10-29T00:00:00Z",
   "title": "Design System: Arogio",
   "extensions": {
     "colorMeta": {
       "background": {
         "role": "neutral",
-        "displayName": "Background",
-        "tonalRamp": [
-          "oklch(15% 0.0045 78.30)",
-          "oklch(26% 0.0045 78.30)",
-          "oklch(38% 0.0045 78.30)",
-          "oklch(49% 0.0045 78.30)",
-          "oklch(61% 0.0045 78.30)",
-          "oklch(72% 0.0045 78.30)",
-          "oklch(84% 0.0045 78.30)",
-          "oklch(95% 0.0045 78.30)"
-        ]
+        "displayName": "Background"
       },
       "surface": {
         "role": "neutral",
-        "displayName": "Surface",
-        "tonalRamp": [
-          "oklch(15% 0.0045 78.30)",
-          "oklch(26% 0.0045 78.30)",
-          "oklch(38% 0.0045 78.30)",
-          "oklch(49% 0.0045 78.30)",
-          "oklch(61% 0.0045 78.30)",
-          "oklch(72% 0.0045 78.30)",
-          "oklch(84% 0.0045 78.30)",
-          "oklch(95% 0.0045 78.30)"
-        ]
+        "displayName": "Surface"
       },
       "ink": {
         "role": "neutral",
-        "displayName": "Ink",
-        "tonalRamp": [
-          "oklch(15% 0.0422 166.23)",
-          "oklch(26% 0.0422 166.23)",
-          "oklch(38% 0.0422 166.23)",
-          "oklch(49% 0.0422 166.23)",
-          "oklch(61% 0.0422 166.23)",
-          "oklch(72% 0.0422 166.23)",
-          "oklch(84% 0.0422 166.23)",
-          "oklch(95% 0.0422 166.23)"
-        ]
+        "displayName": "Ink"
       },
       "muted": {
         "role": "neutral",
-        "displayName": "Muted",
-        "tonalRamp": [
-          "oklch(15% 0.0232 142.91)",
-          "oklch(26% 0.0232 142.91)",
-          "oklch(38% 0.0232 142.91)",
-          "oklch(49% 0.0232 142.91)",
-          "oklch(61% 0.0232 142.91)",
-          "oklch(72% 0.0232 142.91)",
-          "oklch(84% 0.0232 142.91)",
-          "oklch(95% 0.0232 142.91)"
-        ]
+        "displayName": "Muted"
       },
       "placeholder": {
         "role": "neutral",
-        "displayName": "Placeholder",
-        "tonalRamp": [
-          "oklch(15% 0.0208 135.02)",
-          "oklch(26% 0.0208 135.02)",
-          "oklch(38% 0.0208 135.02)",
-          "oklch(49% 0.0208 135.02)",
-          "oklch(61% 0.0208 135.02)",
-          "oklch(72% 0.0208 135.02)",
-          "oklch(84% 0.0208 135.02)",
-          "oklch(95% 0.0208 135.02)"
-        ]
+        "displayName": "Placeholder"
       },
       "primary": {
         "role": "primary",
-        "displayName": "Primary",
-        "tonalRamp": [
-          "oklch(15% 0.0597 165.29)",
-          "oklch(26% 0.0597 165.29)",
-          "oklch(38% 0.0597 165.29)",
-          "oklch(49% 0.0597 165.29)",
-          "oklch(61% 0.0597 165.29)",
-          "oklch(72% 0.0597 165.29)",
-          "oklch(84% 0.0597 165.29)",
-          "oklch(95% 0.0597 165.29)"
-        ]
+        "displayName": "Primary"
       },
       "primary-pressed": {
         "role": "primary",
-        "displayName": "Primary Pressed",
-        "tonalRamp": [
-          "oklch(15% 0.0524 163.38)",
-          "oklch(26% 0.0524 163.38)",
-          "oklch(38% 0.0524 163.38)",
-          "oklch(49% 0.0524 163.38)",
-          "oklch(61% 0.0524 163.38)",
-          "oklch(72% 0.0524 163.38)",
-          "oklch(84% 0.0524 163.38)",
-          "oklch(95% 0.0524 163.38)"
-        ]
+        "displayName": "Primary Pressed"
+      },
+      "on-primary": {
+        "role": "neutral",
+        "displayName": "On Primary"
       },
       "border": {
         "role": "neutral",
-        "displayName": "Border",
-        "tonalRamp": [
-          "oklch(15% 0.0180 120.71)",
-          "oklch(26% 0.0180 120.71)",
-          "oklch(38% 0.0180 120.71)",
-          "oklch(49% 0.0180 120.71)",
-          "oklch(61% 0.0180 120.71)",
-          "oklch(72% 0.0180 120.71)",
-          "oklch(84% 0.0180 120.71)",
-          "oklch(95% 0.0180 120.71)"
-        ]
+        "displayName": "Border"
       },
       "subtle": {
         "role": "neutral",
-        "displayName": "Subtle",
-        "tonalRamp": [
-          "oklch(15% 0.0197 125.83)",
-          "oklch(26% 0.0197 125.83)",
-          "oklch(38% 0.0197 125.83)",
-          "oklch(49% 0.0197 125.83)",
-          "oklch(61% 0.0197 125.83)",
-          "oklch(72% 0.0197 125.83)",
-          "oklch(84% 0.0197 125.83)",
-          "oklch(95% 0.0197 125.83)"
-        ]
+        "displayName": "Subtle"
       },
       "accent": {
         "role": "secondary",
-        "displayName": "Accent",
-        "tonalRamp": [
-          "oklch(15% 0.0863 13.12)",
-          "oklch(26% 0.0863 13.12)",
-          "oklch(38% 0.0863 13.12)",
-          "oklch(49% 0.0863 13.12)",
-          "oklch(61% 0.0863 13.12)",
-          "oklch(72% 0.0863 13.12)",
-          "oklch(84% 0.0863 13.12)",
-          "oklch(95% 0.0863 13.12)"
-        ]
+        "displayName": "Accent"
       },
       "accent-surface": {
         "role": "secondary",
-        "displayName": "Accent Surface",
-        "tonalRamp": [
-          "oklch(15% 0.0142 17.42)",
-          "oklch(26% 0.0142 17.42)",
-          "oklch(38% 0.0142 17.42)",
-          "oklch(49% 0.0142 17.42)",
-          "oklch(61% 0.0142 17.42)",
-          "oklch(72% 0.0142 17.42)",
-          "oklch(84% 0.0142 17.42)",
-          "oklch(95% 0.0142 17.42)"
-        ]
+        "displayName": "Accent Surface"
       },
       "error": {
         "role": "neutral",
-        "displayName": "Error",
-        "tonalRamp": [
-          "oklch(15% 0.1575 20.30)",
-          "oklch(26% 0.1575 20.30)",
-          "oklch(38% 0.1575 20.30)",
-          "oklch(49% 0.1575 20.30)",
-          "oklch(61% 0.1575 20.30)",
-          "oklch(72% 0.1575 20.30)",
-          "oklch(84% 0.1575 20.30)",
-          "oklch(95% 0.1575 20.30)"
-        ]
+        "displayName": "Error"
+      },
+      "error-surface": {
+        "role": "neutral",
+        "displayName": "Error Surface"
+      },
+      "dark-background": {
+        "role": "neutral",
+        "displayName": "Dark Background"
+      },
+      "dark-surface": {
+        "role": "neutral",
+        "displayName": "Dark Surface"
+      },
+      "dark-ink": {
+        "role": "neutral",
+        "displayName": "Dark Ink"
+      },
+      "dark-muted": {
+        "role": "neutral",
+        "displayName": "Dark Muted"
+      },
+      "dark-placeholder": {
+        "role": "neutral",
+        "displayName": "Dark Placeholder"
+      },
+      "dark-primary": {
+        "role": "primary",
+        "displayName": "Dark Primary"
+      },
+      "dark-primary-pressed": {
+        "role": "primary",
+        "displayName": "Dark Primary Pressed"
+      },
+      "dark-on-primary": {
+        "role": "neutral",
+        "displayName": "Dark On Primary"
+      },
+      "dark-border": {
+        "role": "neutral",
+        "displayName": "Dark Border"
+      },
+      "dark-subtle": {
+        "role": "neutral",
+        "displayName": "Dark Subtle"
+      },
+      "dark-accent": {
+        "role": "secondary",
+        "displayName": "Dark Accent"
+      },
+      "dark-accent-surface": {
+        "role": "secondary",
+        "displayName": "Dark Accent Surface"
+      },
+      "dark-error": {
+        "role": "neutral",
+        "displayName": "Dark Error"
+      },
+      "dark-error-surface": {
+        "role": "neutral",
+        "displayName": "Dark Error Surface"
+      },
+      "shortcut-water": {
+        "role": "secondary",
+        "displayName": "Shortcut Water"
+      },
+      "shortcut-medicines": {
+        "role": "secondary",
+        "displayName": "Shortcut Medicines"
+      },
+      "shortcut-cycle": {
+        "role": "secondary",
+        "displayName": "Shortcut Cycle"
+      },
+      "shortcut-activity": {
+        "role": "secondary",
+        "displayName": "Shortcut Activity"
       }
     },
     "shadows": [],
@@ -196,21 +156,27 @@
         "purpose": "Translate the navigation panel out before removing the overlay; zero duration with reduced motion."
       }
     ],
-    "breakpoints": [],
+    "breakpoints": [
+      {
+        "name": "narrow-shortcuts",
+        "value": "360px"
+      },
+      {
+        "name": "app-rail",
+        "value": "768px"
+      }
+    ],
     "notes": [
-      "Tonal ramps are synthesized OKLCH documentation previews with source-derived hue/chroma, not normative source colors.",
-      "App content is bounded to 440 logical units; navigation becomes a 96-unit side rail at 768 logical units.",
-      "Shared CareUI sections and tracking groups start 32 logical units apart; Home section headings use 32 above and 16 below, with nested water headings exempt.",
-      "Setup has three required profile steps followed by optional reminders in a four-segment indicator. Explicit notification permission, skipping and denial preserve completion.",
-      "HTML hover/focus states are documentation affordances; production native pressed and accessibility states remain authoritative.",
-      "Native initial splash is configured separately in app.json using expo-splash-screen, background #FFFDFA, existing assets/android-icon-foreground.png and imageWidth 192. One branded JavaScript surface follows it, without a timed second screen. Development-build startup evidence does not establish standalone launch validation.",
-      "Shared signed-in header keeps menu left, centered brand and notification bell right. Detail back/title controls occupy a second row. Home uses the same header; the profile shortcut is removed.",
-      "Sidebar uses a same-window Expo BlurTargetView, blur intensity 45 and dark dim layer. Main content is touch- and accessibility-hidden while open. Open/close animations use 200ms/160ms, or zero duration with reduced motion.",
-      "Profile uses an 88-unit avatar, one Edit profile action, a wrapping weight/height/BMI strip and flat grouped account controls. Delete account leads to an explicit unchecked acknowledgement before the destructive action enables.",
-      "Today's activity uses the connected source when available, otherwise entered totals or supported foreground phone steps; sources are not added together. Explicit Activity source navigation is honored. Home omits the duplicate seven-day steps plot.",
-      "City setup uses optional foreground permission and reverse geocoding with manual fallback. Only the city enters profile payloads; no coordinate upload or ongoing location tracking is implemented.",
-      "The on-device, account-scoped notification inbox retains up to 120 past reminders within 90 days plus 60 pending reminders, with monotonic read status. Due scheduled reminders do not establish delivery or completion.",
-      "October 29 extension preserves all existing token primitives and the Growing Well world. Synthetic React Native Web final previews support layout review only; Android blur, native permission prompts, large text and physical-device behavior remain unverified. See docs/profile-navigation-revamp.md."
+      "User-pinned October 29 Home reference authorizes emerald grounds, mint actions, rounded care/activity cards, pastel shortcuts and raster wellness artwork. Earlier flat-only and no-raster guidance is superseded.",
+      "Light primitives come from theme/tokens.ts; dark variants come from AppearanceProvider. New installs default dark and saved preferences are preserved.",
+      "App content is bounded to 440 logical units with 16-unit page margins; setup/access retain 24. Navigation becomes a 96-unit side rail at 768.",
+      "Shortcuts adapt to two columns below 360 logical units or with enlarged text. Activity type/flow adapts without inventing readings.",
+      "Setup has three required profile steps, followed by one account-scoped optional access flow. Platform dialogs remain separate and permission denial preserves journal access.",
+      "Health refreshes every 30 seconds while active and on resume; wellness refreshes every 60 seconds. Optional Android background scheduling has a 15-minute minimum and can be delayed. Foreground phone steps are not all-day tracking.",
+      "Shared header keeps menu left, brand centered and bell right; back/title controls are a separate second row. Sidebar blur is an overlay, not decorative glass.",
+      "Home artwork PNGs have embedded exact prompts and adjacent JSON provenance. Banner and weather failure states do not substitute sample health or temperature values.",
+      "Super-admin UI is backend browser-only at /admin. Server-stored records differ from device-only connected readings; administrator actions are role-guarded and audited.",
+      "HTML snippets and synthetic Web captures support composition review only. Native permissions, blur, health-source timing and physical-device behavior remain unverified."
     ]
   },
   "components": [
@@ -218,81 +184,68 @@
       "name": "Primary button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Documentation translation of the implemented native pattern.",
-      "html": "<button class=\"ds-primary\">Continue</button>",
-      "css": ".ds-primary{font-family:Inter, sans-serif;background:#214F3D;color:#FFFFFF;border:0;border-radius:12px;padding:14px 20px;font-size:16px;font-weight:600;min-height:48px}.ds-primary:hover,.ds-primary:active{background:#173D2D}.ds-primary:focus-visible{outline:2px solid #214F3D;outline-offset:3px}.ds-primary:disabled{opacity:.55}"
+      "description": "Light-palette translation of the shared native action.",
+      "html": "<button class=\"ds-button\">Save changes</button>",
+      "css": ".ds-button{font:600 16px/23px Inter,sans-serif;background:#126349;color:#FFFFFF;min-height:52px;border:0;border-radius:12px;padding:14px 20px}.ds-button:hover{background:#173D2D}.ds-button:active{opacity:.9}.ds-button:focus-visible{outline:3px solid #126349;outline-offset:3px}.ds-button:disabled{opacity:.55}"
     },
     {
-      "name": "Secondary button",
+      "name": "Dark primary button",
       "kind": "button",
-      "refersTo": "button-secondary",
-      "description": "Documentation translation of the implemented native pattern.",
-      "html": "<button class=\"ds-secondary\">Sign in</button>",
-      "css": ".ds-secondary{font-family:Inter, sans-serif;background:#FFFDFA;color:#203E32;border:1px solid #D8DCCF;border-radius:12px;padding:14px 20px;font-size:16px;font-weight:600;min-height:48px}.ds-secondary:hover,.ds-secondary:active{background:#E7EDDF}.ds-secondary:focus-visible{outline:2px solid #214F3D;outline-offset:3px}"
+      "refersTo": "button-primary-dark",
+      "description": "Mint action on the emerald ground.",
+      "html": "<button class=\"ds-dark-button\">Log water</button>",
+      "css": ".ds-dark-button{font:600 16px/23px Inter,sans-serif;background:#79E6BB;color:#003728;min-height:52px;border:0;border-radius:12px;padding:14px 20px}.ds-dark-button:hover{background:#5BCBA0}.ds-dark-button:focus-visible{outline:3px solid #79E6BB;outline-offset:3px}.ds-dark-button:active{opacity:.9}"
     },
     {
-      "name": "Field",
-      "kind": "input",
-      "refersTo": "field",
-      "description": "Documentation translation of the implemented native pattern.",
-      "html": "<label class=\"ds-label\">Weight<input class=\"ds-field\" placeholder=\"Your weight\" /></label>",
-      "css": ".ds-label{font-family:Inter, sans-serif;color:#203E32;font-size:13px}.ds-field{display:block;font-family:Inter, sans-serif;background:#FFFDFA;color:#203E32;border:1px solid #D8DCCF;border-radius:12px;padding:14px;min-height:48px}.ds-field::placeholder{color:#687064}.ds-field:hover{border-color:#586357}.ds-field:focus-visible{outline:1px solid #214F3D;border-color:#214F3D}"
-    },
-    {
-      "name": "Care disclosure",
-      "kind": "custom",
-      "refersTo": "",
-      "description": "Documentation translation of the implemented native pattern.",
-      "html": "<details class=\"ds-disclosure\"><summary>Your focus</summary><p>Choose your health and wellness priorities.</p></details>",
-      "css": ".ds-disclosure{font-family:Inter, sans-serif;border-top:1px solid #D8DCCF;color:#203E32}.ds-disclosure summary{padding:18px 0;font-size:16px;font-weight:500;cursor:pointer}.ds-disclosure p{color:#586357;font-size:15px;line-height:23px}.ds-disclosure summary:hover{color:#214F3D}.ds-disclosure summary:focus-visible{outline:2px solid #214F3D}"
-    },
-    {
-      "name": "Profile panel",
+      "name": "Care row",
       "kind": "card",
-      "refersTo": "profile-panel",
-      "description": "Documentation translation of the implemented native pattern.",
-      "html": "<section class=\"ds-panel\"><h3>A clearer picture of you</h3><p>Your personal details, measurements and health priorities.</p></section>",
-      "css": ".ds-panel{font-family:Inter, sans-serif;background:#214F3D;color:#FFFFFF;border-radius:16px;padding:22px}.ds-panel h3{font-size:22px;line-height:29px;margin:0}.ds-panel p{font-size:14px;line-height:22px;color:#E2EBDD}"
+      "refersTo": "care-row",
+      "description": "Theme-backed rounded task destination.",
+      "html": "<button class=\"ds-care-row\"><span>Connected health<small>Apps and last sync</small></span><span aria-hidden=\"true\">&#8250;</span></button>",
+      "css": ".ds-care-row{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#FFFFFF;color:#203E32;border:0;border-radius:14px;padding:18px 14px;font:500 16px/23px Inter,sans-serif;text-align:left;width:100%}.ds-care-row small{display:block;font:400 13px/20px Inter,sans-serif;color:#586357;margin-top:3px}.ds-care-row:hover{background:#E3F0E4}.ds-care-row:focus-visible{outline:2px solid #126349;outline-offset:3px}"
+    },
+    {
+      "name": "Activity card",
+      "kind": "card",
+      "refersTo": "",
+      "description": "Documentation missing-data state; shipping numbers come from actual readings.",
+      "html": "<button class=\"ds-activity\"><span>Movement</span><strong>Not shared</strong><small>of 30 min</small></button>",
+      "css": ".ds-activity{background:#103E33;color:#F4FAF5;border:0;border-radius:16px;padding:12px;min-width:110px;font:400 12px/18px Inter,sans-serif;text-align:left}.ds-activity strong{display:block;font:600 14px/29px Inter,sans-serif;margin-top:20px}.ds-activity small{display:block;color:#B8D0C4}.ds-activity:hover{background:#164C3B}.ds-activity:focus-visible{outline:2px solid #79E6BB;outline-offset:3px}"
     },
     {
       "name": "Bottom navigation",
       "kind": "nav",
       "refersTo": "",
-      "description": "Transparent, borderless navigation; selection uses icon and label color, with no pill. Native navigation contains five tabs including the original raised Jeeva AI artwork and becomes a side rail at 768 logical units.",
-      "html": "<nav class=\"ds-nav\"><button aria-current=\"page\">Home</button><button>Health</button><button>Explore</button><button>Profile</button></nav>",
-      "css": ".ds-nav{font-family:Inter, sans-serif;display:flex;background:transparent;border:0;padding-top:7px}.ds-nav button{flex:1;border:0;background:transparent;color:#586357;min-height:51px;font-size:12px;line-height:18px}.ds-nav button[aria-current]{color:#214F3D}.ds-nav button:hover{color:#214F3D}.ds-nav button:focus-visible{outline:2px solid #214F3D;outline-offset:-2px}"
+      "description": "Transparent native navigation retains five tabs and original raised Jeeva artwork; snippet shows text roles only.",
+      "html": "<nav class=\"ds-nav\"><button aria-current=\"page\">Home</button><button>Health</button><button>Jeeva AI</button><button>Explore</button><button>Profile</button></nav>",
+      "css": ".ds-nav{display:flex;background:#00291E;padding-top:7px;font-family:Inter,sans-serif}.ds-nav button{flex:1;background:transparent;color:#B8D0C4;border:0;min-height:51px;font-size:12px;line-height:18px}.ds-nav button[aria-current],.ds-nav button:hover{color:#79E6BB}.ds-nav button:focus-visible{outline:2px solid #79E6BB;outline-offset:-2px}"
     }
   ],
   "narrative": {
-    "northStar": "Growing Well",
-    "overview": "Cream white, forest-green actions and a restrained plum accent make everyday care feel approachable. Health management and daily wellness carry equal weight. Quiet grouped rows and progressive disclosure support one clear task at a time.",
+    "northStar": "Growing Well - the supplied emerald Home reference",
+    "overview": "The user-pinned Home screenshot replaces the earlier warm flat-only direction with emerald grounds, mint actions, rounded tonal task cards, pastel shortcuts and wellness imagery. Original Arogio branding is retained.",
     "keyCharacteristics": [
-      "Cream-white canvas and flat tonal surfaces.",
-      "Forest-green actions, dark green ink and restrained plum status accents.",
-      "Crisp sans typography, grouped lists and modestly rounded controls.",
-      "Original Arogio logo; code-led composition without new shipping raster artwork."
+      "Emerald dark canvas and mint-white light counterpart.",
+      "Rounded task surfaces, crisp Inter typography and readable spacing.",
+      "Pastel care shortcuts and real raster banner/water artwork.",
+      "Real recorded data, explicit sources and missing-data states."
     ],
     "rules": [
       {
-        "name": "The Action Rule",
-        "body": "Use forest green for available primary actions and retain explicit text for unavailable services.",
+        "name": "The Data Rule",
+        "body": "Values, progress and weekly bars come from saved goals and readings; missing data remains missing.",
         "section": "colors"
-      },
-      {
-        "name": "The One Task Rule",
-        "body": "Group related information behind clear rows or disclosures; retain one personal Edit profile action and a separate Goals & preferences destination.",
-        "section": "layout"
       }
     ],
     "dos": [
-      "Do preserve the Arogio name and original logo proportions.",
-      "Do reuse shared tokens, keyboard scrolling, font scaling and accessible control targets.",
-      "Do distinguish available actions from services labeled Coming soon."
+      "Do preserve original Arogio branding and the pinned reference.",
+      "Do centralize optional access and keep tracking usable after denial.",
+      "Do keep administration in the backend browser portal."
     ],
     "donts": [
-      "Don't return to decorative tile walls or repeated edit controls.",
-      "Don't treat documentation previews as native rendered verification.",
-      "Don't imply reminders, records or daily tracking are available before implementation."
+      "Don't invent weather, health values or completion.",
+      "Don't repeat permission prompts throughout trackers.",
+      "Don't call synthetic Web previews native verification."
     ]
   }
 }

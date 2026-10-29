@@ -68,7 +68,7 @@ export function HealthSourceSettingsScreen() {
       <View style={{ marginTop: 32, gap: 12 }}>
         <Text style={c.title}>Sync &amp; permissions</Text>
         <Text style={c.text}>
-          Refreshes run every 5 minutes while Arogio is open and when you
+          Readings update every 30 seconds while Arogio is open and when you
           return.
         </Text>
         {health.connected && (
@@ -92,12 +92,7 @@ export function HealthSourceSettingsScreen() {
                   : health.enableBackground())
               }
             />
-            <Button
-              title="Refresh now"
-              variant="secondary"
-              loading={health.busy}
-              onPress={() => void health.run()}
-            />
+
           </>
         )}
         {health.availability === "available" && (

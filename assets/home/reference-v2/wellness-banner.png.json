@@ -1,0 +1,5 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Create a standalone production banner background asset for the Arogio health app. The attached image is STYLE AND COMPOSITION REFERENCE ONLY; do not output a phone screenshot, UI, cards, text, logo or frame. Wide landscape canvas ratio 3:1. Match the reference banner: soft editorial painted illustration, young Indian man with short dark hair seen from behind wearing a dark emerald t-shirt and forest backpack on the RIGHT third, looking over a serene sunlit lake, layered green mountains, soft gold sunrise and lush leaves along right/top edges. LEFT 48 percent must be very pale warm sage with subtle atmosphere, calm clean open negative space for dark live text added later. Bottom-left also clean. Refined softly rendered illustration, natural depth, crisp enough for mobile, luminous sage and warm green, no words anywhere.",
+  "reference": "User-provided Home screenshot, 29 October 2026"
+}

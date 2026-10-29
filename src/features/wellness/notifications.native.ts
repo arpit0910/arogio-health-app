@@ -17,8 +17,8 @@ async function channel() {
   // Reusing this ID preserves the user's own mute and sound choices on later launches.
   await Notifications.setNotificationChannelAsync(WATER_CHANNEL, { name: 'Water reminders', description: 'Drinking reminders with a short water-drop sound', importance: AndroidImportance.DEFAULT, sound: WATER_SOUND, lockscreenVisibility: AndroidNotificationVisibility.PRIVATE });
 }
-export async function requestReminderPermission() {
-  try { await channel(); const current = await Notifications.getPermissionsAsync(); return current.granted || (await Notifications.requestPermissionsAsync()).granted; }
+export async function requestReminderPermission(request = true) {
+  try { await channel(); const current = await Notifications.getPermissionsAsync(); return current.granted || (request && (await Notifications.requestPermissionsAsync()).granted); }
   catch { return false; }
 }
 export async function openReminderSettings(target: 'water' | 'all' = 'water') {

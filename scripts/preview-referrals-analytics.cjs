@@ -33,11 +33,14 @@ const data = { activityTracking: { goals: { Steps: 8000, ActiveCaloriesBurned: 4
   medicines: empty ? [] : [{ id: 'example-medicine', name: 'Example prescribed medicine with a longer name', notes: 'Example care instructions. Synthetic record for layout testing.', enabled: true, doses: [{ time: '08:00', amount: 'Example dose amount' }, { time: '20:00', amount: 'Example dose amount' }] }],
   cycleSettings: empty ? null : defaultCycleSettings('Asia/Kolkata'), periods: empty ? [] : [{ id: 'example-period', startDate: addDays(day, -18), endDate: addDays(day, -14) }], cycleEntries: [] };
 const wellness = { data, loading: false, busy: false, error: null, notice: null, scheduledThrough: null, refresh: async () => {}, save: async () => true };
-const health = { source: { id: 'example.source', name: 'Example Health' }, connected: true, hasConnected: true };
+const health = { busy: false, snapshot: { source:'example.source', syncedAt: new Date().toISOString(), granted:['Steps','ExerciseSession','SleepSession'], days:[5100,7200,null,0,9400,6800,2481].map((v,i)=>({day:addDays(day,i-6),readings:{Steps:{value:v,sources:['example.source']},SleepSession:{value:i===6?5.36:null,sources:['example.source']}}})) }, source: { id: 'example.source', name: 'Example Health' }, connected: true, hasConnected: true };
 const load = Module._load;
 Module._load = function(request, parent, ...rest) {
   if (request.endsWith('/WellnessContext') || request === './WellnessContext') return { useWellness: () => wellness };
   if (request.endsWith('/HealthSyncProvider')) return { useHealthSync: () => health };
+  if (request === './HomeContent') { const actual = load.call(this, request, parent, ...rest); return { ...actual, useHomeContent: () => ({ banners: [], weather: { available: true, city: 'Jaipur', temperature: 26, condition: 'Clear', observedAt: new Date().toISOString() }, refresh: async () => {} }) }; }
+  if (request.endsWith('/services/api/client')) return { apiClient: { request: async () => [] } };
+  if (request.endsWith('/config/env')) return { env: { apiUrl: 'https://example.test/api/v1' } };
   if (request.endsWith('/InboxProvider')) return { useInbox: () => ({ items: [], loading: false, error: '', markRead: async () => {} }) };
   if (request.endsWith('/AuthContext')) return { useAuth: () => ({ user: { id: 'fixture', fullName: 'Aarav Sharma', weightValue: 68, weightUnit: 'kg', heightValue: 174, heightUnit: 'cm', bmi: 22.5, profileSetup: { location: 'Bengaluru', healthGoals: ['fitness'] }, email: 'preview@example.test', referralCode: 'A1B2C3D4E5F6', profileCompletedAt: '2026-10-29T00:00:00Z' }, reloadProfile: async () => {} }) };
   if (request.endsWith('/AppearanceProvider')) { const actual = load.call(this, request, parent, ...rest); const colors = theme === 'dark' ? actual.darkColors : require('../src/theme/tokens.ts').colors; return { ...actual, useAppTheme: () => ({ onPrimary: colors.onPrimary, ink: colors.ink, muted: colors.muted, teal: colors.primary, border: colors.border, background: colors.background, mint: colors.subtle, white: colors.surface, accent: colors.accent, fonts: require('../src/theme/tokens.ts').fonts, shadow: {} }), usePalette: () => colors, useAppearance: () => ({ colors, scheme: theme }) }; }
@@ -77,7 +80,7 @@ AppRegistry.registerComponent('DailyCareQA', () => DailyCarePreview);
 const { element, getStyleElement } = AppRegistry.getApplication('DailyCareQA');
 const out = path.join(root, '.impeccable/review/referrals-analytics');
 fs.mkdirSync(out, { recursive: true });
-const fonts = ['400Regular', '500Medium', '600SemiBold'].map((font) => `@font-face{font-family:Inter_${font};src:url(data:font/ttf;base64,${fs.readFileSync(path.join(root, `node_modules/@expo-google-fonts/inter/${font}/Inter_${font}.ttf`)).toString('base64')})}`).join('');
+const fonts = ['400Regular', '500Medium', '600SemiBold', '700Bold'].map((font) => `@font-face{font-family:Inter_${font};src:url(data:font/ttf;base64,${fs.readFileSync(path.join(root, `node_modules/@expo-google-fonts/inter/${font}/Inter_${font}.ttf`)).toString('base64')})}`).join('');
 const markup = ReactDOM.renderToStaticMarkup(element);
 fs.writeFileSync(path.join(out, `${mode}-${theme}-${width}.html`), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+ReactDOM.renderToStaticMarkup(getStyleElement())+`<style>${fonts}body{margin:0;background:${theme === 'dark' ? '#121C17' : '#FFFDFA'}}</style></head><body>`+markup+'</body></html>');
 console.log(`Composition preview: ${mode}, width ${width}. Synthetic records; native behavior is not exercised.`);

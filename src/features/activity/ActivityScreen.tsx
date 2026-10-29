@@ -47,7 +47,7 @@ export function ActivityScreen() {
   const colors = usePalette();
   const s = useStyles();
 
-  const { data, loading, busy, save } = useWellness();
+  const { data, loading, busy, save, refresh } = useWellness();
   const health = useHealthSync(),
     phone = usePhoneSteps();
   const now = useTrackingClock(),
@@ -145,7 +145,7 @@ export function ActivityScreen() {
     }),
   };
   return (
-    <AppScreen back title="Daily activity & targets">
+    <AppScreen back title="Daily activity & targets" refreshing={loading || health.busy} onRefresh={() => void Promise.allSettled([refresh(),health.run()])}>
       <View style={{ gap: 8 }}>
         <Text style={c.heading}>Daily activity</Text>
         <Text style={c.text}>

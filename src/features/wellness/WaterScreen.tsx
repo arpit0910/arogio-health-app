@@ -37,7 +37,7 @@ export function WaterScreen() {
     planLock.current = true; setSavingPlan(true);
     try {
       let enabled = reminders;
-      if (enabled && !await requestReminderPermission()) { enabled = false; setReminders(false); }
+      if (enabled && !await requestReminderPermission(false)) { enabled = false; setReminders(false); }
       if (await save('water/plan', { wakeTime: wake, sleepTime: sleep, targetMl: Number(target), servingMl: Number(serving), timezone: APP_TIMEZONE, remindersEnabled: enabled, pausedUntil: plan?.pausedUntil ?? null })) {
         setEditing(false);
         setFeedback(reminders && !enabled ? 'Plan saved. Device notifications are off; you can enable them in notification settings.' : 'Water plan saved.', reminders && !enabled ? 'info' : 'success');

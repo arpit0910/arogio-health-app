@@ -12,7 +12,6 @@ import { usePalette } from "../../theme/AppearanceProvider";
 import { Button } from "../../components/ui/Button";
 import { PhoneTrackingControl } from "../activity/PhoneTrackingControl";
 import { useHealthSync } from "./HealthSyncProvider";
-import { HealthSourcePicker } from "./HealthSourcePicker";
 import { installHealthConnect } from "./healthConnect";
 
 export function StandaloneHealthScreen() {
@@ -66,7 +65,7 @@ export function StandaloneHealthScreen() {
               color={colors.primary}
             />
           ) : health.availability === "available" ? (
-            <HealthSourcePicker />
+            <CareRow icon="shield" title="Set up app access" detail="Choose your source and permissions in one place" onPress={() => router.push("/app-access")} />
           ) : health.availability === "update-required" ? (
             <>
               <Text style={c.text}>

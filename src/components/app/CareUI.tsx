@@ -43,7 +43,7 @@ return StyleSheet.create({
   brand: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   wordmark: { fontFamily: fonts.semibold, fontSize: 24, color: colors.ink, letterSpacing: -0.7 },
   pressed: { backgroundColor: colors.subtle, borderRadius: 12 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 18 },
+  row: { backgroundColor: colors.surface, borderRadius: 14, paddingHorizontal: 14, marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 18 },
   copy: { flex: 1, minWidth: 0 },
   rowTitle: { fontFamily: fonts.medium, fontSize: 16, lineHeight: 23, color: colors.ink },
   detail: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 20, marginTop: 3, color: colors.muted },

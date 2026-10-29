@@ -12,12 +12,12 @@ import { TodayActivity } from "../activity/TodayActivity";
 export function HealthScreen() {
   const c = useCareStyles(),
     colors = usePalette();
-  const { data, loading } = useWellness(),
+  const { data, loading, refresh } = useWellness(),
     health = useHealthSync();
   const water = homeWater(data, useTrackingClock());
   const medicines = data.medicines ?? [];
   return (
-    <AppScreen>
+    <AppScreen refreshing={loading || health.busy} onRefresh={() => Promise.allSettled([refresh(),health.run()])}>
       <Text accessibilityRole="header" style={c.heading}>
         Your health journal
       </Text>

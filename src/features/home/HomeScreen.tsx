@@ -1,3 +1,5 @@
+import { HomeBanner, WeatherTile, useHomeContent } from './HomeContent';
+import { useHealthSync } from '../health-sync/HealthSyncProvider';
 import { TodayActivity } from '../activity/TodayActivity';
 import { usePalette } from '../../theme/AppearanceProvider';
 import {
@@ -9,6 +11,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Image,
   AppState,
   RefreshControl,
   ScrollView,
@@ -43,6 +46,7 @@ const shortcuts: {
 export function HomeScreen() {
   const colors = usePalette();
   const s = useStyles();
+  const health = useHealthSync(), homeContent = useHomeContent();
 
   const { user } = useAuth();
   const { data, loading, busy, error, refresh, save } = useWellness();
@@ -53,6 +57,7 @@ export function HomeScreen() {
     text: string;
     logId?: string;
   } | null>(null);
+  const [pulling, setPulling] = useState(false);
   const [retryLog, setRetryLog] = useState(false);
   const pending = useRef<{
     id: string;
@@ -128,15 +133,15 @@ export function HomeScreen() {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={loading}
-            onRefresh={() => void refresh()}
+            refreshing={pulling}
+            onRefresh={() => { setPulling(true); void Promise.allSettled([refresh(),health.run(),homeContent.refresh()]).finally(() => setPulling(false)); }}
             tintColor={colors.primary}
             colors={[colors.primary]}
           />
         }
       >
         <View style={[s.content, expanded && s.expandedContent]}>
-          <View style={s.greeting}>
+          <View style={s.greeting}><View style={{ flex: 1, minWidth: 150, gap: 6 }}>
             <Text accessibilityRole="header" style={s.heading}>
               {name ? `Hi, ${name}` : 'Your day'}
             </Text>
@@ -148,9 +153,10 @@ export function HomeScreen() {
                 timeZone: APP_TIMEZONE,
               })}
             </Text>
-          </View>
+          </View><WeatherTile weather={homeContent.weather}/></View>
+          <HomeBanner banners={homeContent.banners}/>
           <View style={s.shortcuts}>
-            {shortcuts.map((item) => (
+            {shortcuts.map((item, index) => (
               <TouchTarget
                 key={item.route}
                 accessibilityRole="button"
@@ -162,14 +168,13 @@ export function HomeScreen() {
                 onPress={() => router.navigate(item.route)}
                 style={({ pressed }) => [
                   s.shortcut,
-                  fontScale > 1.3 && s.largeShortcut,
+                  {backgroundColor: ['#BEE2F7','#F4C4D1','#FAE2B8','#C8C8FB'][index]},
+                  (fontScale > 1.3 || width < 360) && s.largeShortcut,
                   pressed && s.pressed,
                 ]}
               >
-                <View style={s.shortcutIcon}>
-                  <AppIcon name={item.icon} size={24} />
-                </View>
-                <Text style={s.shortcutLabel}>{item.title}</Text>
+                <View style={{flexDirection:'row',width:'100%',alignItems:'center',justifyContent:'space-between'}}><AppIcon name={item.icon} size={24} color={['#14648A','#9D254B','#A05215','#4C4C9B'][index]}/><AppIcon name="right" size={14} color="#234A3C"/></View>
+                <Text style={s.shortcutLabel}>{item.title}</Text><Text style={s.shortcutDetail}>{['Track hydration','Set reminder','Track cycle','Stay active'][index]}</Text>
               </TouchTarget>
             ))}
           </View>
@@ -179,14 +184,9 @@ export function HomeScreen() {
               <Text style={s.errorText}>
                 {retryLog
                   ? 'Your drink could not be confirmed. Retry the log to save it safely.'
-                  : 'Your latest tracking could not be loaded. Refresh to try again.'}
+                  : 'Your latest tracking could not be loaded. We will retry automatically. Pull down to check now.'}
               </Text>
-              <Button
-                title="Refresh tracking"
-                variant="secondary"
-                disabled={loading || busy}
-                onPress={() => void refresh()}
-              />
+
             </View>
           )}
           <View style={expanded && s.columns}>
@@ -215,7 +215,7 @@ export function HomeScreen() {
                   <Text style={s.body}>Loading your day...</Text>
                 </View>
               ) : plan && water ? (
-                <View key="water-ready" style={s.water}>
+                <View key="water-ready" style={[s.water,{backgroundColor:colors.subtle,overflow:'hidden'}]}><Image source={require('../../../assets/home/reference-v2/water-glass.png')} accessible={false} style={{position:'absolute',right:-10,top:25,width:105,height:150,opacity:.7}} resizeMode="contain"/>
                   <View style={[s.sectionHeader, s.waterHeader]}>
                     <View style={s.labelRow}>
                       <AppIcon name="drop" size={24} />
@@ -230,7 +230,7 @@ export function HomeScreen() {
                       <Text style={s.actionText}>View plan</Text>
                     </TouchTarget>
                   </View>
-                  <Text style={s.waterAmount}>
+                  <Text style={[s.waterAmount,{paddingRight:60}]}>
                     {water.totalMl.toLocaleString('en-IN')}{' '}
                     <Text style={s.target}>
                       of {plan.targetMl.toLocaleString('en-IN')} ml today
@@ -277,7 +277,7 @@ export function HomeScreen() {
                         : `Log ${plan.servingMl} ml water`
                     }
                     leading={
-                      <AppIcon name="glass" size={21} color={colors.surface} />
+                      <AppIcon name="glass" size={21} color={colors.onPrimary} />
                     }
                     onPress={() => void logDrink()}
                     loading={busy}
@@ -455,10 +455,10 @@ return StyleSheet.create({
     width: '100%',
     maxWidth: 440,
     alignSelf: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
   },
   expandedContent: { maxWidth: 1100 },
-  greeting: { gap: 8, paddingTop: 24, paddingBottom: 24 },
+  greeting: { flexDirection:'row', flexWrap:'wrap', alignItems:'center', gap:12, paddingTop:16, paddingBottom:18 },
   date: {
     fontFamily: fonts.regular,
     fontSize: 13,
@@ -481,32 +481,12 @@ return StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 0,
   },
-  shortcut: {
-    flex: 1,
-    minWidth: 52,
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 10,
-    borderRadius: 12,
-  },
-  largeShortcut: { flexBasis: '45%' },
-  shortcutIcon: {
-    width: 48,
-    height: 48,
-    backgroundColor: colors.subtle,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  shortcutLabel: {
-    fontFamily: fonts.medium,
-    fontSize: 12,
-    lineHeight: 18,
-    color: colors.ink,
-    textAlign: 'center',
-  },
+  shortcut: { flex:1, minWidth:60, alignItems:'flex-start', gap:9, padding:12, borderRadius:16 },
+  largeShortcut: { flexBasis:'45%' },
+  shortcutLabel: {fontFamily:fonts.semibold,fontSize:12,lineHeight:18,color:'#102D25'},
+  shortcutDetail: {fontFamily:fonts.regular,fontSize:10,lineHeight:14,color:'#28483F'},
   columns: { flexDirection: 'row', flexWrap: 'wrap', gap: 28 },
   primaryColumn: { flex: 1.1, minWidth: 280 },
   secondaryColumn: { flex: 1, minWidth: 240 },

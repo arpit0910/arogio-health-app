@@ -28,6 +28,7 @@ function WellnessSession({ children, owner }: PropsWithChildren<{ owner: string 
     finally { if (active.current === owner) setLoading(false); }
   }, [owner]);
   useEffect(() => { active.current = owner; void syncNotifications(null, []); const timer = setTimeout(() => void refresh(), 0); return () => { clearTimeout(timer); active.current = null; void syncNotifications(null, []); }; }, [owner, refresh]);
+  useEffect(() => { const timer = setInterval(() => { if (AppState.currentState === 'active') void refresh(); }, 60000); return () => clearInterval(timer); }, [refresh]);
   useEffect(() => { const sub = AppState.addEventListener('change', state => { if (state === 'active') void refresh(); }); return () => sub.remove(); }, [refresh]);
   useEffect(() => { if (owner) return listenForReminder(route => router.push(route)); }, [owner]);
   useEffect(() => {

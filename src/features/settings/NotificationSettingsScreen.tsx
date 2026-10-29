@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AppState, Platform, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { AppScreen } from '../../components/app/AppScreen';
@@ -7,14 +7,13 @@ import { AppIcon } from '../../components/app/AppIcon';
 import { Button } from '../../components/ui/Button';
 import { usePalette } from '../../theme/AppearanceProvider';
 import { useWellness } from '../wellness/WellnessContext';
-import { getNotificationAccess, openReminderSettings, requestReminderPermission } from '../wellness/notifications';
+import { getNotificationAccess, openReminderSettings } from '../wellness/notifications';
 import type { NotificationAccess } from '../wellness/notificationAccess';
 
 export function NotificationSettingsScreen() {
   const c = useCareStyles(), colors = usePalette();
   const { data, loading, error: reminderError, refresh } = useWellness();
-  const [access, setAccess] = useState<NotificationAccess | null>(null), [error, setError] = useState(''), [busy, setBusy] = useState(false);
-  const lock = useRef(false);
+  const [access, setAccess] = useState<NotificationAccess | null>(null), [error, setError] = useState('');
   const checkAccess = useCallback(async () => {
     try { setAccess(await getNotificationAccess()); setError(''); }
     catch { setError('Notification status could not be checked. Try again.'); }
@@ -24,13 +23,6 @@ export function NotificationSettingsScreen() {
     const sub = AppState.addEventListener('change', state => { if (state === 'active') { void checkAccess(); void refresh(); } });
     return () => { clearTimeout(timer); sub.remove(); };
   }, [checkAccess, refresh]);
-  async function enable() {
-    if (lock.current) return;
-    lock.current = true; setBusy(true); setError('');
-    try { await requestReminderPermission(); await checkAccess(); await refresh(); }
-    catch { setError('Notifications could not be enabled. Try again or open device settings.'); }
-    finally { lock.current = false; setBusy(false); }
-  }
   async function open(target: 'water' | 'all') {
     try { setError(''); await openReminderSettings(target); }
     catch { setError('Open Arogio in your device notification settings to manage permissions and sounds.'); }
@@ -43,7 +35,7 @@ export function NotificationSettingsScreen() {
     <View style={{ marginTop: 24, padding: 20, backgroundColor: colors.subtle, borderRadius: 16, gap: 12 }}>
       <AppIcon name="bell" size={28} /><Text accessibilityRole="header" style={c.title}>{title}</Text>
       <Text style={c.text}>{access === 'allowed' ? 'Only reminders you turn on in your trackers will be scheduled. Your device controls sound and delivery.' : access === 'unavailable' ? 'You can keep tracking here. Device reminders are available in the Android and iOS app.' : 'Tracking works with notifications off. You can allow access whenever you want reminders.'}</Text>
-      {access === 'not-requested' && <Button title="Allow notifications" onPress={() => void enable()} loading={busy} />}
+      <CareRow icon="shield" title="Manage app access" detail="Review all app permissions in one place" onPress={() => router.push('/app-access')} />
       {Platform.OS !== 'web' && access !== null && <Button title="Open device notification settings" variant="secondary" onPress={() => void open('all')} />}
       {!!error && <><Text accessibilityRole="alert" style={[c.text, { color: colors.error }]}>{error}</Text><Button title="Check again" variant="secondary" onPress={() => void checkAccess()} /></>}
     </View>

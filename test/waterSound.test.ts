@@ -48,6 +48,12 @@ describe('Water reminder sound', () => {
     assert.deepEqual(h.cancelled, ['arogio-wellness:legacy-water']);
     assert.equal((await h.handler().handleNotification()).shouldPlaySound, true);
   });
+  it('does not prompt when a tracker only checks existing permission', async () => {
+    const h = harness(); h.deny();
+    const api = h.api as unknown as { requestReminderPermission: (request?: boolean) => Promise<boolean> };
+    assert.equal(await api.requestReminderPermission(false), false);
+    assert.equal(h.requests(), 0);
+  });
   it('includes the custom sound on iOS without creating Android channels', async () => {
     const h = harness('ios');
     await h.api.syncNotifications('fixture-user', reminders);

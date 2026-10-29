@@ -1,9 +1,8 @@
-import { Platform, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { usePhoneSteps } from "./PhoneStepsProvider";
 import { useCareStyles } from "../../components/app/CareUI";
 import { usePalette } from "../../theme/AppearanceProvider";
 import { AppIcon } from "../../components/app/AppIcon";
-import { Button } from "../../components/ui/Button";
 export function PhoneTrackingControl() {
   const phone = usePhoneSteps(),
     colors = usePalette(),
@@ -32,22 +31,7 @@ export function PhoneTrackingControl() {
       >
         {phone.status}
       </Text>
-      {Platform.OS !== "web" ? (
-        <Button
-          title={
-            phone.enabled ? "Turn off phone counting" : "Start counting steps"
-          }
-          variant={phone.enabled ? "secondary" : "primary"}
-          loading={phone.busy}
-          disabled={!phone.ready}
-          onPress={() => void phone.toggle()}
-        />
-      ) : (
-        <Text style={c.text}>
-          Phone step counting is available in the installed app. You can enter
-          totals here.
-        </Text>
-      )}
+      {!phone.enabled && <Text style={c.text}>Manage access once in Settings. You can enter totals here without a step sensor.</Text>}
     </View>
   );
 }

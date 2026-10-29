@@ -6,15 +6,15 @@ import { colors as light, fonts } from './tokens';
 export type AppearancePreference = 'system' | 'light' | 'dark';
 export type Palette = { [K in keyof typeof light]: string };
 export const darkColors: Palette = {
-  onPrimary: '#12281D', background: '#121C17', surface: '#1B2921', ink: '#EEF4EB', muted: '#B6C4B5',
-  placeholder: '#A3B29F', primary: '#86C6A4', primaryPressed: '#6AAD89', border: '#3E5143',
-  subtle: '#293E30', accent: '#E0A7AF', accentSurface: '#422D34', error: '#FFADB4', errorSurface: '#45272D',
+  onPrimary: '#003728', background: '#00291E', surface: '#0C3B30', ink: '#F4FAF5', muted: '#B8D0C4',
+  placeholder: '#A4C0B1', primary: '#79E6BB', primaryPressed: '#5BCBA0', border: '#2A5546',
+  subtle: '#164C3B', accent: '#BDB3F7', accentSurface: '#303D59', error: '#FFAFBB', errorSurface: '#502C35',
 };
 const KEY = 'arogio.appearance.v1';
-const Context = createContext({ preference: 'system' as AppearancePreference, scheme: 'light' as 'light' | 'dark', colors: light as Palette, ready: false, saving: false, error: '', setPreference: async (_value: AppearancePreference) => {} });
+const Context = createContext({ preference: 'dark' as AppearancePreference, scheme: 'dark' as 'light' | 'dark', colors: darkColors as Palette, ready: false, saving: false, error: '', setPreference: async (_value: AppearancePreference) => {} });
 export function AppearanceProvider({ children }: PropsWithChildren) {
   const system = useColorScheme();
-  const [preference, setValue] = useState<AppearancePreference>('system');
+  const [preference, setValue] = useState<AppearancePreference>('dark');
   const [ready, setReady] = useState(false), [saving, setSaving] = useState(false), [error, setError] = useState('');
   const lock = useRef(false);
   useEffect(() => {

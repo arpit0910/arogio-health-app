@@ -31,7 +31,7 @@ export function MedicineScreen() {
     }
     setSubmitting(true);
     try {
-      const enabled = draft.enabled && await requestReminderPermission();
+      const enabled = draft.enabled && await requestReminderPermission(false);
       const { id, ...body } = draft;
       if (await save(`medicines/${id}`, { ...body, enabled })) { setDraft(null); setFeedback(draft.enabled && !enabled ? 'Medicine saved. Notifications are off; dose times are still kept in Arogio.' : enabled ? 'Medicine saved. Daily reminders follow your dose times.' : 'Medicine saved. Reminders are off.', draft.enabled && !enabled ? 'info' : 'success'); }
     } catch {
