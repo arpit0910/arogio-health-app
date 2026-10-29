@@ -51,6 +51,14 @@ export function ActivityScreen() {
       return { day: date, readings: { [trend]: { value: activityReading(trend, date, mode, tracking, health.snapshot, phone).value, sources: [] } } };
     }),
   };
+  const phonePanel = (
+      <CareDisclosure title={phone.enabled ? "Phone step counting - on" : "Phone step counting - off"}><Text style={c.text}>Compatible phones can count steps while Arogio is open. Enter active calories, food calories, distance, exercise and sleep totals yourself, or choose a connected app.</Text>
+        {health.connected && <Text style={c.text}>A health app is connected. Disconnect it in Connected health settings to enable phone counting.</Text>}
+        <Text accessibilityLiveRegion="polite" style={c.text}>{phone.status}</Text>
+        <Button title={phone.enabled ? 'Turn off phone step counting' : 'Enable phone step counting'} variant="secondary" loading={phone.busy} disabled={!phone.ready || Platform.OS === 'web' || (!phone.enabled && health.connected)} onPress={() => void phone.toggle()} />
+        {Platform.OS !== 'web' && <Button title="Manage motion permission" variant="secondary" onPress={() => void Linking.openSettings().catch(() => setFeedback('Open Arogio in device settings to manage motion access.'))} />}
+      </CareDisclosure>
+  );
   return <AppScreen back title="Daily activity & targets">
     <View style={{ gap: 8 }}><Text style={c.heading}>Your day, your targets.</Text><Text style={c.text}>Set your own daily targets and keep a record that works for you.</Text></View>
     <TrackingStatus /><TrackingFeedback value={feedback} />
@@ -75,6 +83,7 @@ export function ActivityScreen() {
         <Text style={c.text}>{mode === 'connected' ? `Readings from ${health.source?.name ?? 'your selected app'} only. Missing values stay empty.` : 'Your entered totals and, when enabled, phone-counted steps. Each metric uses one source.'}</Text>
         {mode === 'manual' && <Button title="Log or edit daily totals" disabled={loading || busy} onPress={() => edit('entry')} />}
         <Button title={Object.keys(tracking.goals).length ? 'Edit daily targets' : 'Set daily targets'} variant="secondary" disabled={loading || busy} onPress={() => edit('goals')} />
+        {mode === 'manual' && phonePanel}
       </View>
       {!loading && activityMetrics.map((item) => {
         const reading = activityReading(item.key, day, mode, tracking, health.snapshot, phone);
@@ -86,11 +95,6 @@ export function ActivityScreen() {
       <View style={s.section}><Text style={c.title}>Last 7 days</Text><Text style={s.small}>For the selected source, ending on {day}. Empty days stay empty.</Text>
         <View style={s.modes}>{activityMetrics.map((item) => <TouchTarget key={item.key} accessibilityRole="button" accessibilityState={{ selected: trend === item.key }} onPress={() => setTrend(item.key)} style={[s.mode, trend === item.key && s.selected]}><Text style={[s.label, trend === item.key && { color: colors.surface }]}>{item.title}</Text></TouchTarget>)}</View>
         <HealthChart snapshot={history} metric={trend} emptyMessage={mode === 'manual' ? 'No totals recorded for these days. Enter daily totals to start a trend.' : undefined} />
-      </View>
-      <View style={s.section}><Text style={c.title}>Count steps with your phone</Text><Text style={c.text}>Compatible phones can count steps while Arogio is open. Enter active calories, food calories, distance, exercise and sleep totals yourself, or choose a connected app.</Text>
-        <Text accessibilityLiveRegion="polite" style={c.text}>{phone.status}</Text>
-        <Button title={phone.enabled ? 'Turn off phone step counting' : 'Enable phone step counting'} variant="secondary" loading={phone.busy} disabled={!phone.ready || Platform.OS === 'web' || (!phone.enabled && health.connected)} onPress={() => void phone.toggle()} />
-        {Platform.OS !== 'web' && <Button title="Manage motion permission" variant="secondary" onPress={() => void Linking.openSettings().catch(() => setFeedback('Open Arogio in device settings to manage motion access.'))} />}
       </View>
       <View style={s.section}><CareRow title="Connected health settings" detail={health.source?.name ?? 'Optional - choose a health app'} onPress={() => router.push('/connected-health-settings')} />
         <CareDisclosure title="Your activity data"><Text style={c.text}>Targets and entered totals are saved to your account. Phone counts are encrypted on this device and kept for 30 days. Synced readings remain on the device and are never added to your entered totals.</Text><Button title="Delete activity targets and entries" variant="danger" disabled={busy || phone.busy || !phone.ready} onPress={() => confirmDelete('Delete activity tracking?', 'This removes your Arogio activity targets, entered totals and saved phone counts. Water, cycle and medicine tracking stay available.', () => void (async () => {
