@@ -1,11 +1,15 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, AppState, Easing, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Path, SvgXml } from 'react-native-svg';
 import { authAssets } from '../auth/assets/authAssets';
-import { colors, fonts } from '../../theme/tokens';
+import { fonts } from '../../theme/tokens';
 
 /** The logo stays visible even before motion preferences or fonts are ready. */
 export function LaunchArtwork({ motion = false }: { motion?: boolean }) {
+  const colors = usePalette();
+  const s = useStyles();
+
   const { width, height, fontScale } = useWindowDimensions();
   const emblemSize = Math.min(width - 48, height < 640 || fontScale > 1.4 ? 184 : 232);
   const entrancePlayed = useRef(false);
@@ -80,7 +84,9 @@ export function LaunchArtwork({ motion = false }: { motion?: boolean }) {
   </View>;
 }
 
-const s = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   artwork: { flex: 1, overflow: 'hidden', backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32 },
   brand: { width: '100%', maxWidth: 360, alignItems: 'center', gap: 12 },
   emblem: { position: 'absolute', width: 232, height: 232, alignItems: 'center', justifyContent: 'center' },
@@ -95,3 +101,4 @@ const s = StyleSheet.create({
   wordmark: { width: '100%', maxWidth: 320, paddingHorizontal: 12, paddingVertical: 4, textAlign: 'center', fontFamily: fonts.semibold, fontSize: 40, lineHeight: 60, letterSpacing: 0, color: colors.ink, includeFontPadding: true, flexShrink: 0 },
   tagline: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 23, color: colors.muted, textAlign: 'center' },
 });
+};

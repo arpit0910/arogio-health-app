@@ -8,10 +8,13 @@ import { useAuth } from '../context/AuthContext';
 import { registerSchema } from '../types';
 import { AuthField, type AuthFieldRef } from './AuthField';
 import { AuthIcon } from './AuthIcon';
-import { AuthHeading, Checkbox, FormError, SocialDivider, authStyles } from './AuthPrimitives';
+import { AuthHeading, Checkbox, FormError, SocialDivider, useAuthStyles } from './AuthPrimitives';
 import { GoogleSignInButton } from './GoogleSignInButton';
 
 export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }) {
+  const authStyles = useAuthStyles();
+  const styles = useStyles();
+
   const { compact } = useScreenLayout();
   const { register, isSubmitting, error, clearError } = useAuth();
   const [fullName, setFullName] = useState('');
@@ -68,7 +71,8 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
   </View>;
 }
 
-const styles = StyleSheet.create({
+const useStyles = () => {
+return StyleSheet.create({
   container: {},
   fields: { gap: 8 },
   agreement: { marginTop: 4 },
@@ -78,3 +82,4 @@ const styles = StyleSheet.create({
   footer: { marginTop: 0 },
   action: { marginTop: 0 },
 });
+};

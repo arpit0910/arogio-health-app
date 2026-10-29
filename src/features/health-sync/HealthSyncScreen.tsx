@@ -1,3 +1,4 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { DailyTargetProgress } from '../activity/DailyTargetProgress';
 import { useWellness } from '../wellness/WellnessContext';
 import type { ActivityMetric } from '../activity/model';
@@ -13,13 +14,13 @@ import {
 import { router } from 'expo-router';
 import { AppScreen } from '../../components/app/AppScreen';
 import { AppIcon, type AppIconName } from '../../components/app/AppIcon';
-import { CareDisclosure, CareRow, careStyles as c } from '../../components/app/CareUI';
+import { CareDisclosure, CareRow, useCareStyles } from '../../components/app/CareUI';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { Button } from '../../components/ui/Button';
 import { HealthSourcePicker } from './HealthSourcePicker';
 import { useHealthSync } from './HealthSyncProvider';
 import { HealthChart, WeeklyShare } from './HealthCharts';
-import { colors, fonts } from '../../theme/tokens';
+import { fonts } from '../../theme/tokens';
 import { formatDateTime } from '../../lib/time';
 import {
   installHealthConnect,
@@ -46,6 +47,10 @@ const icons: Record<HealthMetric, AppIconName> = {
   Hydration: 'drop',
 };
 export function HealthSyncScreen() {
+  const c = useCareStyles();
+  const colors = usePalette();
+  const s = useStyles();
+
   const { availability, snapshot, connected, hasConnected, ready, source, error: syncError, checkAvailability } = useHealthSync();
   const { data: wellness } = useWellness();
   const [error, setError] = useState('');
@@ -276,7 +281,10 @@ export function HealthSyncScreen() {
     </AppScreen>
   );
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const c = useCareStyles();
+  const colors = usePalette();
+return StyleSheet.create({
   section: { marginTop: 28, gap: 12 },
   small: { ...c.text, fontSize: 13, lineHeight: 20 },
   flex: { flex: 1, minWidth: 120 },
@@ -321,3 +329,4 @@ const s = StyleSheet.create({
     borderColor: colors.border,
   },
 });
+};

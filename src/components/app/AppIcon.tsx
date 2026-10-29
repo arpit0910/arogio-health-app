@@ -1,7 +1,12 @@
+import { useAppTheme } from '../../theme/AppearanceProvider';
 import Svg, { Circle, Path, Rect } from "react-native-svg";
-import { appTheme as t } from "../../theme/appTheme";
+
 
 const paths = {
+  sun: 'M12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8ZM12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2',
+  moon: 'M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z',
+  device: 'M6 2h12v20H6ZM10 18h4',
+  shield: 'M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6ZM8 12l3 3 5-6',
   menu: 'M4 6h16M4 12h16M4 18h16',
   close: 'm6 6 12 12M18 6 6 18',
   logout: 'M9 4H4v16h5M10 12h11m-4-4 4 4-4 4',
@@ -44,7 +49,7 @@ const paths = {
 export type AppIconName = keyof typeof paths;
 export function AppIcon({
   name,
-  color = t.teal,
+  color,
   size = 24,
   filled = false,
 }: {
@@ -53,6 +58,9 @@ export function AppIcon({
   size?: number;
   filled?: boolean;
 }) {
+  const t = useAppTheme();
+  color ??= t.teal;
+
   return (
     <Svg
       width={size}

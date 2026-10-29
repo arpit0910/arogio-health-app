@@ -1,3 +1,4 @@
+import { usePalette } from '../../../theme/AppearanceProvider';
 import { FocusScrollView } from '../../../components/ui/FocusScrollView';
 import { useEffect, useRef, useState } from 'react';
 import { BackHandler, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
@@ -7,9 +8,9 @@ import { useAuth } from '../../auth/context/AuthContext';
 import { FormError } from '../../auth/components/AuthPrimitives';
 import { Button } from '../../../components/ui/Button';
 import { TouchTarget } from '../../../components/ui/TouchTarget';
-import { CareBrand, careStyles as c } from '../../../components/app/CareUI';
+import { CareBrand, useCareStyles } from '../../../components/app/CareUI';
 import { AppIcon } from '../../../components/app/AppIcon';
-import { colors, fonts } from '../../../theme/tokens';
+import { fonts } from '../../../theme/tokens';
 import { activities, convertMeasurement, type SetupDraft } from '../model';
 import { primaryGoals } from '../profileOptions';
 import { ChoiceCard, UnitSelector } from './ProfilePrimitives';
@@ -19,6 +20,9 @@ import { formatBirthday, profileDraft } from '../profileViewModel';
 import { resumeSetup, setupPayload, validateSetupStep, type SetupStep } from '../setupJourney';
 
 export function ProfileSetupScreen() {
+  const c = useCareStyles();
+  const s = useStyles();
+
   const { user, saveSetup } = useAuth();
   const [draft, setDraft] = useState<SetupDraft>(() => profileDraft(user!));
   const [step, setStep] = useState<SetupStep>(() => resumeSetup(profileDraft(user!)));
@@ -76,7 +80,9 @@ export function ProfileSetupScreen() {
     <View style={s.footer}><Button title={step === 2 ? 'Finish setup' : 'Continue'} onPress={() => void next()} loading={busy} /><Text style={s.note}>You can update these choices from your profile.</Text></View>
   </View></KeyboardAvoidingView>{pickingBirthday && <ProfileBirthDatePicker value={draft.dateOfBirth} onClose={() => setPickingBirthday(false)} onSelect={value => { set('dateOfBirth', value); setPickingBirthday(false); }} />}</SafeAreaView>;
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background }, fill: { flex: 1 }, container: { flex: 1, width: '100%', maxWidth: 440, alignSelf: 'center' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 24, paddingTop: 16, minHeight: 64 }, back: { width: 48, justifyContent: 'center' },
   step: { fontFamily: fonts.medium, fontSize: 13, color: colors.muted }, progress: { flexDirection: 'row', gap: 6, marginHorizontal: 24, marginTop: 20, marginBottom: 28 }, segment: { flex: 1, height: 3, backgroundColor: colors.border, borderRadius: 2 }, segmentActive: { backgroundColor: colors.primary },
@@ -84,3 +90,4 @@ const s = StyleSheet.create({
   footer: { paddingHorizontal: 24, paddingTop: 16, paddingBottom: 16, borderTopWidth: 1, borderColor: colors.border, gap: 12 }, note: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 18, color: colors.muted, textAlign: 'center' },
   success: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 20 },
 });
+};

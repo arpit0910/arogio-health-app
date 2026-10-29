@@ -1,12 +1,13 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { useState } from 'react';
 import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { AppScreen } from '../../components/app/AppScreen';
 import { AppIcon, type AppIconName } from '../../components/app/AppIcon';
-import { CareDisclosure, CareRow, careStyles as c } from '../../components/app/CareUI';
+import { CareDisclosure, CareRow, useCareStyles } from '../../components/app/CareUI';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { Button } from '../../components/ui/Button';
-import { colors, fonts } from '../../theme/tokens';
+import { fonts } from '../../theme/tokens';
 import { useWellness } from '../wellness/WellnessContext';
 import { useHealthSync } from '../health-sync/HealthSyncProvider';
 import { HealthChart } from '../health-sync/HealthCharts';
@@ -21,6 +22,10 @@ import { usePhoneSteps } from './PhoneStepsProvider';
 
 const icons: Record<ActivityMetric, AppIconName> = { Steps: 'trend', ActiveCaloriesBurned: 'bolt', Nutrition: 'leaf', Distance: 'location', ExerciseSession: 'clock', SleepSession: 'clock' };
 export function ActivityScreen() {
+  const c = useCareStyles();
+  const colors = usePalette();
+  const s = useStyles();
+
   const { data, loading, busy, save } = useWellness();
   const health = useHealthSync(), phone = usePhoneSteps();
   const now = useTrackingClock(), today = localDay(now);
@@ -104,4 +109,8 @@ export function ActivityScreen() {
     </>}
   </AppScreen>;
 }
-const s = StyleSheet.create({ section: { marginTop: 24, gap: 12 }, modes: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, mode: { paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: colors.border, borderRadius: 12, justifyContent: 'center' }, selected: { backgroundColor: colors.primary, borderColor: colors.primary }, label: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 23, color: colors.ink }, small: { ...c.text, fontSize: 13, lineHeight: 20 }, value: { fontFamily: fonts.semibold, fontSize: 18, lineHeight: 26, color: colors.ink, flexShrink: 1 }, metric: { gap: 8, paddingVertical: 18, borderBottomWidth: 1, borderColor: colors.border }, metricHeader: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, alignItems: 'center' } });
+const useStyles = () => {
+  const c = useCareStyles();
+  const colors = usePalette();
+return StyleSheet.create({ section: { marginTop: 24, gap: 12 }, modes: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, mode: { paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: colors.border, borderRadius: 12, justifyContent: 'center' }, selected: { backgroundColor: colors.primary, borderColor: colors.primary }, label: { fontFamily: fonts.medium, fontSize: 15, lineHeight: 23, color: colors.ink }, small: { ...c.text, fontSize: 13, lineHeight: 20 }, value: { fontFamily: fonts.semibold, fontSize: 18, lineHeight: 26, color: colors.ink, flexShrink: 1 }, metric: { gap: 8, paddingVertical: 18, borderBottomWidth: 1, borderColor: colors.border }, metricHeader: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, alignItems: 'center' } });
+};

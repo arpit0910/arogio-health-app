@@ -1,9 +1,10 @@
+import { usePalette } from '../../../theme/AppearanceProvider';
 import { FocusScrollView } from '../../../components/ui/FocusScrollView';
 import { SvgXml } from 'react-native-svg';
 import { useState, type ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '../../../theme/tokens';
+
 import { TouchTargetScale } from '../../../components/ui/TouchTarget';
 import { type AuthIconName } from './AuthIcon';
 import { authAssets } from '../assets/authAssets';
@@ -15,6 +16,8 @@ const DESIGN_WIDTH = 326;
  * Keep the background out of scroll content so it cannot create empty scroll space.
  */
 export function AuthCanvas({ background, children, backgroundXml }: { background: AuthIconName; children: ReactNode; backgroundXml?: string }) {
+  const styles = useStyles();
+
   const { contentWidth: artworkWidth } = useScreenLayout();
   const [viewportHeight, setViewportHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(0);
@@ -46,7 +49,9 @@ export function AuthCanvas({ background, children, backgroundXml }: { background
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   fill: { flex: 1 },
   scroll: { flexGrow: 1 },
@@ -56,3 +61,4 @@ const styles = StyleSheet.create({
   upperArtwork: { position: 'absolute', top: 0, left: 0, right: 0, overflow: 'hidden' },
   lowerArtwork: { position: 'absolute', bottom: 0, left: 0, right: 0, overflow: 'hidden' },
 });
+};

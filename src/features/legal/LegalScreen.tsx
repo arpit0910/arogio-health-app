@@ -1,7 +1,8 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { colors, fonts, layout } from '../../theme/tokens';
+import { fonts, layout } from '../../theme/tokens';
 import { AuthIcon } from '../auth/components/AuthIcon';
 
 const documents = {
@@ -29,6 +30,8 @@ const documents = {
 } as const;
 
 export function LegalScreen({ document }: { document: keyof typeof documents }) {
+  const styles = useStyles();
+
   const content = documents[document];
   return <SafeAreaView style={styles.safe}>
     <ScrollView bounces={false} alwaysBounceVertical={false} overScrollMode="never" contentContainerStyle={styles.content}>
@@ -43,7 +46,9 @@ export function LegalScreen({ document }: { document: keyof typeof documents }) 
   </SafeAreaView>;
 }
 
-const styles = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   content: { width: '100%', maxWidth: layout.maxFormWidth + 160, alignSelf: 'center', padding: 24, paddingBottom: 48 },
   back: { width: 44, minHeight: 44, justifyContent: 'center', marginBottom: 16 },
@@ -54,3 +59,4 @@ const styles = StyleSheet.create({
   heading: { fontFamily: fonts.semibold, color: colors.ink, fontSize: 17, lineHeight: 25, marginBottom: 8 },
   body: { fontFamily: fonts.regular, color: colors.muted, fontSize: 14, lineHeight: 23 },
 });
+};

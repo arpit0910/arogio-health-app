@@ -7,10 +7,13 @@ import { useAuth } from '../context/AuthContext';
 import { loginSchema } from '../types';
 import { AuthField, type AuthFieldRef } from './AuthField';
 import { AuthIcon } from './AuthIcon';
-import { AuthHeading, Checkbox, FormError, SocialDivider, authStyles } from './AuthPrimitives';
+import { AuthHeading, Checkbox, FormError, SocialDivider, useAuthStyles } from './AuthPrimitives';
 import { GoogleSignInButton } from './GoogleSignInButton';
 
 export function LoginForm({ onSwitchToSignup }: { onSwitchToSignup?: () => void }) {
+  const authStyles = useAuthStyles();
+  const styles = useStyles();
+
   const { login, isSubmitting, error, clearError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -52,8 +55,10 @@ export function LoginForm({ onSwitchToSignup }: { onSwitchToSignup?: () => void 
   </View>;
 }
 
-const styles = StyleSheet.create({
+const useStyles = () => {
+return StyleSheet.create({
   options: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', marginTop: 4 },
   forgot: { minHeight: 48, justifyContent: 'center' },
   action: { marginTop: 2 },
 });
+};

@@ -56,3 +56,5 @@ export function listenForReminder(navigate: (route: '/water' | '/cycle' | '/medi
   const subscription = Notifications.addNotificationResponseReceivedListener(handle); return () => subscription.remove();
 }
 
+
+export async function getNotificationAccess(): Promise<import('./notificationAccess').NotificationAccess> { const status = await Notifications.getPermissionsAsync(); return status.granted ? 'allowed' : status.canAskAgain ? 'not-requested' : 'blocked'; }

@@ -1,7 +1,8 @@
+import { usePalette } from '../../../theme/AppearanceProvider';
 import { useFieldFocus } from '../../../components/ui/FocusScrollView';
 import { useRef, useState, type ComponentRef, type Ref } from 'react';
 import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
-import { colors, fonts } from '../../../theme/tokens';
+import { fonts } from '../../../theme/tokens';
 import { AuthIcon } from './AuthIcon';
 import { useTouchTarget } from '../../../components/ui/TouchTarget';
 
@@ -9,6 +10,9 @@ export type AuthFieldRef = ComponentRef<typeof TextInput>;
 type Props = Omit<TextInputProps, 'ref'> & { icon: 'user' | 'email' | 'lock'; password?: boolean; invalid?: boolean; ref?: Ref<AuthFieldRef> };
 
 export function AuthField({ icon, password, invalid, ref, ...props }: Props) {
+  const colors = usePalette();
+  const styles = useStyles();
+
   const inputRef = useRef<AuthFieldRef>(null);
   const reveal = useFieldFocus();
   const [visible, setVisible] = useState(false);
@@ -28,7 +32,9 @@ export function AuthField({ icon, password, invalid, ref, ...props }: Props) {
   </Pressable>;
 }
 
-const styles = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   field: { flexDirection: 'row', alignItems: 'center', minHeight: 48, paddingLeft: 14,
     borderWidth: 1, borderColor: colors.border, borderRadius: 12, backgroundColor: colors.surface },
   focused: { borderColor: colors.primary },
@@ -37,3 +43,4 @@ const styles = StyleSheet.create({
     fontFamily: fonts.regular, color: colors.ink, outlineWidth: 0, includeFontPadding: false },
   visibility: { minWidth: 48, minHeight: 48, alignItems: 'center', justifyContent: 'center' },
 });
+};

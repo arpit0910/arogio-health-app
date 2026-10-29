@@ -1,11 +1,15 @@
+import { usePalette } from '../../../theme/AppearanceProvider';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { AuthShell } from './AuthScreen';
-import { AuthHeading, authStyles } from './AuthPrimitives';
+import { AuthHeading, useAuthStyles } from './AuthPrimitives';
 import { Button } from '../../../components/ui/Button';
-import { colors, fonts } from '../../../theme/tokens';
+import { fonts } from '../../../theme/tokens';
 
 export function ForgotPasswordScreen() {
+  const authStyles = useAuthStyles();
+  const styles = useStyles();
+
   return <AuthShell>
     <AuthHeading title="Forgot password?" subtitle="Let’s help you get back to your health journey." />
     <View style={styles.notice}>
@@ -17,9 +21,12 @@ export function ForgotPasswordScreen() {
   </AuthShell>;
 }
 
-const styles = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   notice: { backgroundColor: colors.subtle, borderRadius: 12, padding: 20, marginBottom: 24 },
   noticeTitle: { fontFamily: fonts.semibold, fontSize: 15, lineHeight: 22, color: colors.ink, marginBottom: 8 },
   copy: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 21, color: colors.muted },
   link: { minHeight: 44, justifyContent: 'center', alignItems: 'center', marginTop: 16 },
 });
+};

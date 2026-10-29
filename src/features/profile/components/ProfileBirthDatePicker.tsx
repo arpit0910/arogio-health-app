@@ -1,3 +1,4 @@
+import { usePalette, useAppearance } from '../../../theme/AppearanceProvider';
 import { useEffect, useState } from 'react';
 import { Keyboard, Platform } from 'react-native';
 import DateTimePicker, {
@@ -5,10 +6,12 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker';
 import type { BirthDatePickerProps } from '../birthDate';
 import { birthDateInitialValue, birthDateValue } from '../model';
-import { colors } from '../../../theme/tokens';
+
 import { ProfileDialog } from './ProfilePrimitives';
 
 function AndroidBirthDatePicker(props: BirthDatePickerProps) {
+  const colors = usePalette();
+
   // Snapshot this dialog's values; parent rerenders must not reopen it.
   const [initial] = useState(() => props);
   useEffect(() => {
@@ -27,11 +30,14 @@ function AndroidBirthDatePicker(props: BirthDatePickerProps) {
     return () => {
       void DateTimePickerAndroid.dismiss('date');
     };
-  }, [initial]);
+  }, [initial, colors.primary, colors.muted]);
   return null;
 }
 
 export function ProfileBirthDatePicker(props: BirthDatePickerProps) {
+  const colors = usePalette();
+  const { scheme } = useAppearance();
+
   const [date, setDate] = useState(() => birthDateInitialValue(props.value));
   if (Platform.OS === 'android') return <AndroidBirthDatePicker {...props} />;
   return (
@@ -50,7 +56,7 @@ export function ProfileBirthDatePicker(props: BirthDatePickerProps) {
         value={date}
         minimumDate={new Date(1900, 0, 1)}
         maximumDate={new Date()}
-        themeVariant="light"
+        themeVariant={scheme}
         textColor={colors.ink}
         onValueChange={(_event, selected) => setDate(selected)}
         style={{ width: '100%' }}

@@ -39,6 +39,7 @@ Module._load = function(request, parent, ...rest) {
   if (request.endsWith('/HealthSyncProvider')) return { useHealthSync: () => health };
   if (request.endsWith('/AuthContext')) return { useAuth: () => ({ user: { id: 'fixture', email: 'preview@example.test' } }) };
   if (request.endsWith('/PhoneStepsProvider') || request === './PhoneStepsProvider') return { usePhoneSteps: () => ({ enabled: false, totals: {}, status: 'Phone step counting is off.', busy: false, ready: true, toggle: async () => {}, clear: async () => {} }) };
+  if (request === 'expo-secure-store') return { getItemAsync: async () => null, setItemAsync: async () => {} };
   if (request === 'expo-crypto') return { randomUUID: () => 'example-only' };
   if (request === 'expo-router') return { router: { push() {}, navigate() {}, replace() {}, canGoBack: () => true } };
   return load.call(this, request, parent, ...rest);
@@ -49,6 +50,7 @@ const screens = {
   medicines: () => require('../src/features/wellness/MedicineScreen.tsx').MedicineScreen,
   cycle: () => require('../src/features/wellness/CycleScreen.tsx').CycleScreen,
   health: () => require('../src/features/wellness/HealthScreen.tsx').HealthScreen,
+  notifications: () => require('../src/features/settings/NotificationSettingsScreen.tsx').NotificationSettingsScreen,
   settings: () => require('../src/app/(account)/settings.tsx').default,
 };
 const key = mode.replace('-empty', '');

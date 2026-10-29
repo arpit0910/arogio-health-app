@@ -1,14 +1,19 @@
+import { usePalette, useAppearance } from '../../theme/AppearanceProvider';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { G as PathGroup, Circle, Line, Path, Rect, Text as SvgText } from 'react-native-svg';
-import { colors, fonts } from '../../theme/tokens';
-import { careStyles as c } from '../../components/app/CareUI';
+import { fonts } from '../../theme/tokens';
+import { useCareStyles } from '../../components/app/CareUI';
 import { formatHealthValue, healthMetrics, metricAverage, type HealthMetric, type HealthSnapshot } from './model';
 
-const palette = [colors.primary, '#7B3D45', '#426E8A', '#8A601F', '#536632', '#765A80', '#67594B'];
+
 function dayLabel(day: string) {
   return new Intl.DateTimeFormat('en-IN', { weekday: 'short', timeZone: 'Asia/Kolkata' }).format(new Date(`${day}T12:00:00Z`));
 }
 export function HealthChart({ snapshot, metric, emptyMessage }: { snapshot: HealthSnapshot; metric: HealthMetric; emptyMessage?: string }) {
+  const colors = usePalette();
+  const c = useCareStyles();
+  const s = useStyles();
+
   const info = healthMetrics.find((item) => item.key === metric)!;
   const values = snapshot.days.map((day) => day.readings[metric]?.value ?? null);
   const finite = values.filter((v): v is number => v != null && Number.isFinite(v));
@@ -42,9 +47,16 @@ export function HealthChart({ snapshot, metric, emptyMessage }: { snapshot: Heal
 }
 // SVG groups keep every plotted mark in the same coordinate space.
 function ViewlessGrid({ at, label }: { at: number; label: string }) {
+  const colors = usePalette();
+
   return <PathGroup><Line x1={46} x2={324} y1={at} y2={at} stroke={colors.border} /><SvgText x={40} y={at + 4} textAnchor="end" fill={colors.muted} fontSize={10}>{label}</SvgText></PathGroup>;
 }
 export function WeeklyShare({ snapshot, metric }: { snapshot: HealthSnapshot; metric: HealthMetric }) {
+  const { scheme } = useAppearance();
+  const palette = scheme === 'dark' ? ['#86C6A4', '#E0A7AF', '#94BED8', '#DDBD82', '#B7CB8E', '#C4ADD2', '#CDB8A6'] : ['#214F3D', '#7B3D45', '#426E8A', '#8A601F', '#536632', '#765A80', '#67594B'];
+  const colors = usePalette();
+  const s = useStyles();
+
   if (['HeartRate', 'RestingHeartRate', 'Weight', 'SleepSession'].includes(metric)) return null;
   const info = healthMetrics.find((item) => item.key === metric)!;
   const slices = snapshot.days.map((day, i) => ({ day: day.day, value: day.readings[metric]?.value, color: palette[i % palette.length] }));
@@ -70,7 +82,10 @@ export function WeeklyShare({ snapshot, metric }: { snapshot: HealthSnapshot; me
     </View>
   </View>;
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+  const c = useCareStyles();
+return StyleSheet.create({
   chart: { gap: 8, paddingVertical: 16 },
   summary: { gap: 4 },
   label: { fontFamily: fonts.semibold, color: colors.ink, fontSize: 15, lineHeight: 23 },
@@ -81,3 +96,4 @@ const s = StyleSheet.create({
   legendRow: { flexDirection: 'row', gap: 8, alignItems: 'center' },
   swatch: { width: 10, height: 10, borderRadius: 2 },
 });
+};

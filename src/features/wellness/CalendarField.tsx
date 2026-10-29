@@ -1,8 +1,9 @@
+import { usePalette, useAppearance } from '../../theme/AppearanceProvider';
 import { useId } from 'react';
 import { Text, View } from 'react-native';
 import { TimeField } from './TimeField';
-import { careStyles as c } from '../../components/app/CareUI';
-import { colors } from '../../theme/tokens';
+import { useCareStyles } from '../../components/app/CareUI';
+
 
 export function CalendarField({
   label,
@@ -15,6 +16,10 @@ export function CalendarField({
   onChange: (value: string) => void;
   mode: 'date' | 'time';
 }) {
+  const c = useCareStyles();
+  const colors = usePalette();
+  const { scheme } = useAppearance();
+
   const labelId = useId();
   if (mode === 'time')
     return <TimeField label={label} value={value} onChange={onChange} />;
@@ -39,7 +44,7 @@ export function CalendarField({
           backgroundColor: colors.surface,
           font: 'inherit',
           fontSize: 16,
-          colorScheme: 'light',
+          colorScheme: scheme,
           accentColor: colors.primary,
           outlineColor: colors.primary,
         }}

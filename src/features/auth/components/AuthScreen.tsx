@@ -1,8 +1,9 @@
+import { usePalette } from '../../../theme/AppearanceProvider';
 import { CareIllustration } from '../../../components/app/CareIllustration';
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
-import { colors } from '../../../theme/tokens';
+
 import { useAuth } from '../context/AuthContext';
 import { AuthIcon } from './AuthIcon';
 import { LoginForm } from './LoginForm';
@@ -12,6 +13,8 @@ import { AuthBrand } from './AuthBrand';
 import { useScreenLayout } from '../../../components/ui/useScreenLayout';
 
 export function AuthShell({ children, signup = false }: { children: ReactNode; signup?: boolean }) {
+  const styles = useStyles();
+
   const { isSubmitting } = useAuth();
   const { compact } = useScreenLayout();
   return <AuthCanvas background={signup ? 'backgroundSignup' : 'backgroundLogin'}>
@@ -27,6 +30,9 @@ export function AuthShell({ children, signup = false }: { children: ReactNode; s
 }
 
 export function AuthScreen({ initialTab = 'login' }: { initialTab?: 'login' | 'signup' }) {
+  const colors = usePalette();
+  const styles = useStyles();
+
   const { clearError, isLoading } = useAuth();
   const signup = initialTab === 'signup';
   const switchRoute = (route: '/login' | '/signup') => { clearError(); router.replace(route); };
@@ -37,7 +43,9 @@ export function AuthScreen({ initialTab = 'login' }: { initialTab?: 'login' | 's
   </AuthShell>;
 }
 
-const styles = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   illustration: { width: 220, maxWidth: '100%', aspectRatio: 294 / 215, alignSelf: 'center', marginBottom: 12 },
   compactIllustration: { width: 164, marginBottom: 8 },
   loading: { flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' },
@@ -49,3 +57,4 @@ const styles = StyleSheet.create({
   compactBody: { marginTop: 4 },
   compactSignupBody: { marginTop: 8 },
 });
+};

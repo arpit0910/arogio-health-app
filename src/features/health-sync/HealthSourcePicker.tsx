@@ -1,15 +1,20 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { careStyles as c, CareDisclosure } from '../../components/app/CareUI';
+import { useCareStyles, CareDisclosure } from '../../components/app/CareUI';
 import { AppIcon } from '../../components/app/AppIcon';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { Button } from '../../components/ui/Button';
 import { Check } from '../wellness/TrackingUI';
-import { colors, fonts } from '../../theme/tokens';
+import { fonts } from '../../theme/tokens';
 import { healthMetrics, type HealthMetric } from './model';
 import { useHealthSync } from './HealthSyncProvider';
 
 export function HealthSourcePicker({ inSettings = false }: { inSettings?: boolean }) {
+  const c = useCareStyles();
+  const colors = usePalette();
+  const s = useStyles();
+
   const { apps, appsLoading, appsError, refreshApps, source, selectedMetrics, connected, busy, connectSource } = useHealthSync();
   const [choice, setChoice] = useState<string | null>(null);
   const [selected, setSelected] = useState<HealthMetric[]>(selectedMetrics);
@@ -42,7 +47,10 @@ export function HealthSourcePicker({ inSettings = false }: { inSettings?: boolea
     </>}
   </View>;
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const c = useCareStyles();
+  const colors = usePalette();
+return StyleSheet.create({
   panel: { gap: 12 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 18, borderBottomWidth: 1, borderColor: colors.border },
   copy: { flex: 1, gap: 4 },
@@ -51,3 +59,4 @@ const s = StyleSheet.create({
   radio: { width: 22, height: 22, borderWidth: 2, borderRadius: 11, borderColor: colors.muted, alignItems: 'center', justifyContent: 'center' },
   dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.primary },
 });
+};

@@ -1,14 +1,18 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { AppScreen } from '../../components/app/AppScreen';
-import { careStyles as c } from '../../components/app/CareUI';
+import { useCareStyles } from '../../components/app/CareUI';
 import { Button } from '../../components/ui/Button';
-import { colors } from '../../theme/tokens';
+
 import { HealthSourcePicker } from './HealthSourcePicker';
 import { useHealthSync } from './HealthSyncProvider';
 import { openHealthSettings } from './healthConnect';
 
 export function HealthSourceSettingsScreen() {
+  const c = useCareStyles();
+  const colors = usePalette();
+
   const health = useHealthSync();
   const [error, setError] = useState('');
   return <AppScreen back title="Connected health settings">

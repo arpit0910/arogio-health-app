@@ -1,10 +1,11 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { useFieldFocus } from '../../components/ui/FocusScrollView';
 import { AppIcon } from '../../components/app/AppIcon';
 import { useRef, useState, type ComponentRef } from 'react';
 import { Text, TextInput, View, useWindowDimensions } from 'react-native';
-import { careStyles as c } from '../../components/app/CareUI';
+import { useCareStyles } from '../../components/app/CareUI';
 import { TouchTarget } from '../../components/ui/TouchTarget';
-import { colors, fonts } from '../../theme/tokens';
+import { fonts } from '../../theme/tokens';
 import { clockFrom12Hour } from '../../lib/time';
 
 /** Explicit AM/PM controls also work on devices whose system clock is 24-hour. */
@@ -17,6 +18,9 @@ export function TimeField({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const c = useCareStyles();
+  const colors = usePalette();
+
   const reveal = useFieldFocus();
   const { fontScale } = useWindowDimensions();
   const controlHeight = Math.max(52, Math.ceil(24 * fontScale + 24));

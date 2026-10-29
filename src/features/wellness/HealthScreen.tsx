@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { AppScreen } from '../../components/app/AppScreen';
-import { CareBrand, CareRow, careStyles as c } from '../../components/app/CareUI';
+import { CareBrand, CareRow, useCareStyles } from '../../components/app/CareUI';
 import { useWellness } from './WellnessContext';
 import { useHealthSync } from '../health-sync/HealthSyncProvider';
 import { homeWater } from '../home/homeModel';
@@ -9,6 +9,8 @@ import { useTrackingClock } from './useTrackingClock';
 import { TrackingStatus } from './TrackingUI';
 
 export function HealthScreen() {
+  const c = useCareStyles();
+
   const { data, loading } = useWellness();
   const health = useHealthSync();
   const now = useTrackingClock();

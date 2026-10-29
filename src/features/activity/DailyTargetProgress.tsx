@@ -1,7 +1,10 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../theme/tokens';
-import { careStyles as c } from '../../components/app/CareUI';
+
+import { useCareStyles } from '../../components/app/CareUI';
 export function DailyTargetProgress({ value, goal, unit }: { value: number | null; goal?: number; unit: string }) {
+  const s = useStyles();
+
   if (!goal) return <Text style={s.small}>Daily target not set</Text>;
   const fraction = value == null ? 0 : Math.min(1, Math.max(0, value / goal));
   return <View style={{ gap: 6 }}>
@@ -9,4 +12,8 @@ export function DailyTargetProgress({ value, goal, unit }: { value: number | nul
     <View accessible accessibilityRole="progressbar" accessibilityLabel={`Daily target, ${unit}`} accessibilityValue={{ min: 0, max: goal, ...(value == null ? {} : { now: Math.min(value, goal) }), text: value == null ? 'No reading yet' : `${value} of ${goal} ${unit}` }} style={s.track}><View style={[s.fill, { width: `${fraction * 100}%` }]} /></View>
   </View>;
 }
-const s = StyleSheet.create({ small: { ...c.text, fontSize: 13, lineHeight: 20 }, track: { height: 7, borderRadius: 4, backgroundColor: colors.border, overflow: 'hidden' }, fill: { height: 7, borderRadius: 4, backgroundColor: colors.primary } });
+const useStyles = () => {
+  const colors = usePalette();
+  const c = useCareStyles();
+return StyleSheet.create({ small: { ...c.text, fontSize: 13, lineHeight: 20 }, track: { height: 7, borderRadius: 4, backgroundColor: colors.border, overflow: 'hidden' }, fill: { height: 7, borderRadius: 4, backgroundColor: colors.primary } });
+};

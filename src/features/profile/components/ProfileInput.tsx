@@ -1,3 +1,4 @@
+import { useAppTheme } from '../../../theme/AppearanceProvider';
 import { useFieldFocus } from '../../../components/ui/FocusScrollView';
 import {
   Pressable,
@@ -10,7 +11,7 @@ import {
 import { useRef, useState } from 'react';
 import { AppIcon, type AppIconName } from "../../../components/app/AppIcon";
 import { TouchTarget } from "../../../components/ui/TouchTarget";
-import { appTheme as t } from "../../../theme/appTheme";
+
 type Props = {
   label: string;
   icon: AppIconName;
@@ -31,6 +32,9 @@ export function ProfileInput({
   suffix,
   ...input
 }: Props) {
+  const t = useAppTheme();
+  const s = useStyles();
+
   const reveal = useFieldFocus();
   const ref = useRef<import('react').ComponentRef<typeof TextInput>>(null);
   const [focused, setFocused] = useState(false);
@@ -81,7 +85,9 @@ export function ProfileInput({
     </View>
   );
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const t = useAppTheme();
+return StyleSheet.create({
   group: { gap: 9 },
   label: { fontFamily: t.fonts.regular, color: t.ink, fontSize: 13.5 },
   field: {
@@ -113,3 +119,4 @@ const s = StyleSheet.create({
   placeholder: { color: t.muted },
   suffix: { fontFamily: t.fonts.regular, color: t.muted, fontSize: 12 },
 });
+};

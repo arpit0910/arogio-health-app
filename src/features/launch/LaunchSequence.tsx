@@ -1,15 +1,18 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { useEffect, useState, type PropsWithChildren } from 'react';
 import { AccessibilityInfo, Animated, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import { useAuth } from '../auth/context/AuthContext';
-import { colors } from '../../theme/tokens';
+
 import { LaunchArtwork } from './LaunchArtwork';
 
 export { LaunchArtwork };
 
 /** One launch surface, released as soon as session restoration is ready. */
 export function LaunchSequence({ children }: PropsWithChildren) {
+  const s = useStyles();
+
   const { isLoading } = useAuth();
   const [visible, setVisible] = useState(true);
   const [laidOut, setLaidOut] = useState(false);
@@ -50,7 +53,10 @@ export function LaunchSequence({ children }: PropsWithChildren) {
   </View>;
 }
 
-const s = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   fill: { flex: 1, backgroundColor: colors.background },
   overlay: { backgroundColor: colors.background },
 });
+};

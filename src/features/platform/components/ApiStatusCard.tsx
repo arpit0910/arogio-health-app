@@ -1,9 +1,12 @@
+import { usePalette } from '../../../theme/AppearanceProvider';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { isApiConfigured } from '../../../config/env';
 import { useApiHealth } from '../hooks/useApiHealth';
 
 export function ApiStatusCard() {
+  const styles = useStyles();
+
   const health = useApiHealth();
   const status = !isApiConfigured
     ? 'API URL required'
@@ -24,10 +27,13 @@ export function ApiStatusCard() {
   );
 }
 
-const styles = StyleSheet.create({
-  card: { backgroundColor: '#FFFFFF', borderRadius: 16, marginTop: 32, padding: 20 },
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
+  card: { backgroundColor: colors.surface, borderRadius: 16, marginTop: 32, padding: 20 },
   row: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
-  label: { color: '#526766', fontSize: 14, fontWeight: '600' },
-  status: { color: '#102A2A', fontSize: 20, fontWeight: '700', marginTop: 8 },
-  help: { color: '#526766', fontSize: 13, lineHeight: 19, marginTop: 8 },
+  label: { color: colors.muted, fontSize: 14, fontWeight: '600' },
+  status: { color: colors.ink, fontSize: 20, fontWeight: '700', marginTop: 8 },
+  help: { color: colors.muted, fontSize: 13, lineHeight: 19, marginTop: 8 },
 });
+};

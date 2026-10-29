@@ -1,11 +1,16 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { useId } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { ClipPath, Defs, Path, Rect, Line, Text as SvgText } from 'react-native-svg';
-import { careStyles as c } from '../../components/app/CareUI';
-import { colors, fonts } from '../../theme/tokens';
+import { useCareStyles } from '../../components/app/CareUI';
+import { fonts } from '../../theme/tokens';
 import { addDays, type WaterLog } from './domain';
 
 export function WaterSummary({ total, target, done, tasks }: { total: number; target: number; done: number; tasks: number }) {
+  const c = useCareStyles();
+  const colors = usePalette();
+  const s = useStyles();
+
   const clip = useId().replace(/[^a-zA-Z0-9]/g, '');
   const fraction = Math.min(1, Math.max(0, total / Math.max(1, target)));
   return <View style={s.summary}>
@@ -21,6 +26,9 @@ export function WaterSummary({ total, target, done, tasks }: { total: number; ta
   </View>;
 }
 export function WaterHistory({ logs, day }: { logs: WaterLog[]; day: string }) {
+  const colors = usePalette();
+  const s = useStyles();
+
   const days = Array.from({ length: 7 }, (_, index) => {
     const date = addDays(day, index - 6);
     return { date, value: logs.filter((log) => log.day === date).reduce((sum, log) => sum + log.amountMl, 0) };
@@ -36,10 +44,14 @@ export function WaterHistory({ logs, day }: { logs: WaterLog[]; day: string }) {
     <Text style={s.small}>Your saved logs in ml. No logs appear as zero; today is still in progress.</Text>
   </View>;
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const c = useCareStyles();
+  const colors = usePalette();
+return StyleSheet.create({
   summary: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 16, padding: 20, backgroundColor: colors.subtle, borderRadius: 16, marginTop: 24 },
   glass: { width: 66, alignItems: 'center' }, copy: { flex: 1, minWidth: 160, gap: 5 },
   amount: { fontFamily: fonts.semibold, fontSize: 26, lineHeight: 36, color: colors.ink, fontVariant: ['tabular-nums'] },
   unit: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 23, color: colors.muted },
   small: { ...c.text, fontSize: 13, lineHeight: 20 },
 });
+};

@@ -1,3 +1,4 @@
+import { useAppTheme } from '../../theme/AppearanceProvider';
 import { FocusScrollView } from '../ui/FocusScrollView';
 import type { ReactNode } from "react";
 import {
@@ -10,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { TouchTarget } from "../ui/TouchTarget";
-import { appTheme as t } from "../../theme/appTheme";
+
 import { AppIcon } from "./AppIcon";
 
 export function AppScreen({
@@ -24,6 +25,9 @@ export function AppScreen({
   back?: boolean;
   action?: ReactNode;
 }) {
+  const t = useAppTheme();
+  const s = useStyles();
+
   return (
     <SafeAreaView
       edges={
@@ -65,7 +69,9 @@ export function AppScreen({
     </SafeAreaView>
   );
 }
-export const appStyles = StyleSheet.create({
+export const useAppStyles = () => {
+  const t = useAppTheme();
+return StyleSheet.create({
   title: {
     color: t.ink,
     fontFamily: t.fonts.bold,
@@ -105,9 +111,12 @@ export const appStyles = StyleSheet.create({
     justifyContent: "center",
     minHeight: 52,
   },
-  buttonText: { color: t.white, fontFamily: t.fonts.semibold, fontSize: 16 },
+  buttonText: { color: t.onPrimary, fontFamily: t.fonts.semibold, fontSize: 16 },
 });
-const s = StyleSheet.create({
+};
+const useStyles = () => {
+  const t = useAppTheme();
+return StyleSheet.create({
   safe: { flex: 1, backgroundColor: t.background },
   scroll: { flexGrow: 1, paddingBottom: 26 },
   content: {
@@ -134,3 +143,4 @@ const s = StyleSheet.create({
     fontSize: 18,
   },
 });
+};

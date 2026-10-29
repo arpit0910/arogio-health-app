@@ -1,20 +1,23 @@
 import { APP_TIMEZONE, formatClock, formatDateTime, formatTime } from '../../lib/time';
 import { LogChoice, TrackingIntro } from './TrackingVisuals';
 import { useRef, useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { randomUUID } from 'expo-crypto';
 import { AppScreen } from '../../components/app/AppScreen';
-import { CareDisclosure, careStyles as c } from '../../components/app/CareUI';
+import { CareDisclosure, useCareStyles } from '../../components/app/CareUI';
 import { Button } from '../../components/ui/Button';
 import { addDays, awakeMinutes, waterDay, waterSchedule, waterWindow, type WaterPlan } from './domain';
 import { useWellness } from './WellnessContext';
-import { openReminderSettings, requestReminderPermission } from './notifications';
+import { requestReminderPermission } from './notifications';
 import { TrackingFeedback, useTrackingFeedback } from './TrackingFeedback';
 import { useTrackingClock } from './useTrackingClock';
 import { WaterSummary, WaterHistory } from './WaterSummary';
 import { CalendarField } from './CalendarField';
-import { Check, confirmDelete, Field, Group, TrackingStatus, trackingStyles as s } from './TrackingUI';
+import { Check, confirmDelete, Field, Group, TrackingStatus, useTrackingStyles } from './TrackingUI';
 export function WaterScreen() {
+  const c = useCareStyles();
+  const s = useTrackingStyles();
+
   const { data, loading, busy, save, notice, scheduledThrough } = useWellness(), plan = data.waterPlan;
   const [editing, setEditing] = useState(false), [wake, setWake] = useState(plan?.wakeTime ?? '07:00'), [sleep, setSleep] = useState(plan?.sleepTime ?? '23:00'), [target, setTarget] = useState(plan ? String(plan.targetMl) : ''), [serving, setServing] = useState(String(plan?.servingMl ?? 250)), [reminders, setReminders] = useState(plan?.remindersEnabled ?? false), [custom, setCustom] = useState('250');
   const { feedback, setFeedback } = useTrackingFeedback();
@@ -67,7 +70,7 @@ export function WaterScreen() {
         {task.status !== 'skipped' && <Button title="Snooze 15 minutes" variant="secondary" disabled={busy || now.getTime()+900000 < waterWindow(plan,day!).start.getTime() || now.getTime()+900000 >= waterWindow(plan,day!).end.getTime()} onPress={() => void save(`water/tasks/${encodeURIComponent(task.id)}`, { day, status: 'pending', snoozedUntil: new Date(Date.now()+900000).toISOString() })} />}
         <Button title={task.status === 'skipped' ? 'Restore task' : 'Skip task'} variant="secondary" disabled={busy} onPress={() => void save(`water/tasks/${encodeURIComponent(task.id)}`, { day, status: task.status === 'skipped' ? 'pending' : 'skipped', snoozedUntil: null })} />
       </>}</CareDisclosure>)}</CareDisclosure></Group>
-      <Group title="Reminder controls"><Text style={c.text}>Water reminders use a short droplet sound in the installed app. Silent mode, Do Not Disturb and your notification settings control whether it plays.</Text>{Platform.OS !== 'web' && <Button title="Manage water reminder sound" variant="secondary" disabled={busy} onPress={() => void openReminderSettings().catch(() => setFeedback('Open Arogio notification settings on your device to change the water reminder sound.'))} />}<Button title={paused ? 'Resume reminders' : 'Pause until bedtime'} variant="secondary" disabled={busy || !plan.remindersEnabled} onPress={() => void updatePlan({ pausedUntil: paused ? null : waterWindow(plan, day!).end.toISOString() })} /><Button title="Edit target, hours & reminders" variant="secondary" onPress={editPlan} />{notice && <Text style={c.text}>{notice}</Text>}{plan.remindersEnabled && scheduledThrough && <Text style={c.text}>Water reminders scheduled through {formatDateTime(scheduledThrough)}. Open Arogio regularly to extend this schedule. Delivery follows your device’s notification and battery settings.</Text>}</Group>
+      <Group title="Reminder controls"><Text style={c.text}>Water reminders use a short droplet sound in the installed app. Silent mode, Do Not Disturb and your notification settings control whether it plays.</Text><Button title={paused ? 'Resume reminders' : 'Pause until bedtime'} variant="secondary" disabled={busy || !plan.remindersEnabled} onPress={() => void updatePlan({ pausedUntil: paused ? null : waterWindow(plan, day!).end.toISOString() })} /><Button title="Edit target, hours & reminders" variant="secondary" onPress={editPlan} />{notice && <Text style={c.text}>{notice}</Text>}{plan.remindersEnabled && scheduledThrough && <Text style={c.text}>Water reminders scheduled through {formatDateTime(scheduledThrough)}. Open Arogio regularly to extend this schedule. Delivery follows your device’s notification and battery settings.</Text>}</Group>
       <View style={c.section}><CareDisclosure title="Today’s logs">{todayLogs.length ? todayLogs.map(l => <View key={l.id} style={s.row}><Text style={c.text}>{formatTime(l.loggedAt)} · {l.amountMl} ml</Text><Button title="Undo this log" variant="secondary" disabled={busy} onPress={() => void save(`water/logs/${l.id}`, undefined, 'DELETE')} /></View>) : <Text style={c.text}>Your first drink will appear here.</Text>}</CareDisclosure>
       <CareDisclosure title="Last 7 waking days"><WaterHistory logs={data.waterLogs} day={day!} />{Array.from({length:7},(_,i) => addDays(day!, -i)).map(d => { const daily = data.waterLogs.filter(l=>l.day===d); return <Text key={d} style={c.text}>{d} - {daily.reduce((sum,l)=>sum+l.amountMl,0)} ml{daily[0] ? ` / ${daily[0].targetMl} ml target` : ' - No logs'}</Text>; })}</CareDisclosure></View>
       <Group title="Your data"><Text style={c.text}>Water logs are saved to your account. Deleting water tracking removes the plan, logs and water reminders.</Text><Button title="Delete water tracking data" variant="danger" disabled={busy} onPress={() => confirmDelete('Delete water tracking?', 'This permanently removes your water plan and all water logs.', () => { pending.current=null; void save('water/data',undefined,'DELETE'); })} /></Group>

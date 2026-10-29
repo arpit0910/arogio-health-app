@@ -1,3 +1,4 @@
+import { AppearanceProvider } from '../theme/AppearanceProvider';
 import { PhoneStepsProvider } from '../features/activity/PhoneStepsProvider';
 import { QueryClientProvider } from '@tanstack/react-query';
 import type { PropsWithChildren } from 'react';
@@ -21,10 +22,10 @@ export function AppProviders({ children }: PropsWithChildren) {
   const [fontsLoaded, fontError] = useFonts({ Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, PlusJakartaSans_600SemiBold, DMSans_400Regular });
   if (fontError) throw fontError;
   return (
-    <SafeAreaProvider>
+    <AppearanceProvider><SafeAreaProvider>
     <QueryClientProvider client={queryClient}>
       <AuthProvider><HealthSyncProvider><WellnessProvider><PhoneStepsProvider>{fontsLoaded ? <SidebarProvider>{children}</SidebarProvider> : <LaunchArtwork />}</PhoneStepsProvider></WellnessProvider></HealthSyncProvider></AuthProvider>
     </QueryClientProvider>
-    </SafeAreaProvider>
+    </SafeAreaProvider></AppearanceProvider>
   );
 }

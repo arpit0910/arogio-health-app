@@ -1,9 +1,10 @@
+import { useAppTheme } from '../../theme/AppearanceProvider';
 import { router } from 'expo-router';
 import { Button } from '../../components/ui/Button';
 import { Text, View } from "react-native";
-import { AppScreen, appStyles as a } from "../../components/app/AppScreen";
+import { AppScreen, useAppStyles } from "../../components/app/AppScreen";
 import { AppIcon, type AppIconName } from "../../components/app/AppIcon";
-import { appTheme as t } from "../../theme/appTheme";
+
 export function ComingSoonScreen({
   title,
   icon = "heart",
@@ -13,6 +14,9 @@ export function ComingSoonScreen({
   icon?: AppIconName;
   back?: boolean;
 }) {
+  const a = useAppStyles();
+  const t = useAppTheme();
+
   return (
     <AppScreen back={back} title={title}>
       <View style={{ gap: 14, paddingTop: 48, alignItems: "center" }}>

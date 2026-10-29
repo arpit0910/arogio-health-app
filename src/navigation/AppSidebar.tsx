@@ -1,3 +1,4 @@
+import { usePalette } from '../theme/AppearanceProvider';
 import {
   createContext,
   useCallback,
@@ -30,7 +31,7 @@ import { Avatar } from '../components/app/Avatar';
 import { AppIcon, type AppIconName } from '../components/app/AppIcon';
 import { CareBrand } from '../components/app/CareUI';
 import { TouchTarget } from '../components/ui/TouchTarget';
-import { colors, fonts } from '../theme/tokens';
+import { fonts } from '../theme/tokens';
 
 const sections = [
   {
@@ -45,6 +46,7 @@ const sections = [
   {
     title: 'Your care',
     links: [
+      { title: 'Daily activity & targets', icon: 'trend', route: '/activity' },
       { title: 'Water', icon: 'drop', route: '/water' },
       { title: 'Medicines', icon: 'pill', route: '/medicines' },
       { title: 'Cycle tracking', icon: 'calendar', route: '/cycle' },
@@ -76,6 +78,9 @@ export function SidebarProvider({ children }: PropsWithChildren) {
   );
 }
 function SidebarSession({ children }: PropsWithChildren) {
+  const colors = usePalette();
+  const s = useStyles();
+
   const { user, logout, isSubmitting } = useAuth();
   const { width } = useWindowDimensions(),
     insets = useSafeAreaInsets(),
@@ -281,6 +286,9 @@ function SidebarSession({ children }: PropsWithChildren) {
   );
 }
 export function SidebarButton() {
+  const colors = usePalette();
+  const s = useStyles();
+
   const { openSidebar, isOpen } = useSidebar();
   return (
     <TouchTarget
@@ -294,7 +302,9 @@ export function SidebarButton() {
     </TouchTarget>
   );
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   overlay: { flex: 1 },
   backdrop: {
     ...StyleSheet.absoluteFill,
@@ -379,3 +389,4 @@ const s = StyleSheet.create({
     paddingHorizontal: 12,
   },
 });
+};

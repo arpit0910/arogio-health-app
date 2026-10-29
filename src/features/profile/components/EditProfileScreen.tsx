@@ -1,3 +1,4 @@
+import { useAppTheme, usePalette } from '../../../theme/AppearanceProvider';
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -12,22 +13,26 @@ import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { useAuth } from "../../auth/context/AuthContext";
 import { updateProfileSchema } from "../../auth/types";
 import { FormError } from "../../auth/components/AuthPrimitives";
-import { AppScreen, appStyles as a } from "../../../components/app/AppScreen";
+import { AppScreen, useAppStyles } from "../../../components/app/AppScreen";
 import { Avatar } from "../../../components/app/Avatar";
 import { TouchTarget } from "../../../components/ui/TouchTarget";
-import { appTheme as t } from "../../../theme/appTheme";
+
 import { convertMeasurement, genders, validatePersonal } from "../model";
 import {
   formatBirthday,
-  genderLabel,
   profileDraft,
   profilePhoto,
 } from "../profileViewModel";
 import { ProfileBirthDatePicker } from "./ProfileBirthDatePicker";
-import { ProfileDialog, UnitSelector } from "./ProfilePrimitives";
+import { UnitSelector } from "./ProfilePrimitives";
 import { ProfileInput } from "./ProfileInput";
 
 export function EditProfileScreen() {
+  const a = useAppStyles();
+  const t = useAppTheme();
+  const colors = usePalette();
+  const s = useStyles();
+
   const { user, updateProfile, isSubmitting } = useAuth();
   const [draft, setDraft] = useState(() => profileDraft(user!));
   const [fullName, setFullName] = useState(user?.fullName ?? "");
@@ -36,18 +41,10 @@ export function EditProfileScreen() {
   );
   const [photoBusy, setPhotoBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [dialog, setDialog] = useState<"date" | "gender" | "location" | null>(
-    null,
-  );
-  const [dialogValue, setDialogValue] = useState("");
+  const [dialog, setDialog] = useState<"date" | null>(null);
   const set = (key: keyof typeof draft, value: string) => {
     setDraft((d) => ({ ...d, [key]: value }));
     setError(null);
-  };
-  const open = (key: "gender" | "location") => {
-    Keyboard.dismiss();
-    setDialogValue(draft[key]);
-    setDialog(key);
   };
   const choosePhoto = async () => {
     if (photoBusy || isSubmitting) return;
@@ -169,14 +166,18 @@ export function EditProfileScreen() {
             setDialog("date");
           }}
         />
-        <ProfileInput
-          label="Gender"
-          icon="user"
-          value={draft.gender ? genderLabel(draft.gender) : ""}
-          placeholder="Select your gender"
-          editable={!isSubmitting}
-          onPress={() => open("gender")}
-        />
+        <View style={s.genderGroup}>
+          <Text style={a.sectionTitle}>Gender</Text>
+          <View accessibilityRole="radiogroup" accessibilityLabel="Gender" style={s.genderGroup}>
+            {genders.map((option) => <TouchTarget key={option.value}
+              accessibilityRole="radio" accessibilityLabel={option.label}
+              accessibilityState={{ checked: draft.gender === option.value, disabled: isSubmitting }}
+              disabled={isSubmitting} onPress={() => set("gender", option.value)}
+              style={[s.genderOption, draft.gender === option.value && s.genderSelected]}>
+              <Text style={[s.genderText, draft.gender === option.value && s.genderSelectedText]}>{option.label}</Text>
+            </TouchTarget>)}
+          </View>
+        </View>
         <ProfileInput
           label="Location"
           icon="location"
@@ -260,7 +261,7 @@ export function EditProfileScreen() {
           style={a.button}
         >
           {isSubmitting ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={colors.onPrimary} />
           ) : (
             <Text style={a.buttonText}>Save Changes</Text>
           )}
@@ -276,29 +277,18 @@ export function EditProfileScreen() {
           onClose={() => setDialog(null)}
         />
       )}
-      {(dialog === "gender" || dialog === "location") && (
-        <ProfileDialog
-          title={dialog === "gender" ? "Gender" : "Location"}
-          subtitle={
-            dialog === "location"
-              ? "Enter your city and state."
-              : "Choose the option you prefer."
-          }
-          placeholder="Enter your city and state"
-          value={dialogValue}
-          onChange={setDialogValue}
-          options={dialog === "gender" ? genders : undefined}
-          onClose={() => setDialog(null)}
-          onSave={() => {
-            set(dialog, dialogValue.trim());
-            setDialog(null);
-          }}
-        />
-      )}
     </AppScreen>
   );
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const t = useAppTheme();
+  const colors = usePalette();
+return StyleSheet.create({
+  genderGroup: { gap: 8 },
+  genderOption: { minHeight: 52, paddingHorizontal: 16, paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: t.border },
+  genderSelected: { backgroundColor: t.teal, borderColor: t.teal },
+  genderText: { color: t.ink, fontFamily: t.fonts.medium, fontSize: 16 },
+  genderSelectedText: { color: colors.onPrimary },
   form: { gap: 18, paddingBottom: 20 },
   avatar: {
     alignSelf: "center",
@@ -309,3 +299,5 @@ const s = StyleSheet.create({
   body: { flexDirection: "row", flexWrap: "wrap", gap: 20 },
   measurement: { flex: 1, gap: 11, minWidth: 160 },
 });
+};
+

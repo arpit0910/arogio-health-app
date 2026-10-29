@@ -1,6 +1,7 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 import type { ReactNode } from 'react';
-import { colors, fonts } from '../../theme/tokens';
+import { fonts } from '../../theme/tokens';
 import { useTouchTarget } from './TouchTarget';
 
 type Props = {
@@ -14,6 +15,9 @@ type Props = {
 };
 
 export function Button({ title, onPress, loading, disabled, variant = 'primary', leading, trailing }: Props) {
+  const colors = usePalette();
+  const styles = useStyles();
+
   const secondary = variant !== 'primary';
   const danger = variant === 'danger';
   const { control } = useTouchTarget();
@@ -32,7 +36,9 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary',
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   base: { minHeight: 52, paddingVertical: 14, paddingHorizontal: 20, borderRadius: 12,
     flexDirection: 'row', gap: 9, alignItems: 'center', justifyContent: 'center', width: '100%' },
   primary: { backgroundColor: colors.primary },
@@ -41,7 +47,8 @@ const styles = StyleSheet.create({
   dangerPressed: { backgroundColor: colors.errorSurface },
   primaryPressed: { backgroundColor: colors.primaryPressed },
   secondaryPressed: { backgroundColor: colors.subtle },
-  text: { color: '#FFFFFF', fontFamily: fonts.semibold, fontSize: 16, lineHeight: 23, flexShrink: 1, textAlign: 'center' },
+  text: { color: colors.onPrimary, fontFamily: fonts.semibold, fontSize: 16, lineHeight: 23, flexShrink: 1, textAlign: 'center' },
   secondaryText: { color: colors.ink, fontSize: 16 },
   disabled: { opacity: 0.55 },
 });
+};

@@ -1,4 +1,5 @@
 export const colors = {
+  onPrimary: '#FFFFFF',
   background: '#FFFDFA',
   surface: '#FFFDFA',
   ink: '#203E32',

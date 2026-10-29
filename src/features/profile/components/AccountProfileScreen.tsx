@@ -1,3 +1,4 @@
+import { usePalette } from '../../../theme/AppearanceProvider';
 import { useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
@@ -5,14 +6,18 @@ import { useAuth } from '../../auth/context/AuthContext';
 import { AppScreen } from '../../../components/app/AppScreen';
 import { Avatar } from '../../../components/app/Avatar';
 import { AppIcon } from '../../../components/app/AppIcon';
-import { CareRow, careStyles as c } from '../../../components/app/CareUI';
+import { CareRow, useCareStyles } from '../../../components/app/CareUI';
 import { TouchTarget } from '../../../components/ui/TouchTarget';
-import { colors, fonts } from '../../../theme/tokens';
+import { fonts } from '../../../theme/tokens';
 import { ageLabel, formatBirthday, genderLabel, profileDraft, profileName, profilePhoto } from '../profileViewModel';
 import { activities } from '../model';
 import { accountGoals } from '../profileOptions';
 
 export function AccountProfileScreen() {
+  const c = useCareStyles();
+  const colors = usePalette();
+  const s = useStyles();
+
   const { user, logout, isSubmitting } = useAuth();
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const logoutLock = useRef(false);
@@ -39,7 +44,7 @@ export function AccountProfileScreen() {
       <Detail label="BMI" value={user.bmi?.toFixed(1) ?? 'Not available'} />
     </View></View>
     <View style={c.section}><Text accessibilityRole="header" style={c.title}>Your priorities</Text><Text style={[c.text, { marginTop: 10 }]}>{goals.map(goal => goal.title).join(' · ') || 'No goals added'}</Text><Text style={[c.text, { marginTop: 6 }]}>{activities.find(activity => activity.value === draft.activityLevel)?.title || 'Activity level not added'}</Text></View>
-    <View style={[c.section, c.line]}><CareRow title="Goals & preferences" detail="Wellness goals, activity and updates" onPress={() => router.push('/edit-health-goals')} /></View>
+    <View style={[c.section, c.line]}><CareRow icon="goal" title="Goals & preferences" detail="Wellness goals, activity and updates" onPress={() => router.push('/edit-health-goals')} /></View>
     <View style={s.accountAction}>
       <TouchTarget accessibilityRole="button" accessibilityLabel="Log out" accessibilityState={{ disabled: isSubmitting, busy: isSubmitting }} disabled={isSubmitting} onPress={() => void handleLogout()} style={({ pressed }) => [s.logout, pressed && s.logoutPressed, isSubmitting && { opacity: 0.6 }]}>
         {isSubmitting ? <ActivityIndicator color={colors.primary} /> : <AppIcon name="logout" size={22} />}
@@ -50,9 +55,13 @@ export function AccountProfileScreen() {
   </AppScreen>;
 }
 function Detail({ label, value }: { label: string; value: string }) {
+  const s = useStyles();
+
   return <View style={s.detail}><Text style={s.label}>{label}</Text><Text style={s.value}>{value}</Text></View>;
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   settings: { width: 48, alignItems: 'flex-end', justifyContent: 'center' },
   identity: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 28 }, flex: { flex: 1, minWidth: 0 },
@@ -69,3 +78,4 @@ const s = StyleSheet.create({
   label: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 22, color: colors.muted },
   value: { flexShrink: 1, fontFamily: fonts.medium, fontSize: 15, lineHeight: 22, color: colors.ink },
 });
+};

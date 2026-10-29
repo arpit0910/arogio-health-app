@@ -1,3 +1,4 @@
+import { usePalette, useAppearance } from '../../theme/AppearanceProvider';
 import { useState } from 'react';
 import { Keyboard, Platform, Text, View } from 'react-native';
 import DateTimePicker, {
@@ -5,9 +6,9 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker';
 import { TimeField } from './TimeField';
 import { Button } from '../../components/ui/Button';
-import { colors } from '../../theme/tokens';
+
 import { AppIcon } from '../../components/app/AppIcon';
-import { careStyles as c } from '../../components/app/CareUI';
+import { useCareStyles } from '../../components/app/CareUI';
 export function CalendarField({
   label,
   value,
@@ -19,6 +20,10 @@ export function CalendarField({
   onChange: (value: string) => void;
   mode: 'date' | 'time';
 }) {
+  const colors = usePalette();
+  const { scheme } = useAppearance();
+  const c = useCareStyles();
+
   const [open, setOpen] = useState(false);
   const date = new Date(`${value || '2000-01-01'}T12:00:00`);
   const select = (selected: Date) => {
@@ -65,7 +70,7 @@ export function CalendarField({
             value={date}
             mode={mode}
             display="spinner"
-            themeVariant="light"
+            themeVariant={scheme}
             textColor={colors.ink}
             onValueChange={(_event, selected) => select(selected)}
           />

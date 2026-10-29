@@ -1,3 +1,4 @@
+import { usePalette } from '../../theme/AppearanceProvider';
 import {
   APP_TIMEZONE,
   formatClock,
@@ -31,7 +32,7 @@ import { AppIcon, type AppIconName } from '../../components/app/AppIcon';
 import { CareBrand, CareRow } from '../../components/app/CareUI';
 import { Button } from '../../components/ui/Button';
 import { TouchTarget } from '../../components/ui/TouchTarget';
-import { colors, fonts } from '../../theme/tokens';
+import { fonts } from '../../theme/tokens';
 import { profilePhoto } from '../profile/profileViewModel';
 
 const shortcuts: {
@@ -45,6 +46,9 @@ const shortcuts: {
   { title: 'Health sync', icon: 'sync', route: '/connected-health' },
 ];
 export function HomeScreen() {
+  const colors = usePalette();
+  const s = useStyles();
+
   const { user } = useAuth();
   const health = useHealthSync();
   const { data, loading, busy, error, refresh, save } = useWellness();
@@ -466,7 +470,9 @@ export function HomeScreen() {
     </SafeAreaView>
   );
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   appBar: {
     width: '100%',
@@ -682,3 +688,4 @@ const s = StyleSheet.create({
   },
   pressed: { backgroundColor: colors.subtle },
 });
+};

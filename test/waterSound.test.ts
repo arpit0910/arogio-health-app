@@ -9,13 +9,13 @@ function harness(platform = 'android') {
   const scheduled: { content: { sound: string; data: { route: string } }; trigger: { channelId: string } }[] = [];
   const cancelled: string[] = [];
   const intents: { action: string; extras: { key: string; value: string }[] }[] = [];
-  let requestCount = 0, granted = true, failPermissions = false;
+  let requestCount = 0, granted = true, canAskAgain = true, failPermissions = false;
   let handler: { handleNotification: () => Promise<{ shouldPlaySound: boolean }> };
   const notifications = {
     AndroidImportance: { DEFAULT: 3 }, AndroidNotificationVisibility: { PRIVATE: 0 }, SchedulableTriggerInputTypes: { DATE: 'date' },
     setNotificationHandler: (value: typeof handler) => { handler = value; },
     setNotificationChannelAsync: async (id: string, input: { sound?: string }) => { channels.push({ id, sound: input.sound }); },
-    getPermissionsAsync: async () => { if (failPermissions) throw new Error('Native module unavailable'); return { granted }; },
+    getPermissionsAsync: async () => { if (failPermissions) throw new Error('Native module unavailable'); return { granted, canAskAgain }; },
     requestPermissionsAsync: async () => { requestCount++; return { granted }; },
     getAllScheduledNotificationsAsync: async () => [{ identifier: 'arogio-wellness:legacy-water' }, { identifier: 'other-feature:keep' }],
     cancelScheduledNotificationAsync: async (id: string) => { cancelled.push(id); },
@@ -32,8 +32,8 @@ function harness(platform = 'android') {
     if (!(key in dependencies)) throw new Error(`Unexpected dependency ${key}`);
     return dependencies[key];
   } });
-  const api = module.exports as { requestReminderPermission: () => Promise<boolean>; syncNotifications: (owner: string | null, reminders: object[]) => Promise<string | null>; openReminderSettings: () => Promise<void> };
-  return { api, channels, scheduled, cancelled, intents, handler: () => handler, requests: () => requestCount, deny: () => { granted = false; }, fail: () => { failPermissions = true; } };
+  const api = module.exports as { getNotificationAccess: () => Promise<string>; requestReminderPermission: () => Promise<boolean>; syncNotifications: (owner: string | null, reminders: object[]) => Promise<string | null>; openReminderSettings: () => Promise<void> };
+  return { api, channels, scheduled, cancelled, intents, handler: () => handler, requests: () => requestCount, deny: (askAgain = true) => { granted = false; canAskAgain = askAgain; }, fail: () => { failPermissions = true; } };
 }
 const reminders = ['/water', '/medicines', '/cycle'].map((route, i) => ({ id: `test:${i}`, at: '2026-10-30T08:00:00Z', title: 'Fixture', body: 'Synthetic reminder', route }));
 describe('Water reminder sound', () => {
@@ -63,6 +63,14 @@ describe('Water reminder sound', () => {
     assert.match((await h.api.syncNotifications('fixture-user', reminders))!, /Notifications are off/);
     assert.equal(h.scheduled.length, 0);
     h.fail(); assert.equal(await h.api.requestReminderPermission(), false);
+  });
+  it('reads notification access without requesting permission or altering channels', async () => {
+    const h = harness();
+    assert.equal(await h.api.getNotificationAccess(), 'allowed');
+    h.deny(); assert.equal(await h.api.getNotificationAccess(), 'not-requested');
+    h.deny(false); assert.equal(await h.api.getNotificationAccess(), 'blocked');
+    assert.equal(h.requests(), 0); assert.equal(h.channels.length, 0);
+    h.fail(); await assert.rejects(h.api.getNotificationAccess(), /Native module unavailable/);
   });
   it('opens the dedicated water channel so the user controls sound and mute settings', async () => {
     const h = harness();

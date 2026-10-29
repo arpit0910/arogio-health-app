@@ -1,10 +1,11 @@
+import { usePalette } from '../../../theme/AppearanceProvider';
 import { useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "../../auth/context/AuthContext";
 import { updateProfileSchema } from "../../auth/types";
 import { FormError } from "../../auth/components/AuthPrimitives";
-import { AppScreen, appStyles as a } from "../../../components/app/AppScreen";
+import { AppScreen, useAppStyles } from "../../../components/app/AppScreen";
 import { TouchTarget } from "../../../components/ui/TouchTarget";
 import { activities } from "../model";
 import { profileDraft } from "../profileViewModel";
@@ -13,6 +14,9 @@ import { ChoiceCard } from "./ProfilePrimitives";
 import { ProfilePreferences } from './ProfilePreferences';
 
 export function EditHealthGoalsScreen() {
+  const colors = usePalette();
+  const a = useAppStyles();
+
   const { user, updateProfile, isSubmitting } = useAuth();
   const [draft, setDraft] = useState(() => profileDraft(user!));
   const [error, setError] = useState<string | null>(null);
@@ -112,7 +116,7 @@ export function EditHealthGoalsScreen() {
           style={a.button}
         >
           {isSubmitting ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color={colors.onPrimary} />
           ) : (
             <Text style={a.buttonText}>Save Changes</Text>
           )}

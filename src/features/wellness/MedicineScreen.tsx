@@ -1,20 +1,23 @@
 import { useState } from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import * as Crypto from 'expo-crypto';
 import { AppScreen } from '../../components/app/AppScreen';
-import { careStyles as c } from '../../components/app/CareUI';
+import { useCareStyles } from '../../components/app/CareUI';
 import { Button } from '../../components/ui/Button';
 import { TrackingIntro } from './TrackingVisuals';
 import { TrackingFeedback, useTrackingFeedback } from './TrackingFeedback';
 import { AppIcon } from '../../components/app/AppIcon';
 import { useWellness } from './WellnessContext';
 import { type Medicine } from './domain';
-import { Check, Field, Group, TrackingStatus, confirmDelete, trackingStyles as s } from './TrackingUI';
+import { Check, Field, Group, TrackingStatus, confirmDelete, useTrackingStyles } from './TrackingUI';
 import { TimeField } from './TimeField';
-import { openReminderSettings, requestReminderPermission } from './notifications';
+import { requestReminderPermission } from './notifications';
 import { formatClock } from '../../lib/time';
 
 export function MedicineScreen() {
+  const c = useCareStyles();
+  const s = useTrackingStyles();
+
   const { data, loading, busy, save, notice } = useWellness();
   const [draft, setDraft] = useState<Medicine | null>(null);
   const { feedback, setFeedback } = useTrackingFeedback();
@@ -52,6 +55,6 @@ export function MedicineScreen() {
       <Button title="Save medicine" loading={busy || submitting} onPress={() => void submit()} /><Button title="Cancel" variant="secondary" disabled={busy || submitting} onPress={() => {setDraft(null);setFeedback('');}} />
       {medicines.some(m => m.id === draft.id) && <Button title="Delete medicine" variant="danger" disabled={busy} onPress={() => confirmDelete('Delete medicine?', 'This removes the medicine and its future reminders.', () => void (async () => { if (await save(`medicines/${draft.id}`, undefined, 'DELETE')) {setDraft(null);setFeedback('Medicine deleted.', 'success');} })())} />}
     </Group>}
-    {Platform.OS !== 'web' && <Button title="Manage device notifications" variant="secondary" onPress={() => void openReminderSettings('all').catch(() => setFeedback('Open Arogio in device settings to manage notifications.'))} />}{!!notice && <Text style={[c.text,c.section]}>{notice}</Text>}<Text style={[c.text,c.section]}>Device reminders are scheduled ahead. Reopen Arogio regularly to keep upcoming reminders scheduled.</Text>
+    {!!notice && <Text style={[c.text,c.section]}>{notice}</Text>}<Text style={[c.text,c.section]}>Device reminders are scheduled ahead. Reopen Arogio regularly to keep upcoming reminders scheduled.</Text>
   </AppScreen>;
 }

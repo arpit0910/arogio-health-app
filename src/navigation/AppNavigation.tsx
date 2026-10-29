@@ -1,9 +1,10 @@
+import { useAppTheme } from '../theme/AppearanceProvider';
 import type { BottomTabBarProps } from "expo-router/js-tabs";
 import { Image, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TouchTarget } from "../components/ui/TouchTarget";
 import { AppIcon, type AppIconName } from "../components/app/AppIcon";
-import { appTheme as t } from "../theme/appTheme";
+
 
 export const appTabs: { name: string; title: string; icon: AppIconName }[] = [
   { name: "home", title: "Home", icon: "home" },
@@ -17,6 +18,9 @@ export function AppNavigation({
   emitter,
   navigateToTab,
 }: BottomTabBarProps) {
+  const t = useAppTheme();
+  const s = useStyles();
+
   const { bottom, top } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const expanded = width >= 768;
@@ -68,7 +72,9 @@ export function AppNavigation({
     </View>
   );
 }
-const s = StyleSheet.create({
+const useStyles = () => {
+  const t = useAppTheme();
+return StyleSheet.create({
   container: {
     backgroundColor: t.background,
     borderTopWidth: 1,
@@ -103,3 +109,4 @@ const s = StyleSheet.create({
     borderRadius: 31,
   },
 });
+};

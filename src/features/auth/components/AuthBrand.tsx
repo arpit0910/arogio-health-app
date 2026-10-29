@@ -1,8 +1,11 @@
+import { usePalette } from '../../../theme/AppearanceProvider';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors, fonts } from '../../../theme/tokens';
+import { fonts } from '../../../theme/tokens';
 import { AuthIcon } from './AuthIcon';
 
 export function AuthBrand() {
+  const styles = useStyles();
+
   return (
     <View style={styles.brand} accessibilityLabel="Arogio. Your Health Companion">
       <View style={styles.row}>
@@ -14,9 +17,12 @@ export function AuthBrand() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = () => {
+  const colors = usePalette();
+return StyleSheet.create({
   brand: { alignItems: 'center' },
   row: { maxWidth: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 12 },
   wordmark: { flexShrink: 1, fontFamily: fonts.bold, color: colors.ink, fontSize: 28, lineHeight: 42, letterSpacing: 0, paddingRight: 6, includeFontPadding: true },
   tagline: { fontFamily: fonts.medium, fontSize: 11, lineHeight: 17, color: colors.muted, marginTop: 2, includeFontPadding: false },
 });
+};
