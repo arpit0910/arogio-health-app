@@ -45,6 +45,7 @@
       [
         "expo-notifications",
         {
+          "defaultChannel": "wellness",
           "sounds": [
             "./assets/sounds/water_drop.wav"
           ]

@@ -26,28 +26,31 @@ const width = Number(process.argv[2] || 390);
 const mode = process.argv[3] || 'first';
 const height = 1100;
 Dimensions.set({ window: { width, height, scale: 1, fontScale: 1 }, screen: { width, height, scale: 1, fontScale: 1 } });
-const fixtureApps = [{ id: 'example.alpha', name: 'Example Health' }, { id: 'example.beta', name: 'Another Health App' }, { id: 'example.long', name: 'A Health App With a Longer Display Name' }];
+const fixtureApps = [{ id: 'example.alpha', name: 'Example Health', supportsHealthConnect: true, metrics: ['Steps'] }, { id: 'example.beta', name: 'Another Health App', supportsHealthConnect: true, metrics: ['SleepSession'] }, { id: 'example.long', name: 'A Health App With a Longer Display Name', supportsHealthConnect: false }];
 const mock = { apps: mode === 'empty' ? [] : fixtureApps, appsLoading: false, appsError: '',
   source: mode === 'connected' ? fixtureApps[0] : null, selectedMetrics: healthMetrics.map((item) => item.key),
   connected: mode === 'connected', hasConnected: mode === 'connected', busy: false, ready: true, availability: 'available',
   background: false, error: '', refreshApps: async () => [], connectSource: async () => {}, enableBackground: async () => {}, disableBackground: async () => {}, disconnect: async () => {}, run: async () => {} };
 const load = Module._load;
 Module._load = function(request, parent, ...rest) {
+  if (request.endsWith('/AuthContext')) return { useAuth: () => ({ user: { id: 'fixture' } }) };
+  if (request === 'expo-secure-store') return { getItemAsync: async () => null, setItemAsync: async () => {} };
   if (request === './HealthSyncProvider' && parent?.filename.includes('health-sync')) return { useHealthSync: () => mock };
   if (request === './WellnessContext') return { useWellness: () => ({}) };
   if (request === 'expo-router') return { router: { push() {}, canGoBack: () => true } };
   return load.call(this, request, parent, ...rest);
 };
 const { HealthSourcePicker } = require('../src/features/health-sync/HealthSourcePicker.tsx');
-const { HealthSourceSettingsScreen } = require('../src/features/health-sync/HealthSourceSettingsScreen.tsx');
+const HealthSourceSettingsScreen = mode === 'connected' ? require('../src/features/health-sync/HealthSourceSettingsScreen.tsx').HealthSourceSettingsScreen : null;
 function PickerPreview() {
-  return mode === 'connected' ? React.createElement(SafeAreaProvider, { initialMetrics: { frame: { x: 0, y: 0, width, height }, insets: { top: 0, left: 0, right: 0, bottom: 0 } } }, React.createElement(View, { style: { width, height } }, React.createElement(HealthSourceSettingsScreen))) : React.createElement(View, { style: { width, padding: 24, gap: 20, backgroundColor: '#FFFDFA' } },
-    React.createElement(Text, { style: { color: '#586357', fontFamily: 'Inter_400Regular', fontSize: 13 } }, 'Preview - synthetic installed app list'), React.createElement(HealthSourcePicker));
+  return mode === 'connected' ? React.createElement(SafeAreaProvider, { initialMetrics: { frame: { x: 0, y: 0, width, height }, insets: { top: 0, left: 0, right: 0, bottom: 0 } } }, React.createElement(View, { style: { width, height } }, React.createElement(HealthSourceSettingsScreen))) : React.createElement(View, { style: { width, padding: 24, gap: 20, backgroundColor: '#00291E' } },
+    React.createElement(Text, { style: { color: '#B8D0C4', fontFamily: 'Inter_400Regular', fontSize: 13 } }, 'Preview - synthetic installed app list'), React.createElement(HealthSourcePicker));
 }
 AppRegistry.registerComponent('HealthSourcesQA', () => PickerPreview);
 const { element, getStyleElement } = AppRegistry.getApplication('HealthSourcesQA');
 const out = path.join(root, '.impeccable/review/health-sources');
 fs.mkdirSync(out, { recursive: true });
 const fonts = ['400Regular', '500Medium', '600SemiBold'].map((font) => `@font-face{font-family:Inter_${font};src:url(data:font/ttf;base64,${fs.readFileSync(path.join(root, `node_modules/@expo-google-fonts/inter/${font}/Inter_${font}.ttf`)).toString('base64')})}`).join('');
-fs.writeFileSync(path.join(out, `${mode}-${width}.html`), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+ReactDOM.renderToStaticMarkup(getStyleElement())+`<style>${fonts}body{margin:0;background:#FFFDFA}</style></head><body>`+ReactDOM.renderToStaticMarkup(element)+'</body></html>');
+const markup = ReactDOM.renderToStaticMarkup(element);
+fs.writeFileSync(path.join(out, `${mode}-${width}.html`), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+ReactDOM.renderToStaticMarkup(getStyleElement())+`<style>${fonts}body{margin:0;background:#00291E}</style></head><body>`+markup+'</body></html>');
 console.log(`Source picker composition: ${mode} at ${width}. Synthetic app list; native discovery is not exercised.`);

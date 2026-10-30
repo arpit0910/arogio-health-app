@@ -7,6 +7,7 @@ import {
   RefreshControl,
   StyleSheet,
   View,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -28,6 +29,7 @@ export function AppScreen({
   refreshing?: boolean;
 }) {
   const s = useStyles();
+  const { width } = useWindowDimensions();
 
   return (
     <SafeAreaView
@@ -48,7 +50,7 @@ export function AppScreen({
           overScrollMode="never"
           contentContainerStyle={s.scroll}
         >
-          <View style={s.content}>{children}</View>
+          <View style={[s.content, width >= 1024 && { maxWidth: 880 }]} >{children}</View>
         </FocusScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -60,8 +62,8 @@ return StyleSheet.create({
   title: {
     color: t.ink,
     fontFamily: t.fonts.bold,
-    fontSize: 30,
-    lineHeight: 38,
+    fontSize: 26,
+    lineHeight: 34,
   },
   subtitle: {
     color: t.muted,
@@ -75,7 +77,7 @@ return StyleSheet.create({
     fontSize: 19,
     lineHeight: 26,
   },
-  section: { gap: 12, marginTop: 32 },
+  section: { gap: 12, marginTop: 24 },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",

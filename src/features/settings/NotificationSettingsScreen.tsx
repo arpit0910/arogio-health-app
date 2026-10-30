@@ -7,15 +7,16 @@ import { AppIcon } from '../../components/app/AppIcon';
 import { Button } from '../../components/ui/Button';
 import { usePalette } from '../../theme/AppearanceProvider';
 import { useWellness } from '../wellness/WellnessContext';
-import { getNotificationAccess, openReminderSettings } from '../wellness/notifications';
+import { getNotificationAccess, openReminderSettings, getReminderSoundStatus, testReminderSound } from '../wellness/notifications';
 import type { NotificationAccess } from '../wellness/notificationAccess';
 
 export function NotificationSettingsScreen() {
   const c = useCareStyles(), colors = usePalette();
   const { data, loading, error: reminderError, refresh } = useWellness();
   const [access, setAccess] = useState<NotificationAccess | null>(null), [error, setError] = useState('');
+  const [soundStatus, setSoundStatus] = useState(''), [testStatus, setTestStatus] = useState(''), [testing, setTesting] = useState(false);
   const checkAccess = useCallback(async () => {
-    try { setAccess(await getNotificationAccess()); setError(''); }
+    try { setAccess(await getNotificationAccess()); if (Platform.OS !== 'web') setSoundStatus(await getReminderSoundStatus()); setError(''); }
     catch { setError('Notification status could not be checked. Try again.'); }
   }, []);
   useEffect(() => {
@@ -23,9 +24,16 @@ export function NotificationSettingsScreen() {
     const sub = AppState.addEventListener('change', state => { if (state === 'active') { void checkAccess(); void refresh(); } });
     return () => { clearTimeout(timer); sub.remove(); };
   }, [checkAccess, refresh]);
-  async function open(target: 'water' | 'all') {
+  async function open(target: 'water' | 'wellness' | 'all') {
     try { setError(''); await openReminderSettings(target); }
     catch { setError('Open Arogio in your device notification settings to manage permissions and sounds.'); }
+  }
+  async function testSound(target: 'water' | 'wellness') {
+    if (testing) return;
+    setTesting(true); setError(''); setTestStatus('');
+    try { await testReminderSound(target); setTestStatus('Test scheduled in 3 seconds. Listen for your notification sound.'); }
+    catch (e) { setError(e instanceof Error ? e.message : 'Could not schedule the sound test. Try again.'); }
+    finally { setTesting(false); }
   }
   const title = access === 'allowed' ? 'Notifications are allowed' : access === 'blocked' ? 'Notifications are off' : access === 'not-requested' ? 'Allow reminders when you’re ready' : access === 'unavailable' ? 'Reminders need the mobile app' : 'Checking notification access…';
   const enabledMedicines = data.medicines?.filter(m => m.enabled).length ?? 0;
@@ -48,7 +56,15 @@ export function NotificationSettingsScreen() {
     </View>
     {Platform.OS !== 'web' && <View style={{ marginTop: 32, paddingTop: 24, borderTopWidth: 1, borderColor: colors.border }}>
       <Text accessibilityRole="header" style={c.title}>Sound & delivery</Text>
+      <Text accessibilityLiveRegion="polite" style={[c.text, { marginTop: 12 }]}>{soundStatus}</Text>
+      <View style={{ gap: 12, marginTop: 12 }}>
+        <Button title="Test water reminder sound" variant="secondary" disabled={testing || access !== 'allowed'} onPress={() => void testSound('water')} />
+        <Button title="Test medicine & cycle sound" variant="secondary" disabled={testing || access !== 'allowed'} onPress={() => void testSound('wellness')} />
+        {!!testStatus && <Text accessibilityLiveRegion="polite" style={c.text}>{testStatus}</Text>}
+      </View>
+      <CareRow icon="bell" title="Medicine & cycle sound" detail="Choose an alert sound in device settings" onPress={() => void open('wellness')} />
       <CareRow icon="drop" title="Water reminder sound" detail="Manage the droplet sound in device settings" onPress={() => void open('water')} />
+      {Platform.OS === 'android' && <Text style={[c.text, { marginTop: 12 }]}>{'On Samsung phones: Settings > Notifications > Advanced settings > Manage notification categories for each app. Then open Arogio > Notifications > Notification categories and set Water reminders and Wellness reminders to Alert with a sound selected.'}</Text>}
       <Text style={c.text}>Silent mode, Do Not Disturb and battery settings can affect reminders. Reopen Arogio regularly to keep upcoming reminders scheduled.</Text>
     </View>}
   </AppScreen>;

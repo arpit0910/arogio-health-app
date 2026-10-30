@@ -51,7 +51,7 @@ export function HomeScreen() {
   const { user } = useAuth();
   const { data, loading, busy, error, refresh, save } = useWellness();
   const { fontScale, width } = useWindowDimensions();
-  const expanded = width >= 768;
+  const expanded = width >= 1024;
   const [now, setNow] = useState(() => new Date());
   const [feedback, setFeedback] = useState<{
     text: string;
@@ -457,7 +457,7 @@ return StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: 16,
   },
-  expandedContent: { maxWidth: 1100 },
+  expandedContent: { maxWidth: 880 },
   greeting: { flexDirection:'row', flexWrap:'wrap', alignItems:'center', gap:12, paddingTop:16, paddingBottom:18 },
   date: {
     fontFamily: fonts.regular,
@@ -478,16 +478,17 @@ return StyleSheet.create({
     color: colors.muted,
   },
   shortcuts: {
+    alignItems: 'stretch',
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
     marginBottom: 0,
   },
-  shortcut: { flex:1, minWidth:60, alignItems:'flex-start', gap:9, padding:12, borderRadius:16 },
+  shortcut: { flexGrow:0, flexShrink:0, flexBasis:'23%', minWidth:60, minHeight:104, alignItems:'flex-start', gap:9, padding:12, borderRadius:16 },
   largeShortcut: { flexBasis:'45%' },
   shortcutLabel: {fontFamily:fonts.semibold,fontSize:12,lineHeight:18,color:'#102D25'},
   shortcutDetail: {fontFamily:fonts.regular,fontSize:10,lineHeight:14,color:'#28483F'},
-  columns: { flexDirection: 'row', flexWrap: 'wrap', gap: 28 },
+  columns: { flexDirection: 'row', alignItems: 'flex-start', flexWrap: 'wrap', gap: 24 },
   primaryColumn: { flex: 1.1, minWidth: 280 },
   secondaryColumn: { flex: 1, minWidth: 240 },
   sectionHeader: {
@@ -496,8 +497,8 @@ return StyleSheet.create({
     justifyContent: 'space-between',
     gap: 8,
     flexWrap: 'wrap',
-    marginTop: 32,
-    marginBottom: 16,
+    marginTop: 24,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontFamily: fonts.semibold,

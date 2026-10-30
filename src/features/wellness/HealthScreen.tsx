@@ -1,109 +1,31 @@
-import { Text, View } from "react-native";
-import { router } from "expo-router";
-import { AppScreen } from "../../components/app/AppScreen";
-import { CareRow, useCareStyles } from "../../components/app/CareUI";
-import { usePalette } from "../../theme/AppearanceProvider";
-import { useWellness } from "./WellnessContext";
-import { useHealthSync } from "../health-sync/HealthSyncProvider";
-import { homeWater } from "../home/homeModel";
-import { useTrackingClock } from "./useTrackingClock";
-import { TrackingStatus } from "./TrackingUI";
-import { TodayActivity } from "../activity/TodayActivity";
+import { Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { AppScreen } from '../../components/app/AppScreen';
+import { CareRow, useCareStyles } from '../../components/app/CareUI';
+import { useWellness } from './WellnessContext';
+import { useHealthSync } from '../health-sync/HealthSyncProvider';
+import { TodayActivity } from '../activity/TodayActivity';
+import { TrackingStatus } from './TrackingUI';
+import { homeWater } from '../home/homeModel';
+import { useTrackingClock } from './useTrackingClock';
+
 export function HealthScreen() {
-  const c = useCareStyles(),
-    colors = usePalette();
-  const { data, loading, refresh } = useWellness(),
-    health = useHealthSync();
+  const c = useCareStyles(), { data, loading, refresh } = useWellness(), health = useHealthSync();
   const water = homeWater(data, useTrackingClock());
-  const medicines = data.medicines ?? [];
-  return (
-    <AppScreen refreshing={loading || health.busy} onRefresh={() => Promise.allSettled([refresh(),health.run()])}>
-      <Text accessibilityRole="header" style={c.heading}>
-        Your health journal
-      </Text>
-      <Text style={[c.text, { marginTop: 8 }]}>
-        Activity, daily routines and the records you choose to keep.
-      </Text>
-      <TrackingStatus />
-      <TodayActivity />
-      <View
-        style={{
-          marginTop: 32,
-          paddingTop: 24,
-          borderTopWidth: 1,
-          borderColor: colors.border,
-        }}
-      >
-        <Text accessibilityRole="header" style={c.title}>
-          Daily routines
-        </Text>
-        <CareRow
-          icon="drop"
-          title="Water"
-          detail={
-            water
-              ? `${water.totalMl.toLocaleString("en-IN")} ml logged today`
-              : loading
-                ? "Loading your plan..."
-                : "Set a target and log drinks"
-          }
-          onPress={() => router.push("/water")}
-        />
-        <CareRow
-          icon="pill"
-          title="Medicines"
-          detail={
-            loading
-              ? "Loading your medicines..."
-              : medicines.length
-                ? `${medicines.length} saved · View doses and times`
-                : "Keep dose times and instructions together"
-          }
-          onPress={() => router.push("/medicines")}
-        />
-        <CareRow
-          icon="calendar"
-          title="Cycle"
-          detail={
-            data.cycleSettings
-              ? "Calendar and private check-ins"
-              : "Optional period and symptom tracking"
-          }
-          onPress={() => router.push("/cycle")}
-        />
-      </View>
-      <View
-        style={{
-          marginTop: 24,
-          paddingTop: 24,
-          borderTopWidth: 1,
-          borderColor: colors.border,
-        }}
-      >
-        <Text accessibilityRole="header" style={c.title}>
-          More about your health
-        </Text>
-        <CareRow
-          icon="user"
-          title="Body details"
-          detail="Your saved weight, height and profile"
-          onPress={() => router.push("/profile")}
-        />
-        <CareRow
-          icon="sync"
-          title={
-            health.connected
-              ? "Connected readings"
-              : "Connect another health app"
-          }
-          detail={
-            health.connected
-              ? health.source?.name
-              : "Optional · Add readings from a watch or another app"
-          }
-          onPress={() => router.push("/connected-health")}
-        />
-      </View>
-    </AppScreen>
-  );
+  return <AppScreen refreshing={loading || health.busy} onRefresh={() => void Promise.allSettled([refresh(), health.run()])}>
+    <Text accessibilityRole="header" style={c.heading}>Your health</Text>
+    <Text style={[c.text, { marginTop: 8 }]}>Your activity and everyday care, together.</Text>
+    <TrackingStatus />
+    <View style={{ marginTop: 20 }}>
+      <CareRow icon="sync" title="Health apps" detail={health.connected ? `${health.source?.name ?? 'Health app'} - Automatic updates` : 'Connect an app for automatic readings'} onPress={() => router.push('/connected-health')} />
+      <CareRow icon="goal" title="Activity & targets" detail="Log activity and manage your daily goals" onPress={() => router.push('/activity')} />
+    </View>
+    <TodayActivity />
+    <View style={{ marginTop: 24 }}><Text accessibilityRole="header" style={c.title}>Daily care</Text>
+      <CareRow icon="drop" title="Water" detail={water ? `${water.totalMl.toLocaleString('en-IN')} of ${data.waterPlan!.targetMl.toLocaleString('en-IN')} ml today` : 'Set a target and log drinks'} onPress={() => router.push('/water')} />
+      <CareRow icon="pill" title="Medicines" detail={data.medicines?.length ? `${data.medicines.length} saved medicines` : 'Add a medicine and reminder times'} onPress={() => router.push('/medicines')} />
+      <CareRow icon="calendar" title="Cycle" detail="Your private dates and check-ins" onPress={() => router.push('/cycle')} />
+    </View>
+    <View style={{ marginTop: 24 }}><CareRow icon="user" title="Body details" detail="Weight, height and profile" onPress={() => router.push('/profile')} /></View>
+  </AppScreen>;
 }

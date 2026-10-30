@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { useAuth } from "../../auth/context/AuthContext";
 import { updateProfileSchema } from "../../auth/types";
 import { FormError } from "../../auth/components/AuthPrimitives";
+import { CareRow } from '../../../components/app/CareUI';
 import { AppScreen, useAppStyles } from "../../../components/app/AppScreen";
 import { TouchTarget } from "../../../components/ui/TouchTarget";
 import { activities } from "../model";
@@ -51,6 +52,7 @@ export function EditHealthGoalsScreen() {
   };
   return (
     <AppScreen back title="Goals & preferences">
+      <View style={{ marginBottom: 24 }}><CareRow icon="goal" title="Daily activity targets" detail="Set steps, exercise and sleep goals" onPress={() => router.push({ pathname: '/activity', params: { edit: 'goals' } })} /></View>
       <View style={{ gap: 12, paddingBottom: 20 }}>
         <Text accessibilityRole="header" style={a.sectionTitle}>
           Health Goals

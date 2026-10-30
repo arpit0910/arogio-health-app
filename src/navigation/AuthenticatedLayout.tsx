@@ -1,3 +1,4 @@
+import { canEnterApp } from '../features/profile/setupStatus';
 import { usePalette } from '../theme/AppearanceProvider';
 import { Redirect, Tabs } from "expo-router";
 import { ActivityIndicator, View, useWindowDimensions } from "react-native";
@@ -34,6 +35,6 @@ export function AccountGuard({ children }: { children: ReactNode }) {
       </View>
     );
   if (!user) return <Redirect href="/login" />;
-  if (!user.profileCompletedAt) return <Redirect href="/setup-profile" />;
+  if (!canEnterApp(user)) return <Redirect href="/setup-profile" />;
   return children;
 }

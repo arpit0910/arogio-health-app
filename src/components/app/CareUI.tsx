@@ -23,17 +23,17 @@ export function CareDisclosure({ title, children }: { title: string; children: R
   const s = useStyles();
 
   const [open, setOpen] = useState(false);
-  return <View style={s.disclosure}><TouchTarget accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={() => setOpen(value => !value)} style={({ pressed }) => [s.row, pressed && s.pressed]}>
+  return <View style={s.disclosure}><TouchTarget accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={() => setOpen(value => !value)} style={({ pressed }) => [s.row, s.disclosureRow, pressed && s.pressed]}>
     <Text style={[s.rowTitle, s.copy]}>{title}</Text><AppIcon name={open ? 'down' : 'right'} size={18} />
   </TouchTarget>{open && <View style={s.disclosed}>{children}</View>}</View>;
 }
 export const useCareStyles = () => {
   const colors = usePalette();
 return StyleSheet.create({
-  heading: { fontFamily: fonts.semibold, fontSize: 30, lineHeight: 38, color: colors.ink, letterSpacing: -0.7 },
+  heading: { fontFamily: fonts.semibold, fontSize: 26, lineHeight: 34, color: colors.ink, letterSpacing: -0.5 },
   title: { fontFamily: fonts.semibold, fontSize: 20, lineHeight: 28, color: colors.ink },
   text: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 23, color: colors.muted },
-  section: { marginTop: 32 },
+  section: { marginTop: 24 },
   line: { borderTopWidth: 1, borderColor: colors.border },
 });
 };
@@ -43,10 +43,11 @@ return StyleSheet.create({
   brand: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   wordmark: { fontFamily: fonts.semibold, fontSize: 24, color: colors.ink, letterSpacing: -0.7 },
   pressed: { backgroundColor: colors.subtle, borderRadius: 12 },
-  row: { backgroundColor: colors.surface, borderRadius: 14, paddingHorizontal: 14, marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 18 },
+  row: { backgroundColor: colors.surface, borderRadius: 14, paddingHorizontal: 14, marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 16 },
   copy: { flex: 1, minWidth: 0 },
   rowTitle: { fontFamily: fonts.medium, fontSize: 16, lineHeight: 23, color: colors.ink },
   detail: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 20, marginTop: 3, color: colors.muted },
+  disclosureRow: { backgroundColor: 'transparent', marginTop: 0, paddingHorizontal: 0 },
   disclosure: { borderTopWidth: 1, borderColor: colors.border },
   disclosed: { paddingBottom: 20, gap: 8 },
 });

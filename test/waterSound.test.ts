@@ -5,16 +5,18 @@ import vm from 'node:vm';
 import ts from 'typescript';
 
 function harness(platform = 'android') {
-  const channels: { id: string; sound?: string }[] = [];
+  const channels: { id: string; sound?: string | null; importance?: number }[] = [];
   const scheduled: { content: { sound: string; data: { route: string } }; trigger: { channelId: string } }[] = [];
   const cancelled: string[] = [];
   const intents: { action: string; extras: { key: string; value: string }[] }[] = [];
+  let channelMuted = false;
   let requestCount = 0, granted = true, canAskAgain = true, failPermissions = false;
   let handler: { handleNotification: () => Promise<{ shouldPlaySound: boolean }> };
   const notifications = {
-    AndroidImportance: { DEFAULT: 3 }, AndroidNotificationVisibility: { PRIVATE: 0 }, SchedulableTriggerInputTypes: { DATE: 'date' },
+    AndroidImportance: { DEFAULT: 3, HIGH: 4 }, AndroidNotificationVisibility: { PRIVATE: 0 }, SchedulableTriggerInputTypes: { DATE: 'date', TIME_INTERVAL: 'timeInterval' },
     setNotificationHandler: (value: typeof handler) => { handler = value; },
-    setNotificationChannelAsync: async (id: string, input: { sound?: string }) => { channels.push({ id, sound: input.sound }); },
+    setNotificationChannelAsync: async (id: string, input: { sound?: string; importance?: number }) => { channels.push({ id, sound: input.sound, importance: input.importance }); },
+    getNotificationChannelAsync: async (id: string) => channelMuted ? { id, sound: null, importance: 2 } : { id, sound: 'default', importance: 4 },
     getPermissionsAsync: async () => { if (failPermissions) throw new Error('Native module unavailable'); return { granted, canAskAgain }; },
     requestPermissionsAsync: async () => { requestCount++; return { granted }; },
     getAllScheduledNotificationsAsync: async () => [{ identifier: 'arogio-wellness:legacy-water' }, { identifier: 'other-feature:keep' }],
@@ -33,17 +35,38 @@ function harness(platform = 'android') {
     if (!(key in dependencies)) throw new Error(`Unexpected dependency ${key}`);
     return dependencies[key];
   } });
-  const api = module.exports as { getNotificationAccess: () => Promise<string>; requestReminderPermission: () => Promise<boolean>; syncNotifications: (owner: string | null, reminders: object[]) => Promise<string | null>; openReminderSettings: () => Promise<void> };
-  return { api, channels, scheduled, cancelled, intents, handler: () => handler, requests: () => requestCount, deny: (askAgain = true) => { granted = false; canAskAgain = askAgain; }, fail: () => { failPermissions = true; } };
+  const api = module.exports as { getNotificationAccess: () => Promise<string>; requestReminderPermission: () => Promise<boolean>; syncNotifications: (owner: string | null, reminders: object[]) => Promise<string | null>; openReminderSettings: (target?: 'water' | 'wellness' | 'all') => Promise<void>; getReminderSoundStatus: () => Promise<string>; testReminderSound: (target?: 'water' | 'wellness') => Promise<void> };
+  return { mute: () => { channelMuted = true; }, api, channels, scheduled, cancelled, intents, handler: () => handler, requests: () => requestCount, deny: (askAgain = true) => { granted = false; canAskAgain = askAgain; }, fail: () => { failPermissions = true; } };
 }
 const reminders = ['/water', '/medicines', '/cycle'].map((route, i) => ({ id: `test:${i}`, at: '2026-10-30T08:00:00Z', title: 'Fixture', body: 'Synthetic reminder', route }));
 describe('Water reminder sound', () => {
+  it('reports a muted channel and schedules a real sound test through the same reminder channel', async () => {
+    const h = harness();
+    assert.match(await h.api.getReminderSoundStatus(), /sound enabled/);
+    h.mute();
+    assert.match(await h.api.getReminderSoundStatus(), /set to silent or blocked/);
+    await h.api.testReminderSound('water');
+    assert.equal(h.scheduled[0].content.sound, 'water_drop.wav');
+    assert.equal(h.scheduled[0].trigger.channelId, 'water-reminders-v1');
+    assert.equal(h.requests(), 0);
+    await h.api.openReminderSettings('wellness');
+    assert.equal(h.intents[0].extras.find(item => item.key.endsWith('CHANNEL_ID'))?.value, 'wellness');
+  });
+  it('does not schedule a sound test when notification permission is off', async () => {
+    const h = harness(); h.deny();
+    await assert.rejects(h.api.testReminderSound(), /Allow notification access/);
+    assert.equal(h.scheduled.length, 0);
+    assert.equal(h.requests(), 0);
+  });
+
   it('assigns the droplet sound and its channel only to water, while preserving other reminder sounds', async () => {
     const h = harness();
     await h.api.syncNotifications('fixture-user', reminders);
     assert.equal(h.scheduled[0].content.sound, 'water_drop.wav');
     assert.equal(h.scheduled[0].trigger.channelId, 'water-reminders-v1');
     assert.equal(h.channels.find((channel) => channel.id === 'water-reminders-v1')?.sound, 'water_drop.wav');
+    assert.equal(h.channels.find(channel => channel.id === 'wellness')?.sound, 'default');
+    assert.equal(h.channels.find(channel => channel.id === 'wellness')?.importance, 4);
     for (const reminder of h.scheduled.slice(1)) { assert.equal(reminder.content.sound, 'default'); assert.equal(reminder.trigger.channelId, 'wellness'); }
     assert.deepEqual(h.cancelled, ['arogio-wellness:legacy-water']);
     assert.equal((await h.handler().handleNotification()).shouldPlaySound, true);

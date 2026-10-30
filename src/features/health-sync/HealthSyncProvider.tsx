@@ -2,10 +2,10 @@ import { createContext, useContext, useEffect, useRef, useState, type PropsWithC
 import { AppState, Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '../auth/context/AuthContext';
-import { connectHealth, requestBackgroundHealth, grantedHealth, healthAvailability, syncHealth } from './healthConnect';
+import { connectHealth, backgroundHealthGranted, requestBackgroundHealth, grantedHealth, healthAvailability, syncHealth } from './healthConnect';
 import { installedHealthApps } from './healthApps';
 import { startBackgroundHealth, stopBackgroundHealth } from './backgroundHealth';
-import { restoreHealthPreference, isHealthApp, type HealthApp, type HealthPreference } from './connection';
+import { restoreHealthPreference, connectableHealthApps, isHealthApp, type HealthApp, type HealthPreference } from './connection';
 import type { HealthAvailability, HealthMetric, HealthSnapshot } from './model';
 
 export const HEALTH_REFRESH_MS = 30 * 1000;
@@ -65,7 +65,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     const request = ++appsRequest.current;
     setAppsLoading(true); setAppsError('');
     try {
-      const installed = (await installedHealthApps()).filter(isHealthApp);
+      const installed = connectableHealthApps(await installedHealthApps());
       if (mounted.current && request === appsRequest.current) setApps(installed);
       return installed;
     } catch {
@@ -87,8 +87,8 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     if (status !== 'available') { setConnected(false); setSnapshot(null); return; }
     const installed = await installedHealthApps();
     if (!valid()) return;
-    setApps(installed.filter(isHealthApp));
-    if (!installed.some((app) => app.id === source.id)) {
+    setApps(connectableHealthApps(installed));
+    if (!installed.some((app) => app.id === source.id && app.supportsHealthConnect !== false)) {
       setConnected(false); setSnapshot(null); setBackground(false);
       await stopBackgroundHealth();
       if (valid()) setError(`${source.name} is unavailable. Choose another app in Settings > Connected health.`);
@@ -125,13 +125,13 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     try { await readCurrent(request); }
     catch {
       if (mounted.current && request === revision.current) {
-        setSnapshot(null);
+        // Retain the last successful reading and its timestamp during transient failures.
         setError('Health data could not refresh. Check your selected app and Health Connect access in Settings. We will retry automatically.');
       }
     } finally { release(request); }
   }
   async function connectSource(app: HealthApp, selected: HealthMetric[]) {
-    if (!account || !initialized.current || !isHealthApp(app) || !selected.length) return false;
+    if (!account || !initialized.current || !isHealthApp(app) || app.supportsHealthConnect !== true || !selected.length) return false;
     const waitingSince = Date.now();
     while (lock.current && mounted.current && Date.now() - waitingSince < 20000) await new Promise(resolve => setTimeout(resolve, 100));
     if (!mounted.current || lock.current) return false;
@@ -141,12 +141,13 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     setBusy(true); setError(''); setSnapshot(null); setConnected(false); setBackground(false);
     // Stop old reads before any permission prompt, storage operation or source change.
     const previous = preference.current;
+    let committed = false;
     apply({ ...previous, enabled: false });
     try {
       await Promise.all([stopBackgroundHealth(), persist({ ...previous, enabled: false })]);
       if (!valid()) return false;
       const installed = await installedHealthApps();
-      if (!installed.some((candidate) => candidate.id === app.id)) throw new Error('Source app unavailable');
+      if (!installed.some((candidate) => candidate.id === app.id && candidate.supportsHealthConnect !== false)) throw new Error('Source app unavailable');
       if (!valid()) return false;
       const existing = await grantedHealth();
       const granted = !previous.hasConnected || selected.some((m) => !previous.selected.includes(m)) || !existing.some((m) => selected.includes(m)) ? await connectHealth(selected) : existing;
@@ -155,15 +156,35 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
         setError('No health data access was granted. Allow the data types you want to read in Health Connect.');
         return false;
       }
-      await persist({ enabled: true, source: app, selected, background: previous.background, hasConnected: true });
+      await persist({ enabled: true, source: { id: app.id, name: app.name }, selected, background: previous.background, hasConnected: true });
       if (!valid()) return false;
+      committed = true;
       setConnected(true);
+      // Reuse existing background access without adding a second permission step.
+      // Declining this optional permission must not fail the foreground connection.
+      try {
+        const allowed = await backgroundHealthGranted();
+        if (!valid()) return false;
+        if (allowed && await startBackgroundHealth(account, selected, app.id, () => valid() && preference.current.enabled)) {
+          if (!valid()) return false;
+          await persist({ ...preference.current, background: true });
+          if (valid()) setBackground(true);
+        }
+      } catch { /* Foreground polling and resume refresh remain available. */ }
+      if (!valid()) return false;
       await readCurrent(request);
       return valid();
     } catch {
       if (valid()) setError('This health app could not connect. Check that it is installed and sharing data with Health Connect, then try again.');
       return false;
-    } finally { release(request); }
+    } finally {
+      if (!committed && valid()) {
+        // A declined new connection must not silently discard the previous source.
+        try { await persist(previous); pendingRefresh.current = previous.enabled; }
+        catch { if (valid()) setError('Connection could not be restored. Choose your health app again.'); }
+      }
+      release(request);
+    }
   }
   const actions = useRef({ run, refreshApps });
   useEffect(() => { actions.current = { run, refreshApps }; });
@@ -190,7 +211,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
         const status = await healthAvailability();
         if (!mounted.current) return;
         setAvailability(status);
-        if (status === 'available') await actions.current.refreshApps();
+        if (Platform.OS === 'android') await actions.current.refreshApps();
         if (mounted.current) await actions.current.run();
       } catch {
         if (mounted.current) {

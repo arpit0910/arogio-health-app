@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { restoreHealthPreference, showHealthConnectionPrompt } from '../src/features/health-sync/connection.ts';
+import { isHealthApp, restoreHealthPreference, showHealthConnectionPrompt } from '../src/features/health-sync/connection.ts';
 
 describe('Single health source and Home prompt', () => {
   it('only invites a ready, never-connected account and does not flash during startup', () => {
@@ -28,5 +28,16 @@ describe('Single health source and Home prompt', () => {
     assert.deepEqual(value.selected, ['Steps']);
     assert.equal(value.source, null);
     assert.equal(value.hasConnected, false);
+  });
+});
+
+
+describe('Installed app capabilities', () => {
+  it('accepts recognizable apps without a sync adapter but rejects invalid native metadata', () => {
+    const app = { id: 'example.health', name: 'Health app', supportsHealthConnect: false, icon: 'data:image/png;base64,example' };
+    assert.equal(isHealthApp(app), true);
+    assert.equal(isHealthApp({ ...app, supportsHealthConnect: 'true' }), false);
+    assert.equal(isHealthApp({ ...app, icon: {} }), false);
+    assert.equal(isHealthApp({ id: app.id, name: app.name }), true);
   });
 });

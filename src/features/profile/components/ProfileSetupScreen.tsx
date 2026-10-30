@@ -75,6 +75,22 @@ export function ProfileSetupScreen() {
     );
     return () => subscription.remove();
   }, [step, complete, notificationStage, notificationBusy]);
+  const skip = async () => {
+    if (busyRef.current || complete) return;
+    Keyboard.dismiss();
+    busyRef.current = true;
+    setBusy(true);
+    setError(null);
+    try {
+      await saveSetup({ setupDeferred: true });
+      router.replace('/home');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Unable to skip setup. Please try again.');
+    } finally {
+      busyRef.current = false;
+      setBusy(false);
+    }
+  };
   const next = async () => {
     if (busyRef.current || notificationBusy || complete) return;
     const invalid = validateSetupStep(draft, step);
@@ -349,8 +365,9 @@ export function ProfileSetupScreen() {
               loading={busy}
               disabled={notificationBusy}
             />
+            <Button title="Skip for now" variant="secondary" disabled={busy} onPress={() => void skip()} />
             <Text style={s.note}>
-              You can update these choices from your profile.
+              You can finish setup anytime from Profile.
             </Text>
           </View>
         </View>

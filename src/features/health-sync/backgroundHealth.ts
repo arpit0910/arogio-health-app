@@ -71,7 +71,7 @@ if (Platform.OS === 'android') TaskManager.defineTask(TASK, async () => {
     const config = await configuration();
     taskConfig = config;
     if (!config) { await stopBackgroundHealth(); return BackgroundTask.BackgroundTaskResult.Success; }
-    if (await healthAvailability() !== 'available' || !(await backgroundHealthGranted()) || !(await installedHealthApps()).some((app) => app.id === config.source)) {
+    if (await healthAvailability() !== 'available' || !(await backgroundHealthGranted()) || !(await installedHealthApps()).some((app) => app.id === config.source && app.supportsHealthConnect !== false)) {
       await stopBackgroundHealth();
       return BackgroundTask.BackgroundTaskResult.Success;
     }

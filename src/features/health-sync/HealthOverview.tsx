@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
-import { router } from "expo-router";
 import { TouchTarget } from "../../components/ui/TouchTarget";
 import { AppIcon, type AppIconName } from "../../components/app/AppIcon";
 import {
   CareDisclosure,
-  CareRow,
   useCareStyles,
 } from "../../components/app/CareUI";
 import { DailyTargetProgress } from "../activity/DailyTargetProgress";
@@ -18,6 +16,8 @@ import { localDay } from "../wellness/domain";
 import { HealthChart } from "./HealthCharts";
 import {
   healthMetrics,
+  recordedHealthMetrics,
+  hasHealthValue,
   formatHealthValue,
   type HealthMetric,
   type HealthSnapshot,
@@ -43,14 +43,13 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
   const { data } = useWellness();
   const [chosen, setChosen] = useState<HealthMetric>("Steps");
   const [selectedDay, selectDay] = useState<string | null>(null);
-  const metric = snapshot.granted.includes(chosen)
-    ? chosen
-    : snapshot.granted[0];
+  const available = recordedHealthMetrics(snapshot);
+  const metric = available.includes(chosen) ? chosen : available[0];
   if (!metric) return null;
   const info = healthMetrics.find((item) => item.key === metric)!;
   const day =
-    snapshot.days.find((item) => item.day === selectedDay) ??
-    snapshot.days.at(-1);
+    snapshot.days.find((item) => item.day === selectedDay && hasHealthValue(item.readings[metric]?.value)) ??
+    snapshot.days.filter(item => hasHealthValue(item.readings[metric]?.value)).at(-1);
   const latestWeight =
     metric === "Weight" && !selectedDay ? snapshot.latestWeight : null;
   const chartDay = latestWeight
@@ -83,7 +82,7 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
         contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
       >
         {healthMetrics
-          .filter((item) => snapshot.granted.includes(item.key))
+          .filter((item) => available.includes(item.key))
           .map((item) => (
             <TouchTarget
               key={item.key}
@@ -174,7 +173,7 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
           />
         )}
       </View>
-      <View style={{ gap: 6 }}>
+      {summary.recorded > 0 && <><View style={{ gap: 6 }}>
         <Text accessibilityRole="header" style={c.title}>
           Your week
         </Text>
@@ -201,7 +200,7 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
           borderColor: colors.border,
         }}
       >
-        <View style={{ flex: 1, minWidth: 100, gap: 5 }}>
+        {summary.average != null && <View style={{ flex: 1, minWidth: 100, gap: 5 }}>
           <Text style={c.text}>Daily average</Text>
           <Text style={c.title}>
             {formatHealthValue(metric, summary.average)}
@@ -212,7 +211,7 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
           <Text style={[c.text, { fontSize: 12 }]}>
             {summary.completed} completed days
           </Text>
-        </View>
+        </View>}
         <View style={{ flex: 1, minWidth: 100, gap: 5 }}>
           <Text style={c.text}>Data coverage</Text>
           <Text style={c.title}>
@@ -223,14 +222,14 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
           </Text>
         </View>
       </View>
-      <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
+      {summary.completed >= 2 && <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
         <AppIcon name="trend" size={22} />
         <Text style={[c.text, { flex: 1 }]}>
           {comparisonCopy(snapshot, metric)}
         </Text>
-      </View>
+      </View>}
       <CareDisclosure title="Daily readings & details">
-        {[...snapshot.days].reverse().map((item) => (
+        {[...snapshot.days].filter(item => hasHealthValue(item.readings[metric]?.value)).reverse().map((item) => (
           <View
             key={item.day}
             style={{
@@ -252,13 +251,7 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
             </Text>
           </View>
         ))}
-      </CareDisclosure>
-      <CareRow
-        icon="goal"
-        title="Your daily targets"
-        detail="Set your own activity, sleep and food goals"
-        onPress={() => router.push("/activity")}
-      />
+      </CareDisclosure></>}
     </View>
   );
 }

@@ -32,26 +32,39 @@ const data = { activityTracking: { goals: { Steps: 8000, ActiveCaloriesBurned: 4
   waterLogs: empty ? [] : [0, 1, 2].map((i) => ({ id: `example:${i}`, day, amountMl: 250, loggedAt: new Date().toISOString(), targetMl: 2000, taskId: null })), waterTasks: [],
   medicines: empty ? [] : [{ id: 'example-medicine', name: 'Example prescribed medicine with a longer name', notes: 'Example care instructions. Synthetic record for layout testing.', enabled: true, doses: [{ time: '08:00', amount: 'Example dose amount' }, { time: '20:00', amount: 'Example dose amount' }] }],
   cycleSettings: empty ? null : defaultCycleSettings('Asia/Kolkata'), periods: empty ? [] : [{ id: 'example-period', startDate: addDays(day, -18), endDate: addDays(day, -14) }], cycleEntries: [] };
-const wellness = { data, loading: false, busy: false, error: null, notice: null, scheduledThrough: null, refresh: async () => {}, save: async () => true };
-const health = { busy: false, snapshot: { source:'example.source', syncedAt: new Date().toISOString(), granted:['Steps','ExerciseSession','SleepSession'], days:[5100,7200,null,0,9400,6800,2481].map((v,i)=>({day:addDays(day,i-6),readings:{Steps:{value:v,sources:['example.source']},SleepSession:{value:i===6?5.36:null,sources:['example.source']}}})) }, source: { id: 'example.source', name: 'Example Health' }, connected: true, hasConnected: true };
+const wellness = { ready: true, data, loading: false, busy: false, error: null, notice: null, scheduledThrough: null, refresh: async () => {}, save: async () => true };
+const health = { ready: true, availability: 'available', apps: [{ id: 'example.source', name: 'Example Health', supportsHealthConnect: true, metrics: ['Steps','ExerciseSession','SleepSession'] }], appsLoading: false, appsError: '', refreshApps: async () => [], checkAvailability: async () => {}, connectSource: async () => true, run: async () => {}, disconnect: async () => {}, enableBackground: async () => {}, disableBackground: async () => {}, background: false, error: '', busy: false, snapshot: { source:'example.source', syncedAt: new Date().toISOString(), granted:['Steps','ExerciseSession','SleepSession'], days:[5100,7200,null,0,9400,6800,2481].map((v,i)=>({day:addDays(day,i-6),readings:{Steps:{value:v,sources:['example.source']},SleepSession:{value:i===6?5.36:null,sources:['example.source']}}})) }, source: { id: 'example.source', name: 'Example Health' }, connected: true, hasConnected: true };
+if (empty) { health.snapshot = null; data.activityTracking.days = []; }
+if (mode === 'connections-first') { health.connected = false; health.source = null; health.snapshot = null; }
 const load = Module._load;
 Module._load = function(request, parent, ...rest) {
   if (request.endsWith('/WellnessContext') || request === './WellnessContext') return { useWellness: () => wellness };
-  if (request.endsWith('/HealthSyncProvider')) return { useHealthSync: () => health };
+  if (request.endsWith('/HealthSyncProvider') || request === './HealthSyncProvider') return { useHealthSync: () => health };
   if (request === './HomeContent') { const actual = load.call(this, request, parent, ...rest); return { ...actual, useHomeContent: () => ({ banners: [], weather: { available: true, city: 'Jaipur', temperature: 26, condition: 'Clear', observedAt: new Date().toISOString() }, refresh: async () => {} }) }; }
   if (request.endsWith('/services/api/client')) return { apiClient: { request: async () => [] } };
   if (request.endsWith('/config/env')) return { env: { apiUrl: 'https://example.test/api/v1' } };
   if (request.endsWith('/InboxProvider')) return { useInbox: () => ({ items: [], loading: false, error: '', markRead: async () => {} }) };
-  if (request.endsWith('/AuthContext')) return { useAuth: () => ({ user: { id: 'fixture', fullName: 'Aarav Sharma', weightValue: 68, weightUnit: 'kg', heightValue: 174, heightUnit: 'cm', bmi: 22.5, profileSetup: { location: 'Bengaluru', healthGoals: ['fitness'] }, email: 'preview@example.test', referralCode: 'A1B2C3D4E5F6', profileCompletedAt: '2026-10-29T00:00:00Z' }, reloadProfile: async () => {} }) };
+  if (request.endsWith('/AuthContext')) return { useAuth: () => ({ user: { id: 'fixture', fullName: 'Aarav Sharma', weightValue: 68, weightUnit: 'kg', heightValue: 174, heightUnit: 'cm', bmi: 22.5, profileSetup: { location: 'Bengaluru', healthGoals: ['fitness'] }, email: 'preview@example.test', referralCode: 'A1B2C3D4E5F6', profileCompletedAt: mode === 'profile-deferred' || mode === 'setup' ? null : '2026-10-29T00:00:00Z' }, reloadProfile: async () => {} }) };
   if (request.endsWith('/AppearanceProvider')) { const actual = load.call(this, request, parent, ...rest); const colors = theme === 'dark' ? actual.darkColors : require('../src/theme/tokens.ts').colors; return { ...actual, useAppTheme: () => ({ onPrimary: colors.onPrimary, ink: colors.ink, muted: colors.muted, teal: colors.primary, border: colors.border, background: colors.background, mint: colors.subtle, white: colors.surface, accent: colors.accent, fonts: require('../src/theme/tokens.ts').fonts, shadow: {} }), usePalette: () => colors, useAppearance: () => ({ colors, scheme: theme }) }; }
   if (request.endsWith('/PhoneStepsProvider') || request === './PhoneStepsProvider') return { usePhoneSteps: () => ({ enabled: false, totals: {}, status: 'Phone step counting is off.', busy: false, ready: true, toggle: async () => {}, clear: async () => {} }) };
+  if (request === '@react-native-community/datetimepicker') return { __esModule: true, default: () => null }; // Closed native picker is outside composition QA.
   if (request === 'expo-blur') return { BlurTargetView: View, BlurView: View }; // Native effect is verified separately.
   if (request === 'expo-secure-store') return { getItemAsync: async () => null, setItemAsync: async () => {} };
   if (request === 'expo-crypto') return { randomUUID: () => 'example-only' };
-  if (request === 'expo-router') return { router: { push() {}, navigate() {}, replace() {}, canGoBack: () => true }, useLocalSearchParams: () => ({}), usePathname: () => '/settings' };
+  if (request === 'expo-router') return { router: { push() {}, navigate() {}, replace() {}, canGoBack: () => true }, useLocalSearchParams: () => mode === 'activity-targets' ? ({ edit: 'goals' }) : ({}), usePathname: () => '/settings' };
   return load.call(this, request, parent, ...rest);
 };
 const screens = {
+  'activity-targets': () => require('../src/features/activity/ActivityScreen.tsx').ActivityScreen,
+  'connections-first': () => require('../src/features/health-sync/HealthSyncScreen.tsx').HealthSyncScreen,
+  connections: () => require('../src/features/health-sync/HealthSyncScreen.tsx').HealthSyncScreen,
+  explore: () => require('../src/app/(main)/explore.tsx').default,
+  'profile-deferred': () => require('../src/features/profile/components/AccountProfileScreen.tsx').AccountProfileScreen,
+  setup: () => require('../src/features/profile/components/ProfileSetupScreen.tsx').ProfileSetupScreen,
+  navigation: () => function NavigationFixture() {
+    const { AppNavigation, appTabs } = require('../src/navigation/AppNavigation.tsx');
+    return React.createElement(View, { style: { backgroundColor: '#00291E', paddingTop: 40 } }, React.createElement(AppNavigation, { state: { index: 0, routes: appTabs.map(tab => ({ name: tab.name, key: tab.name })) }, emitter: { emit: () => ({ defaultPrevented: false }) }, navigateToTab() {} }));
+  },
   profile: () => require('../src/features/profile/components/AccountProfileScreen.tsx').AccountProfileScreen,
   home: () => require('../src/features/home/HomeScreen.tsx').HomeScreen,
   inbox: () => require('../src/features/notifications/NotificationsScreen.tsx').NotificationsScreen,

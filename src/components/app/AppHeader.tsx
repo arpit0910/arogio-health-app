@@ -1,4 +1,5 @@
-import { Text, View, StyleSheet, type ViewStyle } from 'react-native';
+import { canEnterApp } from '../../features/profile/setupStatus';
+import { Text, View, StyleSheet, useWindowDimensions, type ViewStyle } from 'react-native';
 import type { ReactNode } from 'react';
 import { router } from 'expo-router';
 import { useAuth } from '../../features/auth/context/AuthContext';
@@ -12,10 +13,11 @@ import { CareBrand } from './CareUI';
 /** The same navigation positions on every signed-in screen. */
 export function AppHeader({ title, back = false, action, style }: { title?: string; back?: boolean; action?: ReactNode; style?: ViewStyle }) {
   const { user } = useAuth(), colors = usePalette();
-  const canOpenMenu = Boolean(user?.profileCompletedAt);
+  const { width } = useWindowDimensions();
+  const canOpenMenu = canEnterApp(user);
   if (!back && !canOpenMenu) return null;
   const goBack = () => router.canGoBack() ? router.back() : router.replace(user ? '/profile' : '/signup');
-  return <View style={[s.header, style]}>
+  return <View style={[s.header, width >= 1024 && { maxWidth: 880 }, style]}>
     {canOpenMenu && <View style={s.row}><SidebarButton /><View style={s.brand}><CareBrand /></View><NotificationBell /></View>}
     {(back || title || action) && <View style={s.pageRow}>
       {back && <TouchTarget accessibilityRole="button" accessibilityLabel="Go back" onPress={goBack} style={s.control}><AppIcon name="back" color={colors.ink} size={20} /></TouchTarget>}

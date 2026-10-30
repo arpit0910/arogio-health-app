@@ -11,9 +11,9 @@ export const useTrackingStyles = () => {
   const c = useCareStyles();
   const colors = usePalette();
 return StyleSheet.create({
-  group: { gap: 12, marginTop: 32 }, row: { paddingVertical: 16, borderBottomWidth: 1, borderColor: colors.border, gap: 9 },
+  group: { gap: 12, marginTop: 24 }, row: { paddingVertical: 16, borderBottomWidth: 1, borderColor: colors.border, gap: 9 },
   input: { minHeight: 52, borderWidth: 1, borderColor: colors.border, borderRadius: 12, padding: 14, fontFamily: fonts.regular, fontSize: 16, color: colors.ink, backgroundColor: colors.surface },
-  panel: { backgroundColor: colors.subtle, padding: 20, borderRadius: 16, gap: 10, marginTop: 24 },
+  panel: { backgroundColor: colors.surface, padding: 16, borderRadius: 16, gap: 10, marginTop: 24 },
   error: { ...c.text, color: colors.error }, inline: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
 });
 };
@@ -38,5 +38,5 @@ export function TrackingStatus() {
   const c = useCareStyles();
   const colors = usePalette();
   const trackingStyles = useTrackingStyles();
- const { loading, error } = useWellness(); return <View accessibilityLiveRegion="polite" style={{ gap: 10 }}>{loading && <ActivityIndicator accessibilityLabel="Loading tracking" color={colors.primary} />}{error && <><Text style={trackingStyles.error}>{error}</Text><Text style={c.text}>Arogio will retry automatically. Pull down on Home to check now.</Text></>}</View>; }
+ const { loading, ready, error } = useWellness(); return <View accessibilityLiveRegion="polite" style={{ gap: 10 }}>{loading && !ready && <ActivityIndicator accessibilityLabel="Loading tracking" color={colors.primary} />}{error && <><Text style={trackingStyles.error}>{error}</Text><Text style={c.text}>Arogio will retry automatically. Pull down on Home to check now.</Text></>}</View>; }
 export function confirmDelete(title: string, message: string, action: () => void) { if (Platform.OS === 'web') { if (window.confirm(`${title}\n${message}`)) action(); } else Alert.alert(title, message, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: action }]); }

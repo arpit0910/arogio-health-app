@@ -31,6 +31,8 @@ export function AccountProfileScreen() {
     { label: 'BMI', value: user.bmi?.toFixed(1) ?? '—', unit: '' },
   ];
   return <AppScreen>
+    {!user.profileCompletedAt && <CareRow icon="user" title="Finish profile setup" detail="Add your details whenever you are ready" onPress={() => router.push('/setup-profile')} />}
+
     <View style={s.identity}>
       <Avatar photo={profilePhoto(user)} size={88} />
       <Text accessibilityRole="header" style={[c.heading, s.center]}>{profileName(user)}</Text>

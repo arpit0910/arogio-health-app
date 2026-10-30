@@ -10,12 +10,12 @@ import { formatHealthValue, healthMetrics, type HealthMetric, type HealthSnapsho
 function dayLabel(day: string) {
   return new Intl.DateTimeFormat('en-IN', { weekday: 'short', timeZone: 'Asia/Kolkata' }).format(new Date(`${day}T12:00:00Z`));
 }
-export function HealthChart({ snapshot, metric, emptyMessage, selectedDay, onSelectDay }: { snapshot: HealthSnapshot; metric: HealthMetric; emptyMessage?: string; selectedDay?: string; onSelectDay?: (day: string) => void }) {
-  const colors = usePalette(), c = useCareStyles(), s = useStyles();
+export function HealthChart({ snapshot, metric, emptyMessage: _emptyMessage, selectedDay, onSelectDay }: { snapshot: HealthSnapshot; metric: HealthMetric; emptyMessage?: string; selectedDay?: string; onSelectDay?: (day: string) => void }) {
+  const colors = usePalette(), s = useStyles();
   const info = healthMetrics.find(item => item.key === metric)!;
   const values = snapshot.days.map(day => day.readings[metric]?.value ?? null);
   const finite = values.filter((value): value is number => value != null && Number.isFinite(value));
-  if (!finite.length) return <View style={{ backgroundColor: colors.subtle, borderRadius: 12, padding: 20, gap: 10 }}><Text style={c.title}>No readings in these 7 days</Text><Text style={c.text}>{emptyMessage ?? `Check that ${info.title.toLowerCase()} is recorded in your source app and shared through Health Connect. Missing readings are never counted as zero.`}</Text></View>;
+  if (!finite.length) return null;
   const max = Math.max(...finite, 1) * 1.16;
   const isLine = ['HeartRate', 'RestingHeartRate', 'Weight'].includes(metric);
   const x = (i: number) => 68 + i * 40;
@@ -31,7 +31,6 @@ export function HealthChart({ snapshot, metric, emptyMessage, selectedDay, onSel
           return <PathGroup key={day.day}>
             {value != null && isLine && previous != null && <Line x1={x(i - 1)} y1={y(previous)} x2={x(i)} y2={y(value)} stroke={colors.primary} strokeWidth={2.5} />}
             {value != null && (isLine ? <Circle cx={x(i)} cy={y(value)} r={selected ? 6 : 4} fill={selected ? colors.accent : colors.primary} stroke={colors.surface} strokeWidth={2} /> : <Rect x={x(i) - 10} y={y(value) - (value === 0 ? 2 : 0)} width={20} height={value === 0 ? 2 : 160 - y(value)} rx={5} fill={selected ? colors.accent : colors.primary} />)}
-            {value == null && <SvgText x={x(i)} y={152} textAnchor="middle" fontSize={14} fill={colors.muted}>?</SvgText>}
             <SvgText x={x(i)} y={182} textAnchor="middle" fontSize={11} fill={colors.muted}>{dayLabel(day.day)}</SvgText>
           </PathGroup>;
         })}

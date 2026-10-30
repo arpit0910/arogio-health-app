@@ -30,3 +30,8 @@ export function stepDelta(previous: number, current: number) {
   if (!Number.isFinite(current) || current < 0 || !Number.isInteger(current)) return { previous, delta: 0 };
   return { previous: current, delta: current >= previous ? current - previous : 0 };
 }
+
+
+export function activityMode(preference: 'manual' | 'connected' | null, connected: boolean): 'manual' | 'connected' {
+  return (preference ?? (connected ? 'connected' : 'manual')) === 'connected' && connected ? 'connected' : 'manual';
+}

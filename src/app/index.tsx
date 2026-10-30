@@ -1,3 +1,4 @@
+import { canEnterApp } from '../features/profile/setupStatus';
 import { usePalette } from '../theme/AppearanceProvider';
 import { Redirect } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
@@ -22,6 +23,6 @@ export default function EntryRoute() {
     );
   if (!user) return <WelcomeScreen />;
   return (
-    <Redirect href={user.profileCompletedAt ? "/home" : "/setup-profile"} />
+    <Redirect href={canEnterApp(user) ? "/home" : "/setup-profile"} />
   );
 }

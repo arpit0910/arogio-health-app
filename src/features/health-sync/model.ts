@@ -168,3 +168,15 @@ export function healthSourceName(source: string): string {
     )[source] ?? source
   );
 }
+
+
+export function hasHealthValue(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0;
+}
+export function recordedHealthMetrics(snapshot: HealthSnapshot | null): HealthMetric[] {
+  if (!snapshot) return [];
+  return healthMetrics.filter(({ key }) => snapshot.granted.includes(key) && (
+    snapshot.days.some(day => hasHealthValue(day.readings[key]?.value)) ||
+    (key === 'Weight' && hasHealthValue(snapshot.latestWeight?.kg))
+  )).map(item => item.key);
+}

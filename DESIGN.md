@@ -168,7 +168,7 @@ Shared fields/buttons use 12-unit corners, care rows 14, Home cards 16 and the b
 - **Sidebar:** same-window BlurTargetView overlay at intensity 45, dark dim layer and opaque themed panel. Background touch/accessibility traversal are suppressed. Back, close and backdrop dismiss; reduced motion removes animation.
 - **Home banner:** generated landscape background with live bold text is the built-in fallback. Published server banners can replace it; only allowlisted app routes are actionable. Multiple banners have accessible selection controls. Failed/unavailable content keeps the built-in artwork.
 - **Weather:** city and current Celsius temperature come from the backend weather provider. Missing city/data shows an unavailable value, never a sample temperature. Date uses the app's IST calendar. City is editable in Profile.
-- **Today's activity:** three tonal cards show steps, movement and sleep, real targets and last-seven-day readings. Connected app data is authoritative when connected; otherwise entered totals and supported foreground phone steps are used. Sources are not summed. Missing imported values say Not shared; manual gaps say Not logged.
+- **Today's activity:** three tonal cards show steps, movement and sleep, real targets and last-seven-day readings. Connected app data is authoritative when connected; otherwise entered totals and supported foreground phone steps are used. Sources are not summed. Metrics without recorded data are hidden; real zero readings remain visible. Missing source data is explained once in the connection status.
 - **Daily water care:** saved amount/target, actual plan status and one working log action sit on a tonal card with transparent glass artwork. Progress is not an intake recommendation.
 - **Profile:** centered 88-unit avatar, live identity/city, one Edit profile action and wrapping measurements. Grouped controls lead to preferences, connections and referrals. Account deletion has a separate unchecked acknowledgement; soft-deleted records stay retained and verified sign-in recovery lasts 30 days.
 - **Access setup:** notification, motion, city location and an optional selected Health Connect source are explained together, then requested through the platform dialogs. Declining optional access leaves tracking usable. Tracker saves check existing permission without prompting again. Only city is saved; no ongoing location tracking is implied.
@@ -186,3 +186,8 @@ Existing native splash/auth illustration details remain in `docs/launch-screens.
 - Don't invent weather, health values, completion or live delivery claims.
 - Don't repeat permission and refresh prompts throughout trackers.
 - Don't treat synthetic Web previews as native permission, sync or rendering verification.
+
+
+## Usability refinement (30 October 2026)
+
+Health connections use one shared screen, installed capable apps only, a direct Connect action and a separate waiting-for-data state. Manage controls stay in a disclosure. Activity shows real readings, with logged totals and connected data clearly separated; target editing has a direct entry and server confirmation. Empty analytics never create cards. Shared headings use 26/34 and task groups use 24-unit spacing. Compact care illustrations and tonal surfaces continue Home's emerald language. The active bottom-navigation icon uses color and fill, without a container background or selection border. Explore opens working care tools.

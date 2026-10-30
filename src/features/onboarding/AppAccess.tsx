@@ -1,3 +1,4 @@
+import { canEnterApp } from '../profile/setupStatus';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,7 +17,7 @@ import { usePalette } from '../../theme/AppearanceProvider';
 const key = (id: string) => `arogio.access.v3.${id}`;
 export function AppAccessGate({ children }: PropsWithChildren) {
   const { user } = useAuth();
-  return <AccessSession key={user?.profileCompletedAt?user.id:'out'} owner={user?.profileCompletedAt ? user.id : null}>{children}</AccessSession>;
+  return <AccessSession key={user && canEnterApp(user)?user.id:'out'} owner={user && canEnterApp(user) ? user.id : null}>{children}</AccessSession>;
 }
 function AccessSession({ owner, children }: PropsWithChildren<{owner:string|null}>) {
   const [checked,setChecked]=useState(false),[done,setDone]=useState(false);
