@@ -21,7 +21,7 @@ import { DailyTargetProgress } from './DailyTargetProgress';
 import { usePhoneSteps } from './PhoneStepsProvider';
 import { PhoneTrackingControl } from './PhoneTrackingControl';
 
-const icons: Record<ActivityMetric, AppIconName> = { Steps: 'trend', ActiveCaloriesBurned: 'bolt', Nutrition: 'leaf', Distance: 'location', ExerciseSession: 'clock', SleepSession: 'moon' };
+const icons: Record<ActivityMetric, AppIconName> = { Steps: 'walk', ActiveCaloriesBurned: 'bolt', Nutrition: 'leaf', Distance: 'location', ExerciseSession: 'clock', SleepSession: 'moon' };
 export function ActivityScreen() {
   const c = useCareStyles(), colors = usePalette(), wellness = useWellness(), health = useHealthSync(), phone = usePhoneSteps();
   const { data, busy, save, refresh } = wellness;

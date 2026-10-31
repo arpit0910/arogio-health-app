@@ -5,11 +5,13 @@ import { useAuth } from '../auth/context/AuthContext';
 import { addDays, localDay, validDay } from '../wellness/domain';
 import { phoneSensorState, watchPhoneSteps } from './stepSensor';
 import { stepDelta } from './model';
+import { startPersistentSteps, stopPersistentSteps, persistentStepTotals } from './backgroundSteps';
 type Stored = { enabled: boolean; totals: Record<string, number> };
 type State = Stored & { status: string; busy: boolean; ready: boolean; toggle: () => Promise<void>; clear: () => Promise<void> };
 const Context = createContext<State | null>(null);
 export function PhoneStepsProvider({ children }: PropsWithChildren) {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+  useEffect(() => { if (!isLoading && !user) void stopPersistentSteps('').catch(() => {}); }, [user, isLoading]);
   return <PhoneSession key={user?.id ?? 'none'} owner={user?.id ? String(user.id) : null}>{children}</PhoneSession>;
 }
 function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | null }>) {
@@ -57,6 +59,7 @@ function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | n
     let valid = true;
     let subscription: { remove: () => void } | undefined;
     let previous = 0;
+    let timer: ReturnType<typeof setInterval> | undefined;
     if (!ready || !stored.enabled || !owner) return;
     if (!active) return;
     void (async () => {
@@ -64,6 +67,17 @@ function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | n
         const sensor = await phoneSensorState();
         if (!valid) return;
         if (!sensor.available || !sensor.granted) { setStatus(sensor.available ? 'Motion permission is off. Enable phone counting to allow access.' : 'No step sensor is available. You can enter daily totals instead.'); return; }
+        if (await startPersistentSteps(owner, value.current.totals)) {
+          if (!valid) return;
+          setStatus('Counting phone steps in the background. Android shows a step-counting notification.');
+          const read = async () => {
+            const totals = await persistentStepTotals(owner);
+            if (valid && totals) apply({ ...value.current, totals });
+          };
+          await read();
+          timer = setInterval(() => { void read().catch(() => { if (valid) setStatus('Phone totals could not refresh. Try reopening Activity.'); }); }, 3000);
+          return;
+        }
         setStatus('Counting steps while Arogio is open. Background steps are not included.');
         subscription = await watchPhoneSteps((count) => {
           if (!valid || !alive.current || AppState.currentState !== 'active' || !value.current.enabled) return;
@@ -81,21 +95,23 @@ function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | n
         }
       } catch { if (valid) setStatus('Phone counting is unavailable. Install the latest app build or enter daily totals.'); }
     })();
-    return () => { valid = false; subscription?.remove(); };
+    return () => { valid = false; subscription?.remove(); if (timer) clearInterval(timer); };
   }, [ready, stored.enabled, active, owner]);
   async function toggle() {
     if (lock.current || !owner || !ready) return;
     lock.current = true; setBusy(true);
     try {
-      if (value.current.enabled) { apply({ ...value.current, enabled: false }); await persist(); if (alive.current) setStatus('Phone counting is off. Entered step totals are used.'); return; }
+      if (value.current.enabled) { await stopPersistentSteps(owner); apply({ ...value.current, enabled: false }); await persist(); if (alive.current) setStatus('Phone counting is off. Entered step totals are used.'); return; }
       const sensor = await phoneSensorState(true);
       if (!alive.current) return;
       if (!sensor.available || !sensor.granted) { setStatus(sensor.available ? 'Motion access was declined. You can allow it in device settings or enter totals.' : 'No step sensor is available on this device.'); return; }
+      await startPersistentSteps(owner, value.current.totals);
+      if (!alive.current) { await stopPersistentSteps(owner); return; }
       apply({ ...value.current, enabled: true }); await persist();
-    } catch { apply({ ...value.current, enabled: false }); if (alive.current) setStatus('Phone step preferences could not be saved. Counting is off for now. Manage motion access in device settings to keep it off after restart.'); }
+    } catch { await stopPersistentSteps(owner).catch(() => {}); apply({ ...value.current, enabled: false }); if (alive.current) setStatus('Phone step counting could not start or save. Install the latest build and check motion access in device settings, then try again.'); }
     finally { lock.current = false; if (alive.current) setBusy(false); }
   }
-  async function clear() { if (!ready) throw new Error('Phone history is still loading.'); apply({ enabled: false, totals: {} }); await persist(); if (alive.current) setStatus('Phone step history cleared.'); }
+  async function clear() { if (!ready) throw new Error('Phone history is still loading.'); if (owner) await stopPersistentSteps(owner, true); apply({ enabled: false, totals: {} }); await persist(); if (alive.current) setStatus('Phone step history cleared.'); }
   return <Context.Provider value={{ ...stored, ready, status: !ready ? 'Checking phone step preferences...' : status, busy, toggle, clear }}>{children}</Context.Provider>;
 }
 export function usePhoneSteps() { const state = useContext(Context); if (!state) throw new Error('PhoneStepsProvider is missing.'); return state; }

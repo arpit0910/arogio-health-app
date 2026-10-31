@@ -3,6 +3,7 @@ import Svg, { Circle, Path, Rect } from "react-native-svg";
 
 
 const paths = {
+  walk: 'M15 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 13l2-4 4-1 3 5h4M13 8l-2 7 5 3v4M11 15l-3 7',
   cloud: 'M6 19a4 4 0 0 1-1-8 7 7 0 0 1 13-2 5 5 0 0 1 0 10Z',
   users: 'M3 21v-3a6 6 0 0 1 12 0v3M13 4a4 4 0 0 1 0 8M18 14a5 5 0 0 1 3 4v3M12 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z',
   share: 'M12 16V2m-5 5 5-5 5 5M5 12H3v10h18V12h-2',

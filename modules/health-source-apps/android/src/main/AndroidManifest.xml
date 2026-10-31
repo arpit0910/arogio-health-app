@@ -1,4 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+  <application>
+    <service android:name="expo.modules.healthsources.PhoneStepsService" android:exported="false" android:foregroundServiceType="health" android:stopWithTask="false" />
+  </application>
   <queries>
     <intent>
       <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />

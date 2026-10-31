@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '../auth/context/AuthContext';
 import { connectHealth, backgroundHealthGranted, requestBackgroundHealth, grantedHealth, healthAvailability, syncHealth } from './healthConnect';
 import { installedHealthApps } from './healthApps';
-import { startBackgroundHealth, stopBackgroundHealth } from './backgroundHealth';
+import { cachedBackgroundHealth, startBackgroundHealth, stopBackgroundHealth } from './backgroundHealth';
 import { restoreHealthPreference, connectableHealthApps, isHealthApp, type HealthApp, type HealthPreference } from './connection';
 import type { HealthAvailability, HealthMetric, HealthSnapshot } from './model';
 
@@ -150,7 +150,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
       if (!installed.some((candidate) => candidate.id === app.id && candidate.supportsHealthConnect !== false)) throw new Error('Source app unavailable');
       if (!valid()) return false;
       const existing = await grantedHealth();
-      const granted = !previous.hasConnected || selected.some((m) => !previous.selected.includes(m)) || !existing.some((m) => selected.includes(m)) ? await connectHealth(selected) : existing;
+      const granted = selected.some((m) => !existing.includes(m)) ? await connectHealth(selected) : existing;
       if (!valid()) return false;
       if (!granted.some((m) => selected.includes(m))) {
         setError('No health data access was granted. Allow the data types you want to read in Health Connect.');
@@ -205,7 +205,16 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
         const stored = account && Platform.OS === 'android' ? await SecureStore.getItemAsync(key) : null;
         if (!mounted.current) return;
         apply(restoreHealthPreference(stored));
-        if (account) await stopBackgroundHealth().catch(() => {});
+        const restored = preference.current;
+        if (account && restored.enabled && restored.source) {
+          const cached = await cachedBackgroundHealth(account, restored.source.id).catch(() => null);
+          if (mounted.current && cached?.source === restored.source.id) {
+            const granted = await grantedHealth();
+            if (mounted.current) setSnapshot({ ...cached, granted: cached.granted.filter(metric => granted.includes(metric)),
+              days: cached.days.map(day => ({ ...day, readings: Object.fromEntries(Object.entries(day.readings).filter(([metric]) => granted.includes(metric as HealthMetric))) })),
+              latestWeight: granted.includes('Weight') ? cached.latestWeight : null });
+          }
+        } else if (account) await stopBackgroundHealth().catch(() => {});
         if (!mounted.current) return;
         initialized.current = true;
         const status = await healthAvailability();

@@ -41,7 +41,7 @@ const shortcuts: {
   { title: 'Water', icon: 'drop', route: '/water' },
   { title: 'Medicines', icon: 'pill', route: '/medicines' },
   { title: 'Cycle', icon: 'calendar', route: '/cycle' },
-  { title: 'Activity', icon: 'trend', route: '/activity' },
+  { title: 'Activity', icon: 'walk', route: '/activity' },
 ];
 export function HomeScreen() {
   const colors = usePalette();

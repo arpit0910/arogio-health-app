@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Platform, Text, View } from "react-native";
 import { usePhoneSteps } from "./PhoneStepsProvider";
 import { useCareStyles } from "../../components/app/CareUI";
 import { usePalette } from "../../theme/AppearanceProvider";
@@ -22,8 +22,7 @@ export function PhoneTrackingControl() {
         <Text style={[c.title, { flex: 1 }]}>Count steps with this phone</Text>
       </View>
       <Text style={c.text}>
-        No health app needed. On supported phones, Arogio counts steps while it
-        is open. You can turn counting off at any time.
+        {Platform.OS === 'android' ? 'No health app needed. On supported Android phones, counting continues when you close Arogio, with a step-counting notification. Force-stop or battery restrictions can interrupt counting.' : 'No health app needed. On supported phones, Arogio counts steps while it is open.'} You can turn counting off in Settings.
       </Text>
       <Text
         accessibilityLiveRegion="polite"

@@ -12,6 +12,32 @@ import expo.modules.kotlin.modules.ModuleDefinition
 class HealthSourcesModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ArogioHealthSources")
+    AsyncFunction("startPhoneSteps") { owner: String, initial: Map<String, Int> ->
+      val context = appContext.reactContext ?: throw IllegalStateException("App context unavailable")
+      val sensors = context.getSystemService(android.content.Context.SENSOR_SERVICE) as android.hardware.SensorManager
+      if (sensors.getDefaultSensor(android.hardware.Sensor.TYPE_STEP_COUNTER) == null) throw IllegalStateException("No cumulative step sensor available")
+      val prefs = PhoneStepsService.preferences(context)
+      val continuing = prefs.getBoolean("enabled", false) && prefs.getString("owner", null) == owner
+      val edit = prefs.edit().putString("owner", owner).putBoolean("enabled", true)
+      if (!prefs.contains("totals.$owner")) edit.putString("totals.$owner", org.json.JSONObject(initial).toString())
+      if (!continuing) edit.remove("counter").remove("boot").remove("day")
+      edit.commit()
+      try { context.startForegroundService(Intent(context, PhoneStepsService::class.java)) }
+      catch (error: Exception) { prefs.edit().putBoolean("enabled", false).commit(); throw error }
+    }
+    AsyncFunction("stopPhoneSteps") { owner: String, clear: Boolean ->
+      val context = appContext.reactContext ?: throw IllegalStateException("App context unavailable")
+      val prefs = PhoneStepsService.preferences(context)
+      if (prefs.getString("owner", null) == owner || owner.isEmpty()) {
+        prefs.edit().putBoolean("enabled", false).remove("counter").commit()
+        context.stopService(Intent(context, PhoneStepsService::class.java))
+      }
+      if (clear) prefs.edit().remove("totals.$owner").commit()
+    }
+    AsyncFunction("phoneStepTotals") { owner: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("App context unavailable")
+      PhoneStepsService.totals(context, owner)
+    }
     AsyncFunction("openHealthApp") { packageName: String ->
       val context = appContext.reactContext ?: throw IllegalStateException("App context unavailable")
       val intent = context.packageManager.getLaunchIntentForPackage(packageName)

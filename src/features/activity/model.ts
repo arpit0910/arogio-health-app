@@ -15,7 +15,7 @@ export function activityReading(metric: ActivityMetric, day: string, mode: 'manu
     const value = snapshot?.granted.includes(metric) ? snapshot.days.find((entry) => entry.day === day)?.readings[metric]?.value ?? null : null;
     return { value, source: 'Connected app' };
   }
-  if (metric === 'Steps' && phone.enabled) return { value: phone.totals[day] ?? null, source: 'Phone - while Arogio is open' };
+  if (metric === 'Steps' && phone.enabled) return { value: phone.totals[day] ?? null, source: 'Phone step counter' };
   return { value: tracking.days.find((entry) => entry.day === day)?.values[metric] ?? null, source: 'Your entered total' };
 }
 export function parseActivityValue(metric: ActivityMetric, text: string, goal = false) {

@@ -24,7 +24,7 @@ import {
 } from "./model";
 import { comparisonCopy, healthSummary } from "./insights";
 const icons: Record<HealthMetric, AppIconName> = {
-  Steps: "trend",
+  Steps: "walk",
   SleepSession: "moon",
   HeartRate: "heart",
   Weight: "weight",

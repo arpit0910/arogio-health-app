@@ -14,7 +14,7 @@ import { useTrackingClock } from '../wellness/useTrackingClock';
 import { formatHealthValue, hasHealthValue } from '../health-sync/model';
 
 const metrics = [
-  { key: 'Steps', title: 'Steps', icon: 'trend' },
+  { key: 'Steps', title: 'Steps', icon: 'walk' },
   { key: 'ExerciseSession', title: 'Movement', icon: 'clock' },
   { key: 'SleepSession', title: 'Sleep', icon: 'moon' },
 ] as const;
