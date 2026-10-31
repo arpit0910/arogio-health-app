@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { usePalette, useAppearance } from '../../theme/AppearanceProvider';
 import { useId } from 'react';
 import { Text, View } from 'react-native';
@@ -16,6 +17,7 @@ export function CalendarField({
   onChange: (value: string) => void;
   mode: 'date' | 'time';
 }) {
+  const { t: tr } = useTranslation();
   const c = useCareStyles();
   const colors = usePalette();
   const { scheme } = useAppearance();
@@ -26,7 +28,7 @@ export function CalendarField({
   return (
     <View style={{ gap: 7 }}>
       <Text nativeID={labelId} style={c.text}>
-        {label}
+        {tr(label)}
       </Text>
       <input
         aria-labelledby={labelId}

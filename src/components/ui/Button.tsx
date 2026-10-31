@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { usePalette } from '../../theme/AppearanceProvider';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 import type { ReactNode } from 'react';
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export function Button({ title, onPress, loading, disabled, variant = 'primary', leading, trailing }: Props) {
+  const { t: tr } = useTranslation();
   const colors = usePalette();
   const styles = useStyles();
 
@@ -22,7 +24,7 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary',
   const danger = variant === 'danger';
   const { control } = useTouchTarget();
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={title}
+    <Pressable accessibilityRole="button" accessibilityLabel={tr(title)}
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
       aria-disabled={disabled || loading} aria-busy={loading}
       disabled={disabled || loading} onPress={onPress}
@@ -30,7 +32,7 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary',
         pressed && (danger ? styles.dangerPressed : secondary ? styles.secondaryPressed : styles.primaryPressed),
         (disabled || loading) && styles.disabled]}>
       {loading ? <ActivityIndicator color={danger ? colors.error : secondary ? colors.primary : colors.background} /> : <>
-        {leading}<Text style={[styles.text, secondary && styles.secondaryText, danger && { color: colors.error }]}>{title}</Text>{trailing}
+        {leading}<Text style={[styles.text, secondary && styles.secondaryText, danger && { color: colors.error }]}>{tr(title)}</Text>{trailing}
       </>}
     </Pressable>
   );

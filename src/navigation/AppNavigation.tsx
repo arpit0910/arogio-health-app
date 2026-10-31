@@ -1,3 +1,4 @@
+import { useTranslation } from "../localization/LanguageProvider";
 import { useAppTheme } from '../theme/AppearanceProvider';
 import type { BottomTabBarProps } from "expo-router/js-tabs";
 import { Image, StyleSheet, Text, View, useWindowDimensions } from "react-native";
@@ -18,6 +19,7 @@ export function AppNavigation({
   emitter,
   navigateToTab,
 }: BottomTabBarProps) {
+  const { t: tr } = useTranslation();
   const t = useAppTheme();
   const s = useStyles();
 
@@ -63,7 +65,7 @@ export function AppNavigation({
               <Text
                 style={[s.label, { color: selected ? t.teal : t.muted }]}
               >
-                {tab.title}
+                {tr(tab.title)}
               </Text>
             </TouchTarget>
           );

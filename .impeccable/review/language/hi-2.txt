@@ -1,0 +1,212 @@
+Daily activity & targets|दैनिक गतिविधि और लक्ष्य
+Daily activity targets|दैनिक गतिविधि के लक्ष्य
+Daily average|दैनिक औसत
+Daily care|रोज़ की देखभाल
+Daily readings & details|दैनिक आँकड़े और जानकारी
+Daily reminders on|दैनिक रिमाइंडर चालू
+Daily reminders on.|दैनिक रिमाइंडर चालू हैं।
+Daily target|दैनिक लक्ष्य
+Daily target (ml)|दैनिक लक्ष्य (ml)
+Daily target not set|दैनिक लक्ष्य तय नहीं है
+Daily target reached. Your drinks are saved.|दैनिक लक्ष्य पूरा हुआ। पानी पीने का रिकॉर्ड सहेजा गया।
+Daily target, {0}|दैनिक लक्ष्य, {0}
+Daily targets|दैनिक लक्ष्य
+Daily water target|रोज़ पानी पीने का लक्ष्य
+Daily weather limit reached|आज की मौसम जानकारी की सीमा पूरी हो गई
+Dark|डार्क
+Data coverage|डेटा की उपलब्धता
+Date and tracking options|तारीख और निगरानी के विकल्प
+Date of birth|जन्म तारीख
+Day to inspect|जानकारी के लिए दिन चुनें
+Delete|हटाएँ
+Delete account|खाता हटाएँ
+Delete activity data|गतिविधि का डेटा हटाएँ
+Delete activity data?|गतिविधि का डेटा हटाएँ?
+Delete all cycle tracking data|माहवारी का सारा डेटा हटाएँ
+Delete check-in?|चेक-इन हटाएँ?
+Delete cycle tracking?|माहवारी की निगरानी हटाएँ?
+Delete medicine|दवा हटाएँ
+Delete medicine?|दवा हटाएँ?
+Delete my account|मेरा खाता हटाएँ
+Delete period record|माहवारी का रिकॉर्ड हटाएँ
+Delete period record?|माहवारी का रिकॉर्ड हटाएँ?
+Delete this check-in|यह चेक-इन हटाएँ
+Delete water tracking data|पानी का डेटा हटाएँ
+Delete water tracking?|पानी की निगरानी हटाएँ?
+Detected during access setup, or enter city|अनुमतियों के सेटअप में मिला शहर, या खुद डालें
+Device notifications are off. Your tracking can still be saved.|डिवाइस की सूचनाएँ बंद हैं। आप रिकॉर्ड फिर भी सहेज सकते हैं।
+Device reminders are scheduled ahead. Reopen Arogio regularly to keep upcoming reminders scheduled.|डिवाइस पर रिमाइंडर पहले से तय होते हैं। आगे के रिमाइंडर जारी रखने के लिए आरोगियो नियमित रूप से खोलें।
+Disconnect app|ऐप का कनेक्शन हटाएँ
+Dismiss message|संदेश हटाएँ
+Distance|दूरी
+Don't have an account?|खाता नहीं है?
+Don&apos;t have an account?|खाता नहीं है?
+Done|हो गया
+Dose|खुराक
+Dose {0} amount|खुराक {0} की मात्रा
+Dose {0} time|खुराक {0} का समय
+Draft for review · Not yet approved for public launch|समीक्षा के लिए मसौदा · सार्वजनिक लॉन्च के लिए अभी स्वीकृत नहीं
+Earlier|पहले
+Earlier today · still available to log|आज पहले का समय · अभी भी दर्ज कर सकते हैं
+Edit Profile|प्रोफ़ाइल बदलें
+Edit medicine|दवा बदलें
+Edit profile|प्रोफ़ाइल बदलें
+Edit question|सवाल बदलें
+Edit target, hours & reminders|लक्ष्य, समय और रिमाइंडर बदलें
+Edit targets|लक्ष्य बदलें
+Edit these dates|ये तारीखें बदलें
+Edit tracking preferences|निगरानी की प्राथमिकताएँ बदलें
+Edit {0} check-in|{0} का चेक-इन बदलें
+Edit {0} target|{0} का लक्ष्य बदलें
+Email address|ईमेल पता
+Emergency|आपातकाल
+Emergency contact:|आपातकालीन संपर्क:
+Emergency: find nearby blood banks|आपातकाल: पास के ब्लड बैंक खोजें
+Enable background updates|बैकग्राउंड अपडेट चालू करें
+Enable notifications in device settings to receive reminders.|रिमाइंडर पाने के लिए डिवाइस सेटिंग्स में सूचनाएँ चालू करें।
+End current period|मौजूदा माहवारी समाप्त करें
+Enter a friend's code, or add it during account setup.|मित्र का कोड डालें, या खाते के सेटअप में जोड़ें।
+Enter a friend&apos;s code, or add it during account setup.|मित्र का कोड डालें, या खाते के सेटअप में जोड़ें।
+Enter a medicine name and an amount for every dose. Each dose needs a different time.|दवा का नाम और हर खुराक की मात्रा डालें। हर खुराक का समय अलग होना चाहिए।
+Enter between 1 and 3000 ml per log.|हर बार 1 से 3000 ml तक मात्रा डालें।
+Enter the dose amounts and times from your prescription or care instructions.|अपने नुस्खे या देखभाल के निर्देशों के अनुसार खुराक की मात्रा और समय डालें।
+Enter totals for {0}. Leave a field blank to clear it.|{0} के कुल मान डालें। मान हटाने के लिए जगह खाली छोड़ें।
+Enter your city|अपना शहर डालें
+Enter your city below. City detection is available in the mobile app.|नीचे अपना शहर डालें। मोबाइल ऐप में शहर अपने आप खोज सकते हैं।
+Enter your friend's code|मित्र का कोड डालें
+Enter your full name|अपना पूरा नाम डालें
+Enter {0}|{0} डालें
+Estimates can change and are not a fertility or contraception guide.|अनुमान बदल सकते हैं। इन्हें प्रजनन क्षमता या गर्भनिरोध के मार्गदर्शन के रूप में न लें।
+Everyday care|रोज़ की देखभाल
+Expand to 200 km|200 km तक खोजें
+Explore Arogio|आरोगियो को जानें
+Explore your readings|अपने आँकड़े देखें
+Filter listed services|सूचीबद्ध सेवाएँ छाँटें
+Filters:|फ़िल्टर:
+Find a blood bank near you|अपने पास ब्लड बैंक खोजें
+Find contact details and directions. This directory does not show live blood stock or provide emergency dispatch.|संपर्क और रास्ता जानें। यह सूची रक्त का मौजूदा स्टॉक नहीं दिखाती और आपातकालीन सहायता भेजने की सेवा नहीं है।
+Find near me|मेरे पास खोजें
+Find the tools that fit your day.|अपने दिन के अनुसार साधन चुनें।
+Find your city for your profile and local weather. Only your city is saved.|प्रोफ़ाइल और स्थानीय मौसम के लिए शहर खोजें। केवल शहर का नाम सहेजा जाता है।
+Finding health apps|स्वास्थ्य ऐप खोजे जा रहे हैं
+Finding your city...|आपका शहर खोजा जा रहा है…
+Finish profile|प्रोफ़ाइल पूरी करें
+Finish profile setup|प्रोफ़ाइल का सेटअप पूरा करें
+First day|पहला दिन
+Flow|रक्तस्राव
+For the water, medicine and cycle reminders you choose.|आपके चुने हुए पानी, दवा और माहवारी के रिमाइंडर के लिए।
+Forgot password?|पासवर्ड भूल गए?
+Fri|शुक्र
+Full name|पूरा नाम
+Future dates show estimates only. Select today or an earlier date to log.|भविष्य की तारीखें केवल अनुमान दिखाती हैं। रिकॉर्ड के लिए आज या पहले की तारीख चुनें।
+Gaps mean no data. Today is still in progress.|खाली जगह का अर्थ डेटा नहीं होना है। आज का दिन अभी जारी है।
+Gender|लिंग
+Go back|वापस जाएँ
+Go to daily care|रोज़ की देखभाल पर जाएँ
+Go to my profile|मेरी प्रोफ़ाइल पर जाएँ
+Goals & preferences|लक्ष्य और प्राथमिकताएँ
+Good health is better together.|मिलकर सेहत बेहतर बनाएँ।
+Good to see you again. Continue your health journey with Arogio.|फिर मिलकर अच्छा लगा। आरोगियो के साथ अपनी सेहत का सफ़र जारी रखें।
+Google Play Services is unavailable. Please update it and try again.|Google Play Services उपलब्ध नहीं है। अपडेट करके फिर प्रयास करें।
+Google authentication failed.|Google से पहचान की पुष्टि नहीं हो सकी।
+Google did not return a sign-in token. Please try again.|Google से साइन इन की पुष्टि नहीं मिली। दोबारा प्रयास करें।
+Google sign-in could not complete. Please try again or use your email.|Google से साइन इन पूरा नहीं हो सका। दोबारा प्रयास करें या ईमेल का उपयोग करें।
+Google sign-in is not available on this device yet. Please sign in with email.|इस डिवाइस पर Google से साइन इन अभी उपलब्ध नहीं है। ईमेल से साइन इन करें।
+Google sign-in is not configured for this app build. Please sign in with email for now.|इस ऐप संस्करण में Google साइन इन तैयार नहीं है। अभी ईमेल से साइन इन करें।
+Google sign-in needs the Arogio development build. Open that app instead of Expo Go.|Google साइन इन के लिए आरोगियो का डेवलपमेंट बिल्ड चाहिए। Expo Go की जगह वह ऐप खोलें।
+Google sign-in on iPhone requires an iOS client ID and a new app build. You can still sign in with email.|iPhone पर Google साइन इन के लिए iOS client ID और नया ऐप बिल्ड चाहिए। अभी ईमेल से साइन इन कर सकते हैं।
+Government|सरकारी
+Health & activity|स्वास्थ्य और गतिविधि
+Health Goals|स्वास्थ्य के लक्ष्य
+Health access is off. Manage access in Settings > Connected health.|स्वास्थ्य डेटा की अनुमति बंद है। सेटिंग्स > जुड़े स्वास्थ्य डेटा में अनुमति बदलें।
+Health and wellbeing updates|स्वास्थ्य और सेहत के अपडेट
+Health app|स्वास्थ्य ऐप
+Health app connections|स्वास्थ्य ऐप के कनेक्शन
+Health app connections are available on supported Android phones. You can still log activity in Arogio.|संगत Android फ़ोन पर स्वास्थ्य ऐप जोड़ सकते हैं। आरोगियो में गतिविधि खुद भी दर्ज कर सकते हैं।
+Health apps|स्वास्थ्य ऐप
+Health apps could not be listed. Install the latest Android build, then try again.|स्वास्थ्य ऐप की सूची नहीं मिली। नवीनतम Android संस्करण इंस्टॉल करके फिर प्रयास करें।
+Health data could not refresh. Check your selected app and Health Connect access in Settings. We will retry automatically.|स्वास्थ्य डेटा रिफ्रेश नहीं हो सका। सेटिंग्स में चुने ऐप और Health Connect की अनुमति जाँचें। हम अपने आप फिर प्रयास करेंगे।
+Health information|स्वास्थ्य की जानकारी
+Health metric|स्वास्थ्य का माप
+Health preferences could not be restored. Choose a source again in Settings > Connected health.|स्वास्थ्य की प्राथमिकताएँ बहाल नहीं हो सकीं। सेटिंग्स > जुड़े स्वास्थ्य डेटा में स्रोत फिर चुनें।
+Health profile|स्वास्थ्य प्रोफ़ाइल
+Health reminders|स्वास्थ्य के रिमाइंडर
+Health tracking information is for general information. It does not replace advice, diagnosis, or treatment from a qualified healthcare professional.|स्वास्थ्य निगरानी की जानकारी सामान्य उपयोग के लिए है। यह योग्य स्वास्थ्य पेशेवर की सलाह, जाँच या उपचार का विकल्प नहीं है।
+Height|लंबाई
+Help me build a daily walking habit|रोज़ चलने की आदत बनाने में मदद करें
+Help me plan a calmer bedtime|शांत नींद की दिनचर्या बनाने में मदद करें
+Hi, {0}|नमस्ते, {0}
+Hide|छिपाएँ
+How do I track water in Arogio?|आरोगियो में पानी पीने का रिकॉर्ड कैसे रखूँ?
+How your information is handled|आपकी जानकारी का उपयोग कैसे होता है
+How your sign-in information is used|साइन इन की जानकारी का उपयोग कैसे होता है
+How your week adds up|आपके सप्ताह का हिसाब
+Hydrate|पानी पिएँ
+I agree to the|मैं सहमत हूँ
+I already have an account|मेरा खाता पहले से है
+I go to sleep at|मेरे सोने का समय
+I understand that signing in within 30 days restores my account, and I want to delete it.|मैं समझता/समझती हूँ कि 30 दिनों में साइन इन करने पर खाता बहाल हो जाता है, और मैं इसे हटाना चाहता/चाहती हूँ।
+I wake up at|मेरे जागने का समय
+Ideas and perspectives for your everyday health.|रोज़मर्रा की सेहत के लिए जानकारी और विचार।
+If symptoms or changes concern you, discuss your records with a healthcare professional.|लक्षणों या बदलावों से चिंता हो तो स्वास्थ्य पेशेवर से अपने रिकॉर्ड पर चर्चा करें।
+Includes today if recorded|दर्ज होने पर आज का दिन भी शामिल है
+Information used by this app|इस ऐप में उपयोग होने वाली जानकारी
+Install Arogio first, then enter this code during signup or setup.|पहले आरोगियो इंस्टॉल करें, फिर साइन अप या सेटअप में यह कोड डालें।
+Install Arogio on your phone to receive device reminders. You can finish setup and keep your records here.|डिवाइस पर रिमाइंडर पाने के लिए फ़ोन में आरोगियो इंस्टॉल करें। यहाँ सेटअप पूरा करके रिकॉर्ड रख सकते हैं।
+Install the latest Arogio Android build to connect a health app.|स्वास्थ्य ऐप जोड़ने के लिए आरोगियो का नवीनतम Android संस्करण इंस्टॉल करें।
+Instructions (optional)|निर्देश (वैकल्पिक)
+Invite copied. Paste it into a message to your friend.|आमंत्रण कॉपी हो गया। मित्र के संदेश में पेस्ट करें।
+Invited by a friend?|मित्र ने आमंत्रित किया है?
+Jeeva|जीवा
+Jeeva could not answer. Please retry.|जीवा जवाब नहीं दे सका। फिर प्रयास करें।
+Jeeva is preparing a reply|जीवा जवाब तैयार कर रहा है
+Jeeva is thinking…|जीवा सोच रहा है…
+Join Arogio and take a step towards a healthier you.|आरोगियो से जुड़ें और बेहतर सेहत की ओर कदम बढ़ाएँ।
+Join me on Arogio|आरोगियो पर मेरे साथ जुड़ें
+Keep dose times in one place|खुराक के समय एक जगह रखें
+Keep each medicine and its daily doses together. All times use IST.|हर दवा और उसकी रोज़ की खुराक साथ रखें। सभी समय IST में हैं।
+Keep my account|मेरा खाता रखें
+Keep period dates, symptoms and daily check-ins in one private record.|माहवारी की तारीखें, लक्षण और रोज़ के चेक-इन एक निजी रिकॉर्ड में रखें।
+Last 7 waking days|जागने के समय के अनुसार पिछले 7 दिन
+Last checked|पिछली जाँच
+Last checked {0}|पिछली जाँच {0}
+Last day|अंतिम दिन
+Last seven days; gaps mean no recorded value|पिछले सात दिन; खाली जगह का अर्थ मान दर्ज न होना है
+Latest weight|नवीनतम वज़न
+Let’s help you get back to your health journey.|सेहत के सफ़र में लौटने में आपकी मदद करते हैं।
+Lifestyle|जीवनशैली
+Light|लाइट
+Listed as 24 hours|सूची में 24 घंटे खुला
+Listed groups:|सूचीबद्ध रक्त समूह:
+Loading Arogio|आरोगियो लोड हो रहा है
+Loading articles|लेख लोड हो रहे हैं
+Loading blood banks|ब्लड बैंक लोड हो रहे हैं
+Loading preferences…|प्राथमिकताएँ लोड हो रही हैं…
+Loading profile|प्रोफ़ाइल लोड हो रही है
+Loading tracking|रिकॉर्ड लोड हो रहा है
+Loading upcoming care|आने वाली देखभाल लोड हो रही है
+Loading your account|आपका खाता लोड हो रहा है
+Loading your daily plan|आपकी दिन की योजना लोड हो रही है
+Location|स्थान
+Location access is off. Search by city or pincode below, or enable location in your device settings.|स्थान की अनुमति बंद है। शहर या पिनकोड से खोजें, या डिवाइस सेटिंग्स में स्थान चालू करें।
+Location checked {0}. Distances are straight-line, not travel distance.|स्थान की जाँच {0} पर हुई। दूरियाँ सीधी रेखा में हैं, यात्रा की दूरी नहीं।
+Location is off. You can still enter your city and continue.|स्थान बंद है। शहर खुद डालकर आगे बढ़ सकते हैं।
+Location is unavailable. Search by city or pincode.|स्थान उपलब्ध नहीं है। शहर या पिनकोड से खोजें।
+Location is used for this search only and is not saved. You can also search without sharing it.|स्थान केवल इस खोज के लिए है, सहेजा नहीं जाता। इसे साझा किए बिना भी खोज सकते हैं।
+Log In|लॉग इन
+Log a drink|पानी पीना दर्ज करें
+Log a period|माहवारी दर्ज करें
+Log a period to begin, or turn on estimates in preferences.|शुरू करने के लिए माहवारी दर्ज करें या प्राथमिकताओं में अनुमान चालू करें।
+Log activity|गतिविधि दर्ज करें
+Log activity and manage your daily goals|गतिविधि दर्ज करें और दैनिक लक्ष्य बदलें
+Log an activity or turn on phone steps to get started.|शुरू करने के लिए गतिविधि दर्ज करें या फ़ोन से कदम गिनना चालू करें।
+Log out|लॉग आउट
+Log this amount|यह मात्रा दर्ज करें
+Log your activity|अपनी गतिविधि दर्ज करें
+Log {0} ml for this task|इस कार्य के लिए {0} ml दर्ज करें
+Log {0} ml water|{0} ml पानी दर्ज करें
+Logged|दर्ज है
+Logged by you|आपने दर्ज किया
+Logged water for the last seven waking days. {0}|जागने के समय के अनुसार पिछले सात दिनों का पानी। {0}
+Logging out...|लॉग आउट हो रहा है…
+Login failed. Please check your credentials.|लॉग इन नहीं हो सका। अपनी जानकारी जाँचें।

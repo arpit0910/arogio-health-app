@@ -85,6 +85,7 @@ function medicineForm(allowed: boolean) {
     module,
     exports: module.exports,
     require: (name: string) => {
+      if (name.endsWith("/localization/LanguageProvider")) return { useTranslation: () => ({ t: (value: unknown) => value, language: "en", locale: "en-IN" }) };
       if (!(name in dependencies))
         throw new Error(`Unexpected dependency: ${name}`);
       return dependencies[name];

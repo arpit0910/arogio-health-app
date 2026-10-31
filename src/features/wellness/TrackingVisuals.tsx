@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { usePalette } from '../../theme/AppearanceProvider';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { CareIllustration, type IllustrationName } from '../../components/app/CareIllustration';
@@ -7,21 +8,23 @@ import { TouchTarget } from '../../components/ui/TouchTarget';
 import { fonts } from '../../theme/tokens';
 
 export function TrackingIntro({ name, title, description }: { name: IllustrationName; title: string; description: string }) {
+  const { t: tr } = useTranslation();
   const c = useCareStyles();
   const styles = useStyles();
 
   const { fontScale } = useWindowDimensions();
-  return <View style={styles.intro}><View style={styles.copy}><Text accessibilityRole="header" style={c.heading}>{title}</Text><Text style={c.text}>{description}</Text></View>{fontScale <= 1.3 && <CareIllustration name={name} size={64} />}</View>;
+  return <View style={styles.intro}><View style={styles.copy}><Text accessibilityRole="header" style={c.heading}>{tr(title)}</Text><Text style={c.text}>{description}</Text></View>{fontScale <= 1.3 && <CareIllustration name={name} size={64} />}</View>;
 }
 
 export function LogChoice({ label, detail, icon, selected = false, disabled = false, onPress, multiple = false }: { label: string; detail?: string; icon: AppIconName; selected?: boolean; disabled?: boolean; onPress: () => void; multiple?: boolean }) {
+  const { t: tr } = useTranslation();
   const colors = usePalette();
   const styles = useStyles();
 
   return <TouchTarget accessibilityRole={multiple ? 'checkbox' : 'button'} accessibilityLabel={detail ? `${label}, ${detail}` : label} accessibilityState={{ selected, checked: multiple ? selected : undefined, disabled }} disabled={disabled} onPress={onPress}
     style={({ pressed }) => [styles.choice, selected && styles.selected, pressed && styles.pressed, disabled && styles.disabled]}>
     <AppIcon name={selected ? 'check' : icon} size={22} color={selected ? colors.onPrimary : colors.primary} />
-    <View style={styles.choiceCopy}><Text style={[styles.label, selected && styles.selectedText]}>{label.charAt(0).toUpperCase() + label.slice(1)}</Text>{detail && <Text style={[styles.detail, selected && styles.selectedText]}>{detail}</Text>}</View>
+    <View style={styles.choiceCopy}><Text style={[styles.label, selected && styles.selectedText]}>{label.charAt(0).toUpperCase() + label.slice(1)}</Text>{detail && <Text style={[styles.detail, selected && styles.selectedText]}>{tr(detail)}</Text>}</View>
   </TouchTarget>;
 }
 

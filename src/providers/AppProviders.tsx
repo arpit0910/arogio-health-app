@@ -1,3 +1,4 @@
+import { LanguageProvider } from '../localization/LanguageProvider';
 import { AppAccessGate } from '../features/onboarding/AppAccess';
 import { InboxProvider } from '../features/notifications/InboxProvider';
 import { AppearanceProvider } from '../theme/AppearanceProvider';
@@ -24,10 +25,10 @@ export function AppProviders({ children }: PropsWithChildren) {
   const [fontsLoaded, fontError] = useFonts({ Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, PlusJakartaSans_600SemiBold, DMSans_400Regular });
   if (fontError) throw fontError;
   return (
-    <AppearanceProvider><SafeAreaProvider>
+    <LanguageProvider><AppearanceProvider><SafeAreaProvider>
     <QueryClientProvider client={queryClient}>
       <AuthProvider><InboxProvider><HealthSyncProvider><WellnessProvider><PhoneStepsProvider>{fontsLoaded ? <AppAccessGate><SidebarProvider>{children}</SidebarProvider></AppAccessGate> : <LaunchArtwork />}</PhoneStepsProvider></WellnessProvider></HealthSyncProvider></InboxProvider></AuthProvider>
     </QueryClientProvider>
-    </SafeAreaProvider></AppearanceProvider>
+    </SafeAreaProvider></AppearanceProvider></LanguageProvider>
   );
 }

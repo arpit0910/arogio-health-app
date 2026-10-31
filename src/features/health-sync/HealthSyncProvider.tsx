@@ -4,9 +4,10 @@ import * as SecureStore from 'expo-secure-store';
 import { useAuth } from '../auth/context/AuthContext';
 import { connectHealth, backgroundHealthGranted, requestBackgroundHealth, grantedHealth, healthAvailability, syncHealth } from './healthConnect';
 import { installedHealthApps } from './healthApps';
-import { cachedBackgroundHealth, startBackgroundHealth, stopBackgroundHealth } from './backgroundHealth';
+import { cacheHealthSnapshot, cachedBackgroundHealth, startBackgroundHealth, stopBackgroundHealth } from './backgroundHealth';
 import { restoreHealthPreference, connectableHealthApps, isHealthApp, type HealthApp, type HealthPreference } from './connection';
 import type { HealthAvailability, HealthMetric, HealthSnapshot } from './model';
+import { mergeHealthSnapshot, permittedSnapshot } from './model';
 
 export const HEALTH_REFRESH_MS = 30 * 1000;
 type HealthState = {
@@ -40,6 +41,12 @@ export function HealthSyncProvider({ children }: PropsWithChildren) {
 function HealthSession({ account, children }: PropsWithChildren<{ account: string | null }>) {
   const [availability, setAvailability] = useState<HealthAvailability | null>(null);
   const [snapshot, setSnapshot] = useState<HealthSnapshot | null>(null);
+  const snapshotRef = useRef<HealthSnapshot | null>(null);
+  function publishSnapshot(next: HealthSnapshot | null | ((current: HealthSnapshot | null) => HealthSnapshot | null)) {
+    const result = typeof next === 'function' ? next(snapshotRef.current) : next;
+    snapshotRef.current = result;
+    setSnapshot(result);
+  }
   const [connected, setConnected] = useState(false);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
@@ -84,12 +91,12 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     const status = await healthAvailability();
     if (!valid()) return;
     setAvailability(status);
-    if (status !== 'available') { setConnected(false); setSnapshot(null); return; }
+    if (status !== 'available') { setConnected(false); publishSnapshot(null); return; }
     const installed = await installedHealthApps();
     if (!valid()) return;
     setApps(connectableHealthApps(installed));
     if (!installed.some((app) => app.id === source.id && app.supportsHealthConnect !== false)) {
-      setConnected(false); setSnapshot(null); setBackground(false);
+      setConnected(false); publishSnapshot(null); setBackground(false);
       await stopBackgroundHealth();
       if (valid()) setError(`${source.name} is unavailable. Choose another app in Settings > Connected health.`);
       return;
@@ -97,9 +104,10 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     const granted = await grantedHealth();
     if (!valid()) return;
     const allowed = granted.filter((metric) => pref.selected.includes(metric));
+    publishSnapshot(current => permittedSnapshot(current, allowed));
     setConnected(allowed.length > 0);
     if (!allowed.length) {
-      setSnapshot(null); setBackground(false);
+      publishSnapshot(null); setBackground(false);
       await stopBackgroundHealth();
       if (valid()) setError('Health access is off. Manage access in Settings > Connected health.');
       return;
@@ -111,8 +119,12 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     }
     const next = await syncHealth(pref.selected, source.id);
     if (!valid() || next.source !== source.id) return;
-    pendingRefresh.current = false;
-    setSnapshot(next); setConnected(next.granted.length > 0);
+    const merged = mergeHealthSnapshot(permittedSnapshot(snapshotRef.current, allowed), next);
+    publishSnapshot(merged); setConnected(next.granted.length > 0);
+    if (next.failed.length) setError('Some health readings could not refresh. Previous values keep their earlier check time. Pull down to retry.');
+    await cacheHealthSnapshot(account!, source.id, merged, valid).catch(() => {
+      if (valid()) setError('Readings refreshed, but could not be saved on this device. Pull down to retry.');
+    });
   }
   async function run() {
     if (!account || !initialized.current) return;
@@ -138,7 +150,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     lock.current = true;
     const request = ++revision.current;
     const valid = () => mounted.current && revision.current === request;
-    setBusy(true); setError(''); setSnapshot(null); setConnected(false); setBackground(false);
+    setBusy(true); setError(''); publishSnapshot(null); setConnected(false); setBackground(false);
     // Stop old reads before any permission prompt, storage operation or source change.
     const previous = preference.current;
     let committed = false;
@@ -210,9 +222,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
           const cached = await cachedBackgroundHealth(account, restored.source.id).catch(() => null);
           if (mounted.current && cached?.source === restored.source.id) {
             const granted = await grantedHealth();
-            if (mounted.current) setSnapshot({ ...cached, granted: cached.granted.filter(metric => granted.includes(metric)),
-              days: cached.days.map(day => ({ ...day, readings: Object.fromEntries(Object.entries(day.readings).filter(([metric]) => granted.includes(metric as HealthMetric))) })),
-              latestWeight: granted.includes('Weight') ? cached.latestWeight : null });
+            if (mounted.current) { publishSnapshot(permittedSnapshot(cached, granted, restored.selected)); setConnected(granted.some(metric => restored.selected.includes(metric))); }
           }
         } else if (account) await stopBackgroundHealth().catch(() => {});
         if (!mounted.current) return;
@@ -242,7 +252,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
   async function disconnect() {
     ++revision.current;
     const next = { ...preference.current, enabled: false };
-    apply(next); setSnapshot(null); setConnected(false); setBackground(false); setBusy(false); setError('');
+    apply(next); publishSnapshot(null); setConnected(false); setBackground(false); setBusy(false); setError('');
     try { await Promise.all([stopBackgroundHealth(), persist(next)]); }
     catch { if (mounted.current) setError('Refreshes are stopped for now. Revoke Arogio access in Health Connect to keep access off after restart.'); }
   }

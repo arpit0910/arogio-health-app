@@ -54,12 +54,12 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FFFDFA",
+          "backgroundColor": "#F3F8F0",
           "image": "./assets/android-icon-foreground.png",
           "imageWidth": 192,
           "resizeMode": "contain",
           "dark": {
-            "backgroundColor": "#FFFDFA",
+            "backgroundColor": "#00291E",
             "image": "./assets/android-icon-foreground.png"
           }
         }
@@ -138,7 +138,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Allow Arogio to find your city during account setup. Only your city is saved."
+          "locationWhenInUsePermission": "Allow Arogio to find your city during account setup or nearby blood banks when you ask. Blood-bank search coordinates are not saved."
         }
       ]
     ],
@@ -154,3 +154,4 @@
     }
   }
 }
+

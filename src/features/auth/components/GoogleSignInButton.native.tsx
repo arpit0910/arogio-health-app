@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { useEffect, useRef, useState } from 'react';
 import { Platform, View } from 'react-native';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
@@ -10,6 +11,7 @@ import { GoogleIcon } from './GoogleIcon';
 
 /** Metro selects this implementation for Android/iOS, keeping native code off web. */
 export function GoogleSignInButton({ disabled, referralCode }: { disabled?: boolean; referralCode?: string }) {
+  const { t: tr } = useTranslation();
   const { loginWithGoogle, isSubmitting, beginExternalSignIn, endExternalSignIn } = useAuth();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +76,7 @@ export function GoogleSignInButton({ disabled, referralCode }: { disabled?: bool
   };
 
   return <View>
-    <Button title="Continue with Google" variant="secondary" leading={<GoogleIcon />} onPress={handlePress}
+    <Button title={tr("Continue with Google")} variant="secondary" leading={<GoogleIcon />} onPress={handlePress}
       loading={pending} disabled={disabled || isSubmitting} />
     <FormError message={error} />
   </View>;

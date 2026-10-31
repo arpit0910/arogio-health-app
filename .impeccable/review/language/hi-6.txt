@@ -1,0 +1,40 @@
+A little help for your day|आपके दिन के लिए थोड़ी मदद
+Ask Jeeva about everyday wellness or how to use Arogio.|रोज़ की सेहत या आरोगियो के उपयोग के बारे में जीवा से पूछें।
+Choose a target and your waking hours. Your daily drinking plan will appear here.|लक्ष्य और जागने का समय चुनें। पानी पीने की दैनिक योजना यहाँ दिखेगी।
+Last 7 days|पिछले 7 दिन
+Leave blank to skip. Your referrer is recorded when you tap Finish setup and cannot be changed.|छोड़ने के लिए खाली रखें। सेटअप पूरा करें चुनने पर आमंत्रित करने वाले का कोड दर्ज हो जाएगा और बदला नहीं जा सकेगा।
+Loading your day...|आपका दिन लोड हो रहा है…
+Make room for water|पानी पीने के लिए समय निकालें
+Mark all as read|सभी को पढ़ा हुआ चिह्नित करें
+Page|पेज
+Recorded periods will appear here.|दर्ज माहवारी यहाँ दिखेगी।
+Review access|अनुमतियाँ देखें
+Stay consistent. Stay healthier.|नियमित रहें। स्वस्थ रहें।
+Targets and logged totals are saved to your account. Phone steps and imported readings stay on this device.|लक्ष्य और दर्ज कुल मान आपके खाते में सहेजे जाते हैं। फ़ोन के कदम और आयातित आँकड़े इसी डिवाइस पर रहते हैं।
+These are your Arogio targets. Samsung Health targets are not shared by the current connection. Enter the same values here to use matching goals.|ये आरोगियो के लक्ष्य हैं। मौजूदा कनेक्शन Samsung Health के लक्ष्य साझा नहीं करता। समान लक्ष्य रखने के लिए वही मान यहाँ डालें।
+View plan|योजना देखें
+Your first drink will appear here.|आपका पहला पानी का रिकॉर्ड यहाँ दिखेगा।
+Your friend can enter this code at signup or before finishing account setup.|आपका मित्र साइन अप या खाते का सेटअप पूरा करने से पहले यह कोड डाल सकता है।
+Your friend's referral code has been recorded.|आपके मित्र का आमंत्रण कोड दर्ज हो गया।
+Your health today builds a brighter you tomorrow.|आज की सेहत कल को बेहतर बनाती है।
+Your referral code|आपका आमंत्रण कोड
+Your referral code is not available yet. Refresh your profile to check again.|आपका आमंत्रण कोड अभी उपलब्ध नहीं है। फिर जाँचने के लिए प्रोफ़ाइल रिफ्रेश करें।
+Your saved check-ins will appear here.|आपके सहेजे चेक-इन यहाँ दिखेंगे।
+Your water, medicine and cycle reminders will appear here when they’re due.|पानी, दवा और माहवारी के रिमाइंडर समय होने पर यहाँ दिखेंगे।
+You’re all caught up|आपने सब देख लिया है
+English selected|English चुनी गई
+Hindi selected|हिन्दी चुनी गई
+ listings have no coordinates and cannot be distance-ranked. Search by city to see them.| ब्लड बैंक के निर्देशांक नहीं हैं, इसलिए दूरी के अनुसार नहीं दिख सकते। उन्हें देखने के लिए शहर से खोजें।
+Back_pain|पीठ दर्द
+Breast_tenderness|स्तनों में संवेदनशीलता
+SleepSession|नींद
+ExerciseSession|व्यायाम
+HeartRate|हृदय गति
+RestingHeartRate|आराम के समय हृदय गति
+Targets|लक्ष्य
+No logs|कोई रिकॉर्ड नहीं
+Unread|बिना पढ़ा
+None|नहीं
+Yes|हाँ
+No|नहीं
+On Android, Arogio can read steps, sleep, heart rate, weight, distance, active and total energy, exercise duration, floors climbed and water intake from Health Connect after you choose data types and grant access. You select one installed Health Connect-compatible source app at a time. Only that app supplies analytics, and changing the source clears the previous overview and cache. Compatible app names are discovered locally and not uploaded. Readings are used for the on-device overview and held in memory during the signed-in app session. Automatic refresh runs every five minutes while the app is active and when you return. Optional background refresh uses Android scheduling (at least 15 minutes, possibly later) and keeps a recent overview encrypted on the device. Connection preferences are saved on the device. They are not uploaded to the Arogio API or written back to Health Connect. Disconnect clears the displayed and cached readings and stops refreshes. Signing out clears cached readings and stops background work. You can revoke permissions in Android Health Connect settings. This does not delete records from source apps.|Android पर डेटा के प्रकार चुनकर अनुमति देने के बाद आरोगियो Health Connect से कदम, नींद, हृदय गति, वज़न, दूरी, सक्रिय और कुल ऊर्जा, व्यायाम की अवधि, चढ़ी गई मंज़िलें और पानी का सेवन पढ़ सकता है। एक समय पर एक इंस्टॉल किया गया संगत स्रोत ऐप चुनते हैं। केवल उसी ऐप से विश्लेषण के आँकड़े आते हैं। स्रोत बदलने पर पुराना सार और कैश साफ़ होता है। संगत ऐप के नाम डिवाइस पर ही खोजे जाते हैं, अपलोड नहीं होते। आँकड़े डिवाइस के सार में उपयोग होते हैं और साइन इन वाले ऐप सत्र की मेमोरी में रहते हैं। ऐप सक्रिय रहने पर हर पाँच मिनट में और वापस आने पर अपने आप रिफ्रेश होता है। वैकल्पिक बैकग्राउंड रिफ्रेश Android के समय निर्धारण पर चलता है (कम से कम 15 मिनट, कभी अधिक देर) और हाल का सार डिवाइस पर एन्क्रिप्ट करके रखता है। कनेक्शन की प्राथमिकताएँ डिवाइस पर सहेजते हैं। वे आरोगियो API पर अपलोड या Health Connect में वापस नहीं लिखी जातीं। कनेक्शन हटाने पर दिखने वाले और कैश में रखे आँकड़े साफ़ होते हैं और रिफ्रेश रुकता है। साइन आउट पर कैश साफ़ होता है और बैकग्राउंड काम रुकता है। Android Health Connect की सेटिंग्स में अनुमति हटा सकते हैं। इससे स्रोत ऐप के रिकॉर्ड नहीं मिटते।

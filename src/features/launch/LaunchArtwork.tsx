@@ -1,104 +1,113 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { usePalette } from '../../theme/AppearanceProvider';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, AppState, Easing, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import Svg, { Path, SvgXml } from 'react-native-svg';
+import { Animated, AppState, Easing, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import Svg, { Circle, Path, SvgXml } from 'react-native-svg';
 import { authAssets } from '../auth/assets/authAssets';
-import { fonts } from '../../theme/tokens';
+import { colors as lightColors, fonts } from '../../theme/tokens';
+import { AppIcon } from '../../components/app/AppIcon';
 
-/** The logo stays visible even before motion preferences or fonts are ready. */
+/** A complete static composition is visible before motion preferences are ready. */
 export function LaunchArtwork({ motion = false }: { motion?: boolean }) {
-  const colors = usePalette();
-  const s = useStyles();
-
+  const { t: tr } = useTranslation();
+  const colors = usePalette(), s = useStyles();
   const { width, height, fontScale } = useWindowDimensions();
-  const emblemSize = Math.min(width - 48, height < 640 || fontScale > 1.4 ? 184 : 232);
+  const compact = height < 680 || fontScale > 1.3;
+  const heroSize = Math.max(160, Math.min(width - 48, compact ? 204 : 300));
+  const showLabels = !compact && fontScale <= 1.3;
   const entrancePlayed = useRef(false);
   const [entrance] = useState(() => new Animated.Value(1));
   const [breath] = useState(() => new Animated.Value(0));
   const [active, setActive] = useState(AppState.currentState === 'active');
-
   useEffect(() => {
-    const listener = AppState.addEventListener('change', (state) => setActive(state === 'active'));
+    const listener = AppState.addEventListener('change', state => setActive(state === 'active'));
     return () => listener.remove();
   }, []);
-
   useEffect(() => {
-    if (!motion || !active) {
-      entrance.setValue(1);
-      breath.setValue(0);
-      return;
-    }
+    if (!motion || !active) { entrance.setValue(1); breath.setValue(0); return; }
     const arrival = entrancePlayed.current ? null : Animated.timing(entrance, {
-      toValue: 1, duration: 650, easing: Easing.out(Easing.exp),
-      useNativeDriver: true, isInteraction: false,
+      toValue: 1, duration: 600, easing: Easing.out(Easing.exp), useNativeDriver: true, isInteraction: false,
     });
     const breathing = Animated.loop(Animated.sequence([
-      Animated.timing(breath, { toValue: 1, duration: 2400, easing: Easing.inOut(Easing.sin), useNativeDriver: true, isInteraction: false }),
-      Animated.timing(breath, { toValue: 0, duration: 2400, easing: Easing.inOut(Easing.sin), useNativeDriver: true, isInteraction: false }),
+      Animated.timing(breath, { toValue: 1, duration: 3200, easing: Easing.inOut(Easing.sin), useNativeDriver: true, isInteraction: false }),
+      Animated.timing(breath, { toValue: 0, duration: 3200, easing: Easing.inOut(Easing.sin), useNativeDriver: true, isInteraction: false }),
     ]));
-    if (arrival) {
-      entrancePlayed.current = true;
-      entrance.setValue(0);
-      arrival.start();
-    }
+    if (arrival) { entrancePlayed.current = true; entrance.setValue(0); arrival.start(); }
     breathing.start();
     return () => { arrival?.stop(); breathing.stop(); };
   }, [motion, active, entrance, breath]);
 
-  return <View style={s.artwork} accessible accessibilityLabel="Arogio. Your Health Companion.">
+  return <View style={s.artwork}>
     <View pointerEvents="none" accessible={false} importantForAccessibility="no-hide-descendants" style={StyleSheet.absoluteFill}>
-      <View style={s.topArc} />
-      <View style={s.bottomField} />
-      <View style={s.bottomArc} />
+      <View style={s.topArc} /><View style={s.bottomField} /><View style={s.bottomArc} />
     </View>
-    <View style={s.brand}>
-      <View accessible={false} importantForAccessibility="no-hide-descendants" style={{ width: emblemSize, height: emblemSize }}>
-        <View style={[s.emblem, { left: (emblemSize - 232) / 2, top: (emblemSize - 232) / 2, transform: [{ scale: emblemSize / 232 }] }]}>
-          <Animated.View style={[s.breathingField, {
-            opacity: breath.interpolate({ inputRange: [0, 1], outputRange: [0.55, 0.85] }),
-            transform: [{ scale: breath.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1.04] }) }],
-          }]} />
-          <Svg width={232} height={232} viewBox="0 0 232 232" style={StyleSheet.absoluteFill}>
-            <Path d="M37 151A87 87 0 0 1 136 31M195 81A87 87 0 0 1 96 201" fill="none" stroke={colors.border} strokeWidth={1.5} strokeLinecap="round" />
-          </Svg>
-          <Animated.View style={[s.seed, s.seedGreen, { transform: [
-            { translateY: breath.interpolate({ inputRange: [0, 1], outputRange: [0, -8] }) },
-            { rotate: breath.interpolate({ inputRange: [0, 1], outputRange: ['30deg', '42deg'] }) },
-          ] }]} />
-          <Animated.View style={[s.seed, s.seedLight, { transform: [
-            { translateY: breath.interpolate({ inputRange: [0, 1], outputRange: [0, 6] }) },
-            { rotate: '-35deg' },
-          ] }]} />
-          <Animated.View style={[s.seedPlum, { transform: [{ translateY: breath.interpolate({ inputRange: [0, 1], outputRange: [0, -5] }) }] }]} />
-          <Animated.View style={{ transform: [
-            { scale: entrance.interpolate({ inputRange: [0, 1], outputRange: [0.88, 1] }) },
-            { rotate: entrance.interpolate({ inputRange: [0, 1], outputRange: ['-8deg', '0deg'] }) },
-          ] }}>
-            <SvgXml xml={authAssets.brand} width={112} height={101} />
+    <ScrollView style={s.scroll} bounces={false} showsVerticalScrollIndicator={false} contentContainerStyle={[s.content, compact && s.compactContent]}>
+      <View style={s.brand}>
+        <Text style={[s.wordmark, compact && s.compactWordmark]}>{tr("Arogio")}</Text>
+        <Text style={s.tagline}>{tr("Your Health Companion")}</Text>
+      </View>
+      <Animated.View pointerEvents="none" accessible={false} importantForAccessibility="no-hide-descendants" style={{ width: heroSize, height: heroSize,
+        transform: [{ translateY: entrance.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }}>
+        <Animated.View style={[s.breathingField, { width: heroSize * .65, height: heroSize * .65, borderRadius: heroSize,
+          opacity: breath.interpolate({ inputRange: [0, 1], outputRange: [.65, .8] }),
+          transform: [{ scale: breath.interpolate({ inputRange: [0, 1], outputRange: [.98, 1.02] }) }] }]} />
+        <Svg width={heroSize} height={heroSize} viewBox="0 0 300 300" style={StyleSheet.absoluteFill}>
+          <Circle cx={150} cy={150} r={118} stroke={colors.border} strokeWidth={1} strokeOpacity={.4} fill="none" />
+          <Path d="M46 191A112 112 0 0 1 169 39M254 109A112 112 0 0 1 131 261" fill="none" stroke={colors.primary} strokeOpacity={.5} strokeWidth={1.5} strokeLinecap="round" />
+          <Circle cx={61} cy={226} r={4} fill={colors.primary} /><Circle cx={233} cy={54} r={3} fill={colors.accent} />
+        </Svg>
+        <View style={[s.logoField, { width: heroSize * .53, height: heroSize * .53, borderRadius: heroSize }]}>
+          <Animated.View style={{ transform: [{ scale: entrance.interpolate({ inputRange: [0, 1], outputRange: [.9, 1] }) }] }}>
+            <SvgXml xml={authAssets.brand} width={heroSize * .32} height={heroSize * .288} />
           </Animated.View>
         </View>
+        <Animated.View style={[s.careBadge, s.waterBadge, { left: 0, top: heroSize * .29, transform: [{ translateY: breath.interpolate({ inputRange: [0, 1], outputRange: [0, -2] }) }] }]}>
+          <AppIcon name="drop" color={colors.primary} size={22} />{showLabels && <Text style={s.badgeText}>{tr("Hydrate")}</Text>}
+        </Animated.View>
+        <Animated.View style={[s.careBadge, s.moveBadge, { right: 0, top: heroSize * .12, transform: [{ translateY: breath.interpolate({ inputRange: [0, 1], outputRange: [0, 2] }) }] }]}>
+          <AppIcon name="walk" color={colors.primary} size={22} />{showLabels && <Text style={s.badgeText}>{tr("Move")}</Text>}
+        </Animated.View>
+        <Animated.View style={[s.careBadge, s.restBadge, { right: heroSize * .05, bottom: heroSize * .1, transform: [{ translateY: breath.interpolate({ inputRange: [0, 1], outputRange: [0, -2] }) }] }]}>
+          <AppIcon name="moon" color={colors.primary} size={22} />{showLabels && <Text style={s.badgeText}>{tr("Rest")}</Text>}
+        </Animated.View>
+      </Animated.View>
+      <View style={s.message}>
+        <Text accessibilityRole="header" style={[s.headline, compact && s.compactHeadline]}>{tr("Your health,")}{'\n'}{tr("at your pace.")}</Text>
+        <Text style={s.description}>{tr("Make space for movement, rest,")}{compact ? ' ' : '\n'}{tr("and a little care for yourself.")}</Text>
       </View>
-      <Text accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={s.wordmark}>Arogio</Text>
-      <Text style={s.tagline}>Your Health Companion</Text>
-    </View>
+      <View accessibilityRole="progressbar" accessibilityLabel={tr("Opening Arogio")} accessibilityState={{ busy: true }} style={s.loading}>
+        <View accessible={false} style={s.dots}>{[0, 1, 2].map(index => <Animated.View key={index} style={[s.dot, {
+          opacity: breath.interpolate({ inputRange: [0, 1], outputRange: index === 1 ? [.7, .45] : [.45, .7] }),
+        }]} />)}</View>
+        <Text accessible={false} style={s.loadingText}>{tr("Opening Arogio")}</Text>
+      </View>
+    </ScrollView>
   </View>;
 }
-
 const useStyles = () => {
-  const colors = usePalette();
-return StyleSheet.create({
-  artwork: { flex: 1, overflow: 'hidden', backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 32 },
-  brand: { width: '100%', maxWidth: 360, alignItems: 'center', gap: 12 },
-  emblem: { position: 'absolute', width: 232, height: 232, alignItems: 'center', justifyContent: 'center' },
-  breathingField: { position: 'absolute', width: 158, height: 158, borderRadius: 79, backgroundColor: colors.subtle },
-  seed: { position: 'absolute', borderTopLeftRadius: 16, borderBottomRightRadius: 16, borderTopRightRadius: 3, borderBottomLeftRadius: 3 },
-  seedGreen: { width: 15, height: 27, right: 24, top: 44, backgroundColor: colors.primary },
-  seedLight: { width: 11, height: 20, left: 42, top: 26, backgroundColor: colors.border },
-  seedPlum: { position: 'absolute', width: 9, height: 9, borderRadius: 5, left: 27, bottom: 57, backgroundColor: colors.accent },
-  topArc: { position: 'absolute', width: 320, height: 320, borderRadius: 160, borderWidth: 1, borderColor: colors.border, opacity: 0.5, top: -192, right: -120 },
-  bottomField: { position: 'absolute', width: 320, height: 320, borderRadius: 160, backgroundColor: colors.subtle, opacity: 0.4, bottom: -216, left: -100 },
-  bottomArc: { position: 'absolute', width: 368, height: 368, borderRadius: 184, borderWidth: 1, borderColor: colors.border, opacity: 0.45, bottom: -216, left: -100 },
-  wordmark: { width: '100%', maxWidth: 320, paddingHorizontal: 12, paddingVertical: 4, textAlign: 'center', fontFamily: fonts.semibold, fontSize: 40, lineHeight: 60, letterSpacing: 0, color: colors.ink, includeFontPadding: true, flexShrink: 0 },
-  tagline: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 23, color: colors.muted, textAlign: 'center' },
-});
+  const c = usePalette();
+  return StyleSheet.create({
+    artwork: { flex: 1, overflow: 'hidden', backgroundColor: c.background }, scroll: { flex: 1 },
+    content: { flexGrow: 1, alignItems: 'center', justifyContent: 'space-between', gap: 24, paddingHorizontal: 24, paddingVertical: 36 },
+    compactContent: { gap: 16, paddingVertical: 20 },
+    brand: { alignItems: 'center', gap: 4, width: '100%' },
+    wordmark: { fontFamily: fonts.semibold, fontSize: 40, lineHeight: 54, letterSpacing: -.8, color: c.ink, textAlign: 'center' },
+    compactWordmark: { fontSize: 34, lineHeight: 46 },
+    tagline: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 22, color: c.muted, textAlign: 'center' },
+    breathingField: { position: 'absolute', alignSelf: 'center', top: '17.5%', backgroundColor: c.subtle },
+    logoField: { position: 'absolute', top: '23.5%', alignSelf: 'center', backgroundColor: lightColors.subtle, alignItems: 'center', justifyContent: 'center' },
+    careBadge: { position: 'absolute', flexDirection: 'row', alignItems: 'center', gap: 6, padding: 12, borderRadius: 16, borderWidth: 1, borderColor: c.border },
+    waterBadge: { backgroundColor: c.subtle }, moveBadge: { backgroundColor: c.surface }, restBadge: { backgroundColor: c.surface },
+    badgeText: { fontFamily: fonts.medium, fontSize: 12, lineHeight: 18, color: c.ink },
+    message: { alignItems: 'center', gap: 14, width: '100%', maxWidth: 420 },
+    headline: { fontFamily: fonts.heading, fontSize: 32, lineHeight: 41, letterSpacing: -.6, textAlign: 'center', color: c.ink },
+    compactHeadline: { fontSize: 27, lineHeight: 35 },
+    description: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 23, color: c.muted, textAlign: 'center' },
+    loading: { alignItems: 'center', gap: 10, paddingTop: 4 }, dots: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    dot: { width: 5, height: 5, borderRadius: 3, backgroundColor: c.primary },
+    loadingText: { fontFamily: fonts.medium, fontSize: 12, lineHeight: 19, color: c.muted },
+    topArc: { position: 'absolute', width: 400, height: 400, borderRadius: 200, borderWidth: 1, borderColor: c.border, opacity: .5, top: -270, right: -180 },
+    bottomField: { position: 'absolute', width: 400, height: 400, borderRadius: 200, backgroundColor: c.subtle, opacity: .45, bottom: -270, left: -180 },
+    bottomArc: { position: 'absolute', width: 450, height: 450, borderRadius: 225, borderWidth: 1, borderColor: c.border, opacity: .45, bottom: -270, left: -180 },
+  });
 };

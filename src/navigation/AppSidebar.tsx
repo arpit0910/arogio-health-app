@@ -1,3 +1,4 @@
+import { useTranslation } from "../localization/LanguageProvider";
 import { usePalette } from '../theme/AppearanceProvider';
 import {
   createContext,
@@ -52,6 +53,8 @@ const sections = [
       { title: 'Water', icon: 'drop', route: '/water' },
       { title: 'Medicines', icon: 'pill', route: '/medicines' },
       { title: 'Cycle tracking', icon: 'calendar', route: '/cycle' },
+      { title: 'Articles', icon: 'book', route: '/articles' },
+      { title: 'Blood banks', icon: 'drop', route: '/blood-banks' },
       { title: 'Connected health', icon: 'sync', route: '/connected-health' },
     ],
   },
@@ -80,6 +83,7 @@ export function SidebarProvider({ children }: PropsWithChildren) {
   );
 }
 function SidebarSession({ children }: PropsWithChildren) {
+  const { t: tr } = useTranslation();
   const colors = usePalette();
   const s = useStyles();
 
@@ -171,7 +175,7 @@ function SidebarSession({ children }: PropsWithChildren) {
           <BlurView blurTarget={blurTarget} intensity={45} blurMethod="dimezisBlurView" tint="dark" style={StyleSheet.absoluteFill} pointerEvents="none" />
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Close navigation menu"
+            accessibilityLabel={tr("Close navigation menu")}
             onPress={() => closeSidebar()}
             style={s.backdrop}
           />
@@ -192,7 +196,7 @@ function SidebarSession({ children }: PropsWithChildren) {
               <CareBrand />
               <TouchTarget
                 accessibilityRole="button"
-                accessibilityLabel="Close menu"
+                accessibilityLabel={tr("Close menu")}
                 disabled={isSubmitting}
                 onPress={() => closeSidebar()}
                 style={s.close}
@@ -203,14 +207,14 @@ function SidebarSession({ children }: PropsWithChildren) {
             {user && (
               <TouchTarget
                 accessibilityRole="button"
-                accessibilityLabel="Open your profile"
+                accessibilityLabel={tr("Open your profile")}
                 onPress={() => closeSidebar(() => router.navigate('/profile'))}
                 style={s.identity}
               >
                 <Avatar photo={profilePhoto(user)} size={44} />
                 <View style={s.flex}>
                   <Text style={s.name}>{profileName(user)}</Text>
-                  <Text style={s.detail}>View your profile</Text>
+                  <Text style={s.detail}>{tr("View your profile")}</Text>
                 </View>
                 <AppIcon name="right" size={18} />
               </TouchTarget>
@@ -219,7 +223,7 @@ function SidebarSession({ children }: PropsWithChildren) {
               {sections.map((section) => (
                 <View key={section.title} style={s.section}>
                   {section.title !== 'Arogio' && (
-                    <Text style={s.sectionTitle}>{section.title}</Text>
+                    <Text style={s.sectionTitle}>{tr(section.title)}</Text>
                   )}
                   {section.links.map((link) => {
                     const active = pathname === link.route;
@@ -247,7 +251,7 @@ function SidebarSession({ children }: PropsWithChildren) {
                           size={22}
                         />
                         <Text style={[s.linkText, active && s.activeText]}>
-                          {link.title}
+                          {tr(link.title)}
                         </Text>
                       </TouchTarget>
                     );
@@ -258,12 +262,12 @@ function SidebarSession({ children }: PropsWithChildren) {
             <View style={s.footer}>
               {!!error && (
                 <Text accessibilityRole="alert" style={s.error}>
-                  {error}
+                  {tr(error)}
                 </Text>
               )}
               <TouchTarget
                 accessibilityRole="button"
-                accessibilityLabel="Log out"
+                accessibilityLabel={tr("Log out")}
                 accessibilityState={{
                   disabled: isSubmitting,
                   busy: isSubmitting,
@@ -278,7 +282,7 @@ function SidebarSession({ children }: PropsWithChildren) {
                   <AppIcon name="logout" size={22} />
                 )}
                 <Text style={s.linkText}>
-                  {isSubmitting ? 'Logging out...' : 'Log out'}
+                  {tr(isSubmitting ? 'Logging out...' : 'Log out')}
                 </Text>
               </TouchTarget>
             </View>
@@ -289,6 +293,7 @@ function SidebarSession({ children }: PropsWithChildren) {
   );
 }
 export function SidebarButton() {
+  const { t: tr } = useTranslation();
   const colors = usePalette();
   const s = useStyles();
 
@@ -296,7 +301,7 @@ export function SidebarButton() {
   return (
     <TouchTarget
       accessibilityRole="button"
-      accessibilityLabel="Open navigation menu"
+      accessibilityLabel={tr("Open navigation menu")}
       accessibilityState={{ expanded: isOpen }}
       onPress={openSidebar}
       style={s.menu}
@@ -393,3 +398,4 @@ return StyleSheet.create({
   },
 });
 };
+

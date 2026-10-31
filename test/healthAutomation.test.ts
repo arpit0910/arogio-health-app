@@ -22,6 +22,33 @@ function load(file: string, dependencies: Record<string, unknown>) {
 const model = require('../src/features/health-sync/model.ts');
 
 describe('Expanded native health import', () => {
+  it('batches a week per metric, keeps sparse IST dates aligned, and refuses another app’s bucket', async () => {
+    let aggregates = 0;
+    const native = { initialize: async () => true,
+      getGrantedPermissions: async () => [{ recordType: 'Steps', accessType: 'read' }],
+      aggregateRecord: async () => { throw new Error('Daily calls must not be used'); },
+      aggregateGroupByDuration: async ({ timeRangeFilter, timeRangeSlicer, dataOriginFilter }: { timeRangeFilter: { startTime: string; endTime: string }; timeRangeSlicer: { duration: string; length: number }; dataOriginFilter: string[] }) => {
+        aggregates++;
+        assert.equal(timeRangeSlicer.duration, 'DAYS'); assert.equal(timeRangeSlicer.length, 1);
+        assert.deepEqual(Array.from(dataOriginFilter), ['com.pebble.ring.app']);
+        const ranges = model.healthDayRanges(new Date(timeRangeFilter.endTime));
+        assert.equal(timeRangeFilter.startTime, ranges[0].start);
+        return ranges.flatMap((range: { start: string; end: string }, index: number) => index === 2 ? [] : [{ startTime: range.start, endTime: range.end,
+          result: { COUNT_TOTAL: index === 0 ? 0 : index * 100, dataOrigins: index === 4 ? ['other.health'] : ['com.pebble.ring.app'] } }]);
+      },
+    };
+    const api = load('../src/features/health-sync/healthConnect.android.ts', {
+      'react-native': { Platform: { Version: 36 } }, './model': model, 'react-native-health-connect': native,
+    }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot> };
+    const snapshot = await api.syncHealth(['Steps'], 'com.pebble.ring.app');
+    assert.equal(aggregates, 1);
+    assert.equal(snapshot.days[0].readings.Steps?.value, 0);
+    assert.equal(snapshot.days[2].readings.Steps?.value, null);
+    assert.equal(snapshot.days[3].readings.Steps?.value, 300);
+    assert.equal(snapshot.days[4].readings.Steps?.value, null);
+    assert.equal(snapshot.days[6].readings.Steps?.value, 600);
+    assert.equal(snapshot.days[6].readings.Steps?.checkedAt, snapshot.syncedAt);
+  });
   it('rejects missing sources and refuses mixed-origin readings or a weight from another app', async () => {
     let queries = 0;
     const native = { initialize: async () => true,
@@ -115,10 +142,22 @@ function backgroundHarness() {
     './healthConnect': { backgroundHealthGranted: async () => grants, healthAvailability: async () => 'available', syncHealth: (_selected: string[], source: string) => read(source) },
     './healthApps': { installedHealthApps: async () => [{ id: 'example.source', name: 'Example' }, { id: 'other.source', name: 'Other' }] },
     './model': model,
-  }) as { startBackgroundHealth: (owner: string, selected: string[], source: string, valid?: () => boolean) => Promise<boolean>; stopBackgroundHealth: () => Promise<void>; cachedBackgroundHealth: (owner: string, source: string) => Promise<HealthSnapshot | null> };
+  }) as { cacheHealthSnapshot: (owner: string, source: string, snapshot: HealthSnapshot, valid?: () => boolean) => Promise<void>; startBackgroundHealth: (owner: string, selected: string[], source: string, valid?: () => boolean) => Promise<boolean>; stopBackgroundHealth: () => Promise<void>; cachedBackgroundHealth: (owner: string, source: string) => Promise<HealthSnapshot | null> };
   return { api, store, run: () => handler(), setRead: (next: typeof read) => { read = next; }, revoke: () => { grants = false; }, registrations: () => registrations, registered: () => registered };
 }
 describe('Background refresh lifecycle', () => {
+  it('persists foreground-only readings, isolates owners and rejects obsolete writes', async () => {
+    const h = backgroundHarness();
+    const snapshot: HealthSnapshot = { source: 'example.source', syncedAt: '2026-10-31T08:00:00Z', granted: ['Steps'], days: [], failed: [], latestWeight: null };
+    await h.api.cacheHealthSnapshot('alice', 'example.source', snapshot);
+    assert.equal(h.registered(), false);
+    assert.equal((await h.api.cachedBackgroundHealth('alice', 'example.source'))?.syncedAt, snapshot.syncedAt);
+    assert.equal(await h.api.cachedBackgroundHealth('bob', 'example.source'), null);
+    await h.api.cacheHealthSnapshot('bob', 'example.source', { ...snapshot, syncedAt: 'later' }, () => false);
+    assert.equal((await h.api.cachedBackgroundHealth('alice', 'example.source'))?.syncedAt, snapshot.syncedAt);
+    await h.api.stopBackgroundHealth();
+    assert.equal(await h.api.cachedBackgroundHealth('alice', 'example.source'), null);
+  });
   it('keeps the 15-minute task schedule stable across foreground refreshes and isolates accounts', async () => {
     const h = backgroundHarness();
     assert.equal(await h.api.startBackgroundHealth('alice', ['Steps'], 'example.source'), true);

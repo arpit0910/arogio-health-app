@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
@@ -5,6 +6,7 @@ import { isApiConfigured } from '../../../config/env';
 import { useApiHealth } from '../hooks/useApiHealth';
 
 export function ApiStatusCard() {
+  const { t: tr } = useTranslation();
   const styles = useStyles();
 
   const health = useApiHealth();
@@ -18,11 +20,11 @@ export function ApiStatusCard() {
   return (
     <View style={styles.card}>
       <View style={styles.row}>
-        <Text style={styles.label}>Connection</Text>
+        <Text style={styles.label}>{tr("Connection")}</Text>
         {health.isPending && isApiConfigured ? <ActivityIndicator color="#097C68" size="small" /> : null}
       </View>
       <Text style={styles.status}>{status}</Text>
-      <Text style={styles.help}>Configure EXPO_PUBLIC_API_URL in your local environment.</Text>
+      <Text style={styles.help}>{tr("Configure EXPO_PUBLIC_API_URL in your local environment.")}</Text>
     </View>
   );
 }

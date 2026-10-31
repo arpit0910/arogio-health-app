@@ -1,3 +1,4 @@
+import { useTranslation } from "../localization/LanguageProvider";
 import { canEnterApp } from '../features/profile/setupStatus';
 import { usePalette } from '../theme/AppearanceProvider';
 import { Redirect, Tabs } from "expo-router";
@@ -27,11 +28,12 @@ export function AuthenticatedLayout() {
   );
 }
 export function AccountGuard({ children }: { children: ReactNode }) {
+  const { t: tr } = useTranslation();
   const { user, isLoading } = useAuth();
   if (isLoading)
     return (
       <View style={{ flex: 1, justifyContent: "center" }}>
-        <ActivityIndicator accessibilityLabel="Loading your account" />
+        <ActivityIndicator accessibilityLabel={tr("Loading your account")} />
       </View>
     );
   if (!user) return <Redirect href="/login" />;

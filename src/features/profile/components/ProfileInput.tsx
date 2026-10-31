@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { useAppTheme } from '../../../theme/AppearanceProvider';
 import { useFieldFocus } from '../../../components/ui/FocusScrollView';
 import {
@@ -32,6 +33,7 @@ export function ProfileInput({
   suffix,
   ...input
 }: Props) {
+  const { t: tr } = useTranslation();
   const t = useAppTheme();
   const s = useStyles();
 
@@ -47,13 +49,13 @@ export function ProfileInput({
       />
       {onPress ? (
         <Text style={[s.value, !value && s.placeholder]}>
-          {value || placeholder}
+          {value || tr(placeholder)}
         </Text>
       ) : (
         <TextInput ref={ref}
-          accessibilityLabel={label}
+          accessibilityLabel={tr(label)}
           value={value}
-          placeholder={placeholder}
+          placeholder={tr(placeholder)}
           placeholderTextColor={t.muted}
           style={s.input}
           selectionColor={t.teal}
@@ -68,12 +70,12 @@ export function ProfileInput({
   );
   return (
     <View style={s.group}>
-      <Text style={s.label}>{label}</Text>
+      <Text style={s.label}>{tr(label)}</Text>
       {onPress ? (
         <TouchTarget
           disabled={input.editable === false}
           accessibilityRole="button"
-          accessibilityLabel={`${label}, ${value || "not selected"}`}
+          accessibilityLabel={tr(`${label}, ${value || "not selected"}`)}
           onPress={onPress}
           style={s.field}
         >

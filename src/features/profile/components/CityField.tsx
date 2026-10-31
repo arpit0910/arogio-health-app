@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, Text, View } from 'react-native';
 import * as Location from 'expo-location';
@@ -6,6 +7,7 @@ import { useCareStyles } from '../../../components/app/CareUI';
 import { TouchTarget } from '../../../components/ui/TouchTarget';
 import { usePalette } from '../../../theme/AppearanceProvider';
 export function CityField({ value, onChange, disabled, autoDetect }: { value: string; onChange: (value: string) => void; disabled: boolean; autoDetect: boolean }) {
+  const { t: tr } = useTranslation();
   const c = useCareStyles(), colors = usePalette(), [busy, setBusy] = useState(false), [message, setMessage] = useState('We use location once to find your city. You can also enter it yourself.');
   const lock = useRef(false), alive = useRef(true), edited = useRef(false);
   const initial = useRef(autoDetect && !value);
@@ -29,5 +31,5 @@ export function CityField({ value, onChange, disabled, autoDetect }: { value: st
     return () => { alive.current = false; };
   }, []);
   useEffect(() => { if (initial.current) { initial.current = false; void detect(); } }, [detect]);
-  return <View style={{ gap: 10, marginTop: 12 }}><Text style={c.title}>Your city</Text><Text style={c.text}>{message}</Text><ProfileInput label="City" icon="location" value={value} placeholder="Enter your city" maxLength={100} editable={!disabled} onChangeText={next => { edited.current = true; onChange(next); }} /><TouchTarget accessibilityRole="button" disabled={busy || disabled} accessibilityState={{ busy, disabled: busy || disabled }} onPress={() => void detect()} style={{ paddingVertical: 10 }}><Text style={[c.text, { color: colors.primary }]}>{busy ? 'Finding your city...' : 'Use my location'}</Text></TouchTarget></View>;
+  return <View style={{ gap: 10, marginTop: 12 }}><Text style={c.title}>{tr("Your city")}</Text><Text style={c.text}>{tr(message)}</Text><ProfileInput label={tr("City")} icon="location" value={value} placeholder={tr("Enter your city")} maxLength={100} editable={!disabled} onChangeText={next => { edited.current = true; onChange(next); }} /><TouchTarget accessibilityRole="button" disabled={busy || disabled} accessibilityState={{ busy, disabled: busy || disabled }} onPress={() => void detect()} style={{ paddingVertical: 10 }}><Text style={[c.text, { color: colors.primary }]}>{tr(busy ? 'Finding your city...' : 'Use my location')}</Text></TouchTarget></View>;
 }

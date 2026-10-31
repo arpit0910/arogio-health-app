@@ -21,17 +21,32 @@ const ReactDOM = require('react-dom/server');
 const { AppRegistry, Dimensions, View } = require('react-native-web');
 const width = Number(process.argv[2] || 390);
 const height = Number(process.argv[3] || 844);
+const scheme = process.argv[4] || 'dark', fontScale = Number(process.argv[5] || 1);
 if (!Number.isFinite(width) || !Number.isFinite(height) || width < 280 || height < 480) throw new Error('Use a phone or tablet viewport.');
-Dimensions.set({ window: { width, height, scale: 1, fontScale: 1 }, screen: { width, height, scale: 1, fontScale: 1 } });
+Dimensions.set({ window: { width, height, scale: 1, fontScale }, screen: { width, height, scale: 1, fontScale } });
+const load = Module._load;
+Module._load = function(request, parent, ...rest) {
+  if (request === 'expo-secure-store') return { getItemAsync: async () => null };
+  return load.call(this, request, parent, ...rest);
+};
+const { colors: light, fonts } = require('../src/theme/tokens.ts');
+const { darkColors } = require('../src/theme/AppearanceProvider.tsx');
+const palette = scheme === 'light' ? light : darkColors;
+Module._load = function(request, parent, ...rest) {
+  if (request.endsWith('/AppearanceProvider')) return { usePalette: () => palette, useAppTheme: () => ({ ...palette, teal: palette.primary, white: palette.surface, fonts }) };
+  if (request === 'expo-secure-store') return { getItemAsync: async () => null };
+  return load.call(this, request, parent, ...rest);
+};
 const { LaunchArtwork } = require('../src/features/launch/LaunchArtwork.tsx');
 function LaunchPreview() { return React.createElement(View, { style: { width, height } }, React.createElement(LaunchArtwork)); }
 AppRegistry.registerComponent('LaunchQA', () => LaunchPreview);
 const { element, getStyleElement } = AppRegistry.getApplication('LaunchQA');
-const out = path.join(root, '.impeccable/review/launch-motion');
+const out = path.join(root, '.impeccable/review/launch-refresh');
 fs.mkdirSync(out, { recursive: true });
-const fontCSS = ['400Regular', '600SemiBold'].map((font) => {
+const fontCSS = ['400Regular', '500Medium', '600SemiBold'].map((font) => {
   const data = fs.readFileSync(path.join(root, `node_modules/@expo-google-fonts/inter/${font}/Inter_${font}.ttf`)).toString('base64');
   return `@font-face{font-family:Inter_${font};src:url(data:font/ttf;base64,${data})}`;
-}).join('');
-fs.writeFileSync(path.join(out, `launch-${width}x${height}.html`), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+ReactDOM.renderToStaticMarkup(getStyleElement())+`<style>${fontCSS}body{margin:0;background:#FFFDFA}</style></head><body>`+ReactDOM.renderToStaticMarkup(element)+'</body></html>');
+}).join('') + `@font-face{font-family:PlusJakartaSans_600SemiBold;src:url(data:font/ttf;base64,${fs.readFileSync(path.join(root,'node_modules/@expo-google-fonts/plus-jakarta-sans/600SemiBold/PlusJakartaSans_600SemiBold.ttf')).toString('base64')})}`;
+const markup = ReactDOM.renderToStaticMarkup(element);
+fs.writeFileSync(path.join(out, `launch-${width}x${height}-${scheme}-${fontScale}.html`), '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+ReactDOM.renderToStaticMarkup(getStyleElement())+`<style>${fontCSS}body{margin:0;background:${palette.background}}</style></head><body>`+markup+'</body></html>');
 console.log(`Composition preview: ${width}x${height}. Native animation is not exercised by SSR.`);

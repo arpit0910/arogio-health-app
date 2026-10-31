@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { useRef, useState } from "react";
 import { Platform, Share, Text, View } from "react-native";
 import { useAuth } from "../auth/context/AuthContext";
@@ -8,6 +9,7 @@ import { usePalette } from "../../theme/AppearanceProvider";
 import { referralLink, referralMessage, validInviteCode } from "./model";
 
 export function ReferralPanel() {
+  const { t: tr } = useTranslation();
   const { user, reloadProfile } = useAuth();
   const c = useCareStyles(),
     colors = usePalette();
@@ -70,13 +72,10 @@ export function ReferralPanel() {
       <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
         <AppIcon name="users" size={26} />
         <Text accessibilityRole="header" style={c.title}>
-          Refer a friend
-        </Text>
+          {tr("Refer a friend")}</Text>
       </View>
       <Text style={c.text}>
-        A little care goes further together. Invite a friend to join Arogio with
-        your personal code.
-      </Text>
+        {tr("A little care goes further together. Invite a friend to join Arogio with your personal code.")}</Text>
       {code && validInviteCode(code) ? (
         <>
           <View
@@ -87,17 +86,17 @@ export function ReferralPanel() {
               gap: 6,
             }}
           >
-            <Text style={c.text}>Your referral code</Text>
+            <Text style={c.text}>{tr("Your referral code")}</Text>
             <Text
               selectable
-              accessibilityLabel={`Your referral code: ${code.split("").join(" ")}`}
+              accessibilityLabel={tr(`Your referral code: ${code.split("").join(" ")}`)}
               style={[c.title, { letterSpacing: 1.5 }]}
             >
               {code}
             </Text>
           </View>
           <Button
-            title="Share invite"
+            title={tr("Share invite")}
             leading={
               <AppIcon name="share" color={colors.onPrimary} size={20} />
             }
@@ -108,18 +107,14 @@ export function ReferralPanel() {
             {referralLink(code)}
           </Text>
           <Text style={[c.text, { fontSize: 13 }]}>
-            Your friend can enter this code at signup or before finishing
-            account setup.
-          </Text>
+            {tr("Your friend can enter this code at signup or before finishing account setup.")}</Text>
         </>
       ) : (
         <>
           <Text style={c.text}>
-            Your referral code is not available yet. Refresh your profile to
-            check again.
-          </Text>
+            {tr("Your referral code is not available yet. Refresh your profile to check again.")}</Text>
           <Button
-            title="Refresh referral code"
+            title={tr("Refresh referral code")}
             variant="secondary"
             loading={busy}
             onPress={() => void retry()}
@@ -128,7 +123,7 @@ export function ReferralPanel() {
       )}
       {!!error && (
         <Text accessibilityLiveRegion="polite" style={c.text}>
-          {error}
+          {tr(error)}
         </Text>
       )}
     </View>

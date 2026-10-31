@@ -49,3 +49,4 @@ yarn-error.*
 
 # Disposable isolated preview browser profiles
 /.impeccable/review/chrome-*/
+/.impeccable/review/**/chrome-*/

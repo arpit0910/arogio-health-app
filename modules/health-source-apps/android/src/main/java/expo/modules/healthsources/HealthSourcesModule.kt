@@ -53,8 +53,14 @@ class HealthSourcesModule : Module() {
       )
       val excluded = setOf(context.packageName, "com.google.android.apps.healthdata", "com.android.healthconnect.controller")
       @Suppress("DEPRECATION")
-      val candidates = intents.flatMap { manager.queryIntentActivities(it, PackageManager.MATCH_ALL) }
-      candidates.map { it.activityInfo.applicationInfo }.distinctBy { it.packageName }.mapNotNull { app ->
+      val candidates = intents.flatMap { manager.queryIntentActivities(it, PackageManager.MATCH_ALL) }.map { it.activityInfo.applicationInfo }
+      // Some installed writer apps do not expose a discoverable rationale activity.
+      // Still require actual Health Connect WRITE permissions below, never just a name.
+      val known = listOf("com.pebble.ring.app", "com.sec.android.app.shealth").mapNotNull { packageName ->
+        @Suppress("DEPRECATION")
+        runCatching { manager.getApplicationInfo(packageName, 0) }.getOrNull()
+      }
+      (candidates + known).distinctBy { it.packageName }.mapNotNull { app ->
         val packageName = app.packageName
         if (!app.enabled || packageName in excluded) return@mapNotNull null
         // Keep non-writers visible without presenting them as working sync sources.

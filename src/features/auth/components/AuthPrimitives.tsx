@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
@@ -5,23 +6,26 @@ import { fonts } from '../../../theme/tokens';
 import { useTouchTarget } from '../../../components/ui/TouchTarget';
 
 export function FormError({ message }: { message?: string | null }) {
+  const { t: tr } = useTranslation();
   const styles = useStyles();
 
-  return message ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.error}>{message}</Text> : null;
+  return message ? <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.error}>{tr(message)}</Text> : null;
 }
 
 export function AuthHeading({ title, subtitle, compact = false }: { title: string; subtitle: string; compact?: boolean }) {
+  const { t: tr } = useTranslation();
   const styles = useStyles();
 
   const { fontScale } = useWindowDimensions();
   return <View style={[styles.heading, compact && styles.compactHeading]}><Text accessibilityRole="header" style={styles.title}
-    numberOfLines={fontScale <= 1.05 ? 1 : undefined} adjustsFontSizeToFit={fontScale <= 1.05} minimumFontScale={0.85}>{title}</Text>
+    numberOfLines={fontScale <= 1.05 ? 1 : undefined} adjustsFontSizeToFit={fontScale <= 1.05} minimumFontScale={0.85}>{tr(title)}</Text>
     <Text style={[styles.subtitle, compact && styles.compactSubtitle]}>{subtitle}</Text></View>;
 }
 
 export function Checkbox({ checked, onChange, label, children, disabled }: {
   checked: boolean; onChange: () => void; label: string; children?: ReactNode; disabled?: boolean;
 }) {
+  const { t: tr } = useTranslation();
   const styles = useStyles();
 
   const { minimum } = useTouchTarget();
@@ -30,14 +34,15 @@ export function Checkbox({ checked, onChange, label, children, disabled }: {
       disabled={disabled} onPress={onChange} hitSlop={{ top: 2, bottom: 2, left: 10, right: 10 }} style={[styles.checkTarget, { minHeight: minimum }]}>
       <View style={[styles.check, checked && styles.checked]}>{checked && <View style={styles.tick} />}</View>
     </Pressable>
-    {children ?? <Text onPress={disabled ? undefined : onChange} style={styles.small}>{label}</Text>}
+    {children ?? <Text onPress={disabled ? undefined : onChange} style={styles.small}>{tr(label)}</Text>}
   </View>;
 }
 
 export function SocialDivider({ compact = false }: { compact?: boolean }) {
+  const { t: tr } = useTranslation();
   const styles = useStyles();
 
-  return <View style={[styles.divider, compact && styles.compactDivider]}><View style={styles.line} /><Text style={styles.dividerText}>or continue with</Text><View style={styles.line} /></View>;
+  return <View style={[styles.divider, compact && styles.compactDivider]}><View style={styles.line} /><Text style={styles.dividerText}>{tr("or continue with")}</Text><View style={styles.line} /></View>;
 }
 
 export const useAuthStyles = () => {

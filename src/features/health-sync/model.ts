@@ -28,7 +28,7 @@ export const healthMetrics = [
 export type HealthMetric = (typeof healthMetrics)[number]['key'];
 export type HealthAvailability =
   'available' | 'update-required' | 'unsupported' | 'rebuild-required';
-export type Reading = { value: number | null; sources: string[] };
+export type Reading = { value: number | null; sources: string[]; checkedAt?: string };
 export type DailyHealth = {
   day: string;
   readings: Partial<Record<HealthMetric, Reading>>;
@@ -42,6 +42,7 @@ export type HealthSnapshot = {
   failed: HealthMetric[];
 };
 export type HealthReader = {
+  aggregateDays?: (metric: HealthMetric, ranges: ReturnType<typeof healthDayRanges>) => Promise<Reading[]>;
   granted: () => Promise<HealthMetric[]>;
   aggregate: (
     metric: HealthMetric,
@@ -78,23 +79,29 @@ export async function readHealthSnapshot(
     selected.includes(metric),
   );
   const failed = new Set<HealthMetric>();
-  const days: DailyHealth[] = [];
-  for (const range of healthDayRanges(now)) {
-    const readings: DailyHealth['readings'] = {};
-    await Promise.all(
-      granted.map(async (metric) => {
+  const ranges = healthDayRanges(now);
+  const days: DailyHealth[] = ranges.map(range => ({ day: range.day, readings: {} }));
+  // Read each metric's buckets in one call where supported; avoid native call bursts.
+  for (const metric of granted) {
+    if (reader.aggregateDays) {
+      try {
+        const readings = await reader.aggregateDays(metric, ranges);
+        if (readings.length !== ranges.length) throw new Error('Incomplete daily buckets');
+        readings.forEach((reading, index) => { days[index].readings[metric] = { ...reading, checkedAt: now.toISOString() }; });
+      } catch { failed.add(metric); }
+    } else {
+      for (const [index, range] of ranges.entries()) {
         try {
-          readings[metric] = await reader.aggregate(
+          days[index].readings[metric] = { ...await reader.aggregate(
             metric,
             range.start,
             range.end,
-          );
+          ), checkedAt: now.toISOString() };
         } catch {
           failed.add(metric);
         }
-      }),
-    );
-    days.push({ day: range.day, readings });
+      }
+    }
   }
   let latestWeight: HealthSnapshot['latestWeight'] = null;
   if (granted.includes('Weight')) {
@@ -142,6 +149,27 @@ export function metricAverage(snapshot: HealthSnapshot, metric: HealthMetric) {
       }
     : null;
 }
+/** Apply current permissions before exposing either cached or refreshed values. */
+export function permittedSnapshot(snapshot: HealthSnapshot | null, granted: HealthMetric[], selected = granted): HealthSnapshot | null {
+  if (!snapshot) return null;
+  const allowed = snapshot.granted.filter(metric => granted.includes(metric) && selected.includes(metric));
+  return { ...snapshot, granted: allowed, days: snapshot.days.map(day => ({ ...day,
+    readings: Object.fromEntries(Object.entries(day.readings).filter(([metric]) => allowed.includes(metric as HealthMetric))) })),
+    latestWeight: allowed.includes('Weight') ? snapshot.latestWeight : null };
+}
+/** Preserve failed cells only. A successful empty read or revoked grant removes old data. */
+export function mergeHealthSnapshot(previous: HealthSnapshot | null, next: HealthSnapshot): HealthSnapshot {
+  if (!previous || previous.source !== next.source) return next;
+  const safe = permittedSnapshot(previous, next.granted)!;
+  return { ...next, days: next.days.map(day => {
+    const readings = { ...day.readings }, old = safe.days.find(item => item.day === day.day);
+    for (const metric of next.failed) {
+      if (!next.granted.includes(metric) || readings[metric] !== undefined || !old?.readings[metric]) continue;
+      readings[metric] = { ...old.readings[metric]!, checkedAt: old.readings[metric]!.checkedAt ?? previous.syncedAt };
+    }
+    return { ...day, readings };
+  }), latestWeight: next.latestWeight ?? (next.granted.includes('Weight') && next.failed.includes('Weight') ? safe.latestWeight : null) };
+}
 export function formatHealthValue(
   metric: HealthMetric,
   value: number | null | undefined,
@@ -164,6 +192,7 @@ export function healthSourceName(source: string): string {
         'com.sec.android.app.shealth': 'Samsung Health',
         'com.google.android.apps.fitness': 'Google Fit',
         'com.fitbit.FitbitMobile': 'Fitbit',
+        'com.pebble.ring.app': 'Pebble Halo',
       } as Record<string, string>
     )[source] ?? source
   );

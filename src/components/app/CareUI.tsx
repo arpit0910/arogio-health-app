@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { usePalette } from '../../theme/AppearanceProvider';
 import { useState, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -8,23 +9,26 @@ import { TouchTarget } from '../ui/TouchTarget';
 import { AppIcon, type AppIconName } from './AppIcon';
 
 export function CareBrand() {
+  const { t: tr } = useTranslation();
   const s = useStyles();
 
-  return <View style={s.brand} accessible accessibilityLabel="Arogio"><SvgXml xml={authAssets.brand} width={32} height={29} /><Text style={s.wordmark}>Arogio</Text></View>;
+  return <View style={s.brand} accessible accessibilityLabel={tr("Arogio")}><SvgXml xml={authAssets.brand} width={32} height={29} /><Text style={s.wordmark}>{tr("Arogio")}</Text></View>;
 }
 export function CareRow({ title, detail, onPress, icon }: { title: string; detail?: string; onPress: () => void; icon?: AppIconName }) {
+  const { t: tr } = useTranslation();
   const s = useStyles();
 
   return <TouchTarget accessibilityRole="button" accessibilityLabel={`${title}${detail ? `. ${detail}` : ''}`} onPress={onPress} style={({ pressed }) => [s.row, pressed && s.pressed]}>
-    {icon && <AppIcon name={icon} size={22} />}<View style={s.copy}><Text style={s.rowTitle}>{title}</Text>{detail && <Text style={s.detail}>{detail}</Text>}</View><AppIcon name="right" size={18} />
+    {icon && <AppIcon name={icon} size={22} />}<View style={s.copy}><Text style={s.rowTitle}>{tr(title)}</Text>{detail && <Text style={s.detail}>{tr(detail)}</Text>}</View><AppIcon name="right" size={18} />
   </TouchTarget>;
 }
-export function CareDisclosure({ title, children }: { title: string; children: ReactNode }) {
+export function CareDisclosure({ title, children, divider = true }: { title: string; children: ReactNode; divider?: boolean }) {
+  const { t: tr } = useTranslation();
   const s = useStyles();
 
   const [open, setOpen] = useState(false);
-  return <View style={s.disclosure}><TouchTarget accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={() => setOpen(value => !value)} style={({ pressed }) => [s.row, s.disclosureRow, pressed && s.pressed]}>
-    <Text style={[s.rowTitle, s.copy]}>{title}</Text><AppIcon name={open ? 'down' : 'right'} size={18} />
+  return <View style={divider && s.disclosure}><TouchTarget accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={() => setOpen(value => !value)} style={({ pressed }) => [s.row, s.disclosureRow, pressed && s.pressed]}>
+    <Text style={[s.rowTitle, s.copy]}>{tr(title)}</Text><AppIcon name={open ? 'down' : 'right'} size={18} />
   </TouchTarget>{open && <View style={s.disclosed}>{children}</View>}</View>;
 }
 export const useCareStyles = () => {

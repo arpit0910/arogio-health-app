@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
@@ -15,6 +16,7 @@ import { ChoiceCard } from "./ProfilePrimitives";
 import { ProfilePreferences } from './ProfilePreferences';
 
 export function EditHealthGoalsScreen() {
+  const { t: tr } = useTranslation();
   const colors = usePalette();
   const a = useAppStyles();
 
@@ -51,15 +53,13 @@ export function EditHealthGoalsScreen() {
     }
   };
   return (
-    <AppScreen back title="Goals & preferences">
-      <View style={{ marginBottom: 24 }}><CareRow icon="goal" title="Daily activity targets" detail="Set steps, exercise and sleep goals" onPress={() => router.push({ pathname: '/activity', params: { edit: 'goals' } })} /></View>
+    <AppScreen back title={tr("Goals & preferences")}>
+      <View style={{ marginBottom: 24 }}><CareRow icon="goal" title={tr("Daily activity targets")} detail={tr("Set steps, exercise and sleep goals")} onPress={() => router.push({ pathname: '/activity', params: { edit: 'goals' } })} /></View>
       <View style={{ gap: 12, paddingBottom: 20 }}>
         <Text accessibilityRole="header" style={a.sectionTitle}>
-          Health Goals
-        </Text>
+          {tr("Health Goals")}</Text>
         <Text style={a.subtitle}>
-          Select your primary health goals. You can choose more than one.
-        </Text>
+          {tr("Select your primary health goals. You can choose more than one.")}</Text>
         {options.map((goal) => (
           <ChoiceCard
             key={goal.value}
@@ -85,9 +85,8 @@ export function EditHealthGoalsScreen() {
           accessibilityRole="header"
           style={[a.sectionTitle, { marginTop: 20 }]}
         >
-          Activity Level
-        </Text>
-        <Text style={a.subtitle}>Choose how active you are in daily life.</Text>
+          {tr("Activity Level")}</Text>
+        <Text style={a.subtitle}>{tr("Choose how active you are in daily life.")}</Text>
         <View accessibilityRole="radiogroup" style={{ gap: 10 }}>
           {activities.map((activity) => (
             <ChoiceCard
@@ -112,7 +111,7 @@ export function EditHealthGoalsScreen() {
         <FormError message={error} />
         <TouchTarget
           accessibilityRole="button"
-          accessibilityLabel="Save Changes"
+          accessibilityLabel={tr("Save Changes")}
           disabled={isSubmitting}
           onPress={() => void save()}
           style={a.button}
@@ -120,7 +119,7 @@ export function EditHealthGoalsScreen() {
           {isSubmitting ? (
             <ActivityIndicator color={colors.onPrimary} />
           ) : (
-            <Text style={a.buttonText}>Save Changes</Text>
+            <Text style={a.buttonText}>{tr("Save Changes")}</Text>
           )}
         </TouchTarget>
       </View>

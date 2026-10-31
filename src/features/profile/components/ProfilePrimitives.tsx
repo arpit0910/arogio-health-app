@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import type { ReactNode } from 'react';
 import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -15,24 +16,27 @@ export function ProfileIcon({ name, white = false }: { name: string; white?: boo
 }
 
 export function ProfileProgress({ step }: { step: number }) {
+  const { t: tr } = useTranslation();
   const s = useStyles();
 
   const active = step < 2 ? 0 : step === 2 ? 1 : step === 3 ? 2 : 3;
-  return <View style={s.progress} accessibilityLabel={`Setup step ${step + 1} of 8`}>
+  return <View style={s.progress} accessibilityLabel={tr(`Setup step ${step + 1} of 8`)}>
     <View style={s.track}><View style={[s.trackDone, { width: `${active / 3 * 100}%` }]} /></View>
     {['Profile', 'Lifestyle', 'Health Goals', 'Done'].map((label, i) => <View key={label} style={s.stage}>
-      <View style={[s.dot, i <= active && s.dotDone]} /><Text style={[s.stageLabel, i <= active && s.stageActive]}>{label}</Text>
+      <View style={[s.dot, i <= active && s.dotDone]} /><Text style={[s.stageLabel, i <= active && s.stageActive]}>{tr(label)}</Text>
     </View>)}
   </View>;
 }
 export function ProfileHeading({ title, subtitle }: { title: string; subtitle: string }) {
+  const { t: tr } = useTranslation();
   const s = useStyles();
 
-  return <View style={s.heading}><Text accessibilityRole="header" style={s.title}>{title}</Text><Text style={s.subtitle}>{subtitle}</Text></View>;
+  return <View style={s.heading}><Text accessibilityRole="header" style={s.title}>{tr(title)}</Text><Text style={s.subtitle}>{subtitle}</Text></View>;
 }
 export function ProfileField({ label, icon, value, placeholder, onChange, onPress, suffix, numeric }: {
   label: string; icon: string; value: string; placeholder: string; onChange?: (value: string) => void; onPress?: () => void; suffix?: string; numeric?: boolean;
 }) {
+  const { t: tr } = useTranslation();
   const colors = usePalette();
   const s = useStyles();
 
@@ -40,7 +44,7 @@ export function ProfileField({ label, icon, value, placeholder, onChange, onPres
   const content = <><View style={s.fieldIcon}><ProfileIcon name={icon} /></View>
     {onChange ? <TextInput accessibilityLabel={label} value={value} placeholder={placeholder} placeholderTextColor={colors.placeholder} onChangeText={onChange} keyboardType={numeric ? 'decimal-pad' : 'default'} returnKeyType="done" onSubmitEditing={Keyboard.dismiss} style={s.input} selectionColor={colors.primary} /> : <Text style={[s.input, !value && { color: colors.placeholder }]}>{value || placeholder}</Text>}
     {suffix && <Text style={s.suffix}>{suffix}</Text>}{onPress && <ProfileIcon name="down" />}</>;
-  return <View style={s.fieldGroup}><Text style={s.label}>{label}</Text>{onPress ? <TouchTarget accessibilityRole="button" accessibilityLabel={`${label}, ${value || 'not selected'}`} onPress={onPress} style={s.field}>{content}</TouchTarget> : <View style={[s.field, { minHeight: control }]}>{content}</View>}</View>;
+  return <View style={s.fieldGroup}><Text style={s.label}>{tr(label)}</Text>{onPress ? <TouchTarget accessibilityRole="button" accessibilityLabel={tr(`${label}, ${value || 'not selected'}`)} onPress={onPress} style={s.field}>{content}</TouchTarget> : <View style={[s.field, { minHeight: control }]}>{content}</View>}</View>;
 }
 export function UnitSelector({ units, value, onChange }: { units: string[]; value: string; onChange: (v: string) => void }) {
   const s = useStyles();
@@ -50,24 +54,26 @@ export function UnitSelector({ units, value, onChange }: { units: string[]; valu
 export function ChoiceCard({ title, subtitle, selected, multiple, onPress, children }: {
   title: string; subtitle: string; icon: string; selected?: boolean; multiple?: boolean; onPress?: () => void; children?: ReactNode;
 }) {
+  const { t: tr } = useTranslation();
   const s = useStyles();
 
   return <TouchTarget accessibilityRole={children ? undefined : multiple ? 'checkbox' : 'radio'} accessibilityLabel={children ? undefined : `${title}. ${subtitle}`} accessibilityState={children ? undefined : { checked: selected }} onPress={onPress} disabled={!onPress} style={[s.card, selected && s.selected]}>
-    <View style={s.cardCopy}><Text style={s.cardTitle}>{title}</Text><Text style={s.cardSubtitle}>{subtitle}</Text></View>
+    <View style={s.cardCopy}><Text style={s.cardTitle}>{tr(title)}</Text><Text style={s.cardSubtitle}>{subtitle}</Text></View>
     {children ?? <View style={[s.mark, !multiple && { borderRadius: 20 }, selected && s.markSelected]}>{selected && (multiple ? <ProfileIcon name="check" white /> : <View style={s.radioDot} />)}</View>}
   </TouchTarget>;
 }
 export function ProfileDialog({ title, subtitle = '', placeholder, value, onChange, options, onClose, onSave, children, error }: {
   title: string; subtitle?: string; placeholder?: string; value: string; onChange: (v: string) => void; options?: { value: string; label: string }[]; onClose: () => void; onSave: () => void; children?: ReactNode; error?: string | null;
 }) {
+  const { t: tr } = useTranslation();
   const colors = usePalette();
   const s = useStyles();
 
   return <TouchTargetScale value={1}><Modal transparent visible animationType="fade" onRequestClose={onClose}><KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.overlay}><ScrollView accessibilityViewIsModal style={s.dialog} contentContainerStyle={s.dialogContent} keyboardShouldPersistTaps="handled" bounces={false} overScrollMode="never">
     <ProfileHeading title={title} subtitle={subtitle} />
-    {children ?? (options ? options.map(option => <TouchTarget key={option.value} accessibilityRole="radio" accessibilityState={{ checked: value === option.value }} onPress={() => onChange(option.value)} style={[s.option, value === option.value && s.selected]}><Text style={s.cardTitle}>{option.label}</Text></TouchTarget>) : <TextInput autoFocus maxLength={100} accessibilityLabel={title} value={value} placeholder={placeholder} placeholderTextColor={colors.placeholder} onChangeText={onChange} returnKeyType="done" onSubmitEditing={onSave} style={[s.field, s.input]} selectionColor={colors.primary} />)}
-    {error && <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text>}
-    <Button title="Save" onPress={onSave} /><TouchTarget onPress={onClose} accessibilityRole="button" style={s.cancel}><Text style={s.link}>Cancel</Text></TouchTarget>
+    {children ?? (options ? options.map(option => <TouchTarget key={option.value} accessibilityRole="radio" accessibilityState={{ checked: value === option.value }} onPress={() => onChange(option.value)} style={[s.option, value === option.value && s.selected]}><Text style={s.cardTitle}>{tr(option.label)}</Text></TouchTarget>) : <TextInput autoFocus maxLength={100} accessibilityLabel={title} value={value} placeholder={placeholder} placeholderTextColor={colors.placeholder} onChangeText={onChange} returnKeyType="done" onSubmitEditing={onSave} style={[s.field, s.input]} selectionColor={colors.primary} />)}
+    {error && <Text accessibilityRole="alert" style={{ color: colors.error }}>{tr(error)}</Text>}
+    <Button title={tr("Save")} onPress={onSave} /><TouchTarget onPress={onClose} accessibilityRole="button" style={s.cancel}><Text style={s.link}>{tr("Cancel")}</Text></TouchTarget>
   </ScrollView></KeyboardAvoidingView></Modal></TouchTargetScale>;
 }
 export const useProfileStyles = () => {

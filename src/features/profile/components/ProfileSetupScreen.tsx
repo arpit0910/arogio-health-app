@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { normalizeInviteCode } from "../../referrals/model";
 import { referralCodeSchema } from "../../auth/types";
 import { usePalette } from "../../../theme/AppearanceProvider";
@@ -35,6 +36,7 @@ import {
 } from "../setupJourney";
 
 export function ProfileSetupScreen() {
+  const { t: tr } = useTranslation();
   const c = useCareStyles();
   const s = useStyles();
 
@@ -133,11 +135,9 @@ export function ProfileSetupScreen() {
         <View style={s.success}>
           <AppIcon name="check" size={48} />
           <Text accessibilityRole="header" style={c.heading}>
-            You’re ready.
-          </Text>
+            {tr("You’re ready.")}</Text>
           <Text style={[c.text, { textAlign: "center" }]}>
-            Your profile is saved. Let’s make room for a little care.
-          </Text>
+            {tr("Your profile is saved. Let’s make room for a little care.")}</Text>
         </View>
       </SafeAreaView>
     );
@@ -165,7 +165,7 @@ export function ProfileSetupScreen() {
             {step > 0 ? (
               <TouchTarget
                 accessibilityRole="button"
-                accessibilityLabel="Previous step"
+                accessibilityLabel={tr("Previous step")}
                 disabled={busy || notificationBusy}
                 onPress={() => {
                   setError(null);
@@ -178,11 +178,11 @@ export function ProfileSetupScreen() {
             ) : (
               <CareBrand />
             )}
-            <Text style={s.step}>Step {activeStep + 1} of 3</Text>
+            <Text style={s.step}>{tr("Step ")}{activeStep + 1} {tr(" of 3")}</Text>
           </View>
           <View
             style={s.progress}
-            accessibilityLabel={`Setup step ${activeStep + 1} of 3`}
+            accessibilityLabel={tr(`Setup step ${activeStep + 1} of 3`)}
           >
             {[0, 1, 2].map((index) => (
               <View
@@ -227,12 +227,12 @@ export function ProfileSetupScreen() {
               {!notificationStage && step === 1 && (
                 <>
                   <ProfileInput
-                    label="Date of birth"
+                    label={tr("Date of birth")}
                     icon="calendar"
                     value={
                       draft.dateOfBirth ? formatBirthday(draft.dateOfBirth) : ""
                     }
-                    placeholder="Choose your birthday"
+                    placeholder={tr("Choose your birthday")}
                     editable={!busy}
                     onPress={() => {
                       Keyboard.dismiss();
@@ -242,9 +242,9 @@ export function ProfileSetupScreen() {
                   <View style={s.measurements}>
                     <View style={s.measurement}>
                       <ProfileInput
-                        label="Weight"
+                        label={tr("Weight")}
                         icon="weight"
-                        placeholder="Your weight"
+                        placeholder={tr("Your weight")}
                         value={draft.weightValue}
                         keyboardType="decimal-pad"
                         editable={!busy}
@@ -272,9 +272,9 @@ export function ProfileSetupScreen() {
                     </View>
                     <View style={s.measurement}>
                       <ProfileInput
-                        label="Height"
+                        label={tr("Height")}
                         icon="height"
-                        placeholder="Your height"
+                        placeholder={tr("Your height")}
                         value={draft.heightValue}
                         keyboardType="decimal-pad"
                         editable={!busy}
@@ -301,11 +301,9 @@ export function ProfileSetupScreen() {
                       />
                     </View>
                   </View>
-                  <ProfileInput label="City (optional)" icon="location" value={draft.location} placeholder="Detected during access setup, or enter city" onChangeText={value => set('location',value)} editable={!busy} maxLength={100} />
+                  <ProfileInput label={tr("City (optional)")} icon="location" value={draft.location} placeholder={tr("Detected during access setup, or enter city")} onChangeText={value => set('location',value)} editable={!busy} maxLength={100} />
                   <Text style={c.text}>
-                    Only the essentials for now. Add other personal details
-                    later in your profile.
-                  </Text>
+                    {tr("Only the essentials for now. Add other personal details later in your profile.")}</Text>
                 </>
               )}
               {!notificationStage && step === 2 && (
@@ -327,17 +325,16 @@ export function ProfileSetupScreen() {
             </View>
             {!notificationStage && step === 2 && (
               <View style={{ marginTop: 24, gap: 10 }}>
-                <Text style={c.title}>Invited by a friend?</Text>
+                <Text style={c.title}>{tr("Invited by a friend?")}</Text>
                 {user?.hasReferrer ? (
                   <Text style={c.text}>
-                    Your friend&apos;s referral code has been recorded.
-                  </Text>
+                    {tr("Your friend's referral code has been recorded.")}</Text>
                 ) : (
                   <>
                     <ProfileInput
-                      label="Referral code (optional)"
+                      label={tr("Referral code (optional)")}
                       icon="users"
-                      placeholder="Enter your friend's code"
+                      placeholder={tr("Enter your friend's code")}
                       value={referralCode}
                       onChangeText={(value) => {
                         setReferralCode(value.toUpperCase());
@@ -349,9 +346,7 @@ export function ProfileSetupScreen() {
                       editable={!busy}
                     />
                     <Text style={c.text}>
-                      Leave blank to skip. Your referrer is recorded when you
-                      tap Finish setup and cannot be changed.
-                    </Text>
+                      {tr("Leave blank to skip. Your referrer is recorded when you tap Finish setup and cannot be changed.")}</Text>
                   </>
                 )}
               </View>
@@ -360,15 +355,14 @@ export function ProfileSetupScreen() {
           </FocusScrollView>
           <View style={s.footer}>
             <Button
-              title={step === 2 ? "Finish profile" : "Continue"}
+              title={tr(step === 2 ? "Finish profile" : "Continue")}
               onPress={() => void next()}
               loading={busy}
               disabled={notificationBusy}
             />
-            <Button title="Skip for now" variant="secondary" disabled={busy} onPress={() => void skip()} />
+            <Button title={tr("Skip for now")} variant="secondary" disabled={busy} onPress={() => void skip()} />
             <Text style={s.note}>
-              You can finish setup anytime from Profile.
-            </Text>
+              {tr("You can finish setup anytime from Profile.")}</Text>
           </View>
         </View>
       </KeyboardAvoidingView>

@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { AppHeader } from '../../components/app/AppHeader';
 import { usePalette } from '../../theme/AppearanceProvider';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -29,16 +30,17 @@ const documents = {
 } as const;
 
 export function LegalScreen({ document }: { document: keyof typeof documents }) {
+  const { t: tr } = useTranslation();
   const styles = useStyles();
 
   const content = documents[document];
   return <SafeAreaView style={styles.safe}>
     <AppHeader back title={content.title} />
     <ScrollView bounces={false} alwaysBounceVertical={false} overScrollMode="never" contentContainerStyle={styles.content}>
-      <Text accessibilityRole="header" style={styles.title}>{content.title}</Text>
-      <View style={styles.notice}><Text style={styles.noticeText}>Draft for review · Not yet approved for public launch</Text></View>
+      <Text accessibilityRole="header" style={styles.title}>{tr(content.title)}</Text>
+      <View style={styles.notice}><Text style={styles.noticeText}>{tr("Draft for review · Not yet approved for public launch")}</Text></View>
       {content.sections.map(([title, body]) => <View key={title} style={styles.section}>
-        <Text accessibilityRole="header" style={styles.heading}>{title}</Text><Text style={styles.body}>{body}</Text>
+        <Text accessibilityRole="header" style={styles.heading}>{tr(title)}</Text><Text style={styles.body}>{tr(body)}</Text>
       </View>)}
     </ScrollView>
   </SafeAreaView>;

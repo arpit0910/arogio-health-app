@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { usePalette } from '../../theme/AppearanceProvider';
 import { useFieldFocus } from '../../components/ui/FocusScrollView';
 import { AppIcon } from '../../components/app/AppIcon';
@@ -18,6 +19,7 @@ export function TimeField({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const { t: tr } = useTranslation();
   const c = useCareStyles();
   const colors = usePalette();
 
@@ -67,7 +69,7 @@ export function TimeField({
     <View style={{ gap: 8 }}>
       <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
         <AppIcon name="clock" size={20} />
-        <Text style={[c.text, { flex: 1 }]}>{label} / IST</Text>
+        <Text style={[c.text, { flex: 1 }]}>{tr(label)} {tr(" / IST")}</Text>
       </View>
       <View
         style={{
@@ -92,9 +94,9 @@ export function TimeField({
               setFocused('hour');
               reveal(hourRef.current);
             }}
-            placeholder="HH"
+            placeholder={tr("HH")}
             selectionColor={colors.primary}
-            accessibilityLabel={`${label}, hour, 1 to 12`}
+            accessibilityLabel={tr(`${label}, hour, 1 to 12`)}
             keyboardType="number-pad"
             maxLength={2}
             value={hour}
@@ -130,9 +132,9 @@ export function TimeField({
               setFocused('minute');
               reveal(minuteRef.current);
             }}
-            placeholder="MM"
+            placeholder={tr("MM")}
             selectionColor={colors.primary}
-            accessibilityLabel={`${label}, minutes, 0 to 59`}
+            accessibilityLabel={tr(`${label}, minutes, 0 to 59`)}
             keyboardType="number-pad"
             maxLength={2}
             value={minute}
@@ -201,8 +203,7 @@ export function TimeField({
           accessibilityLiveRegion="polite"
           style={[c.text, { color: colors.error }]}
         >
-          Use an hour from 1–12 and minutes from 00–59.
-        </Text>
+          {tr("Use an hour from 1–12 and minutes from 00–59.")}</Text>
       )}
     </View>
   );

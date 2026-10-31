@@ -1,3 +1,7 @@
+import { useTranslation } from "../../localization/LanguageProvider";
+import { useQueryClient } from '@tanstack/react-query';
+import { HomeArticles } from '../directory/ArticlesScreen';
+import { EmergencyButton } from '../directory/BloodBanksScreen';
 import { HomeBanner, WeatherTile, useHomeContent } from './HomeContent';
 import { useHealthSync } from '../health-sync/HealthSyncProvider';
 import { TodayActivity } from '../activity/TodayActivity';
@@ -44,6 +48,8 @@ const shortcuts: {
   { title: 'Activity', icon: 'walk', route: '/activity' },
 ];
 export function HomeScreen() {
+  const { t: tr, locale } = useTranslation();
+  const directoryQueries = useQueryClient();
   const colors = usePalette();
   const s = useStyles();
   const health = useHealthSync(), homeContent = useHomeContent();
@@ -134,7 +140,7 @@ export function HomeScreen() {
         refreshControl={
           <RefreshControl
             refreshing={pulling}
-            onRefresh={() => { setPulling(true); void Promise.allSettled([refresh(),health.run(),homeContent.refresh()]).finally(() => setPulling(false)); }}
+            onRefresh={() => { setPulling(true); void Promise.allSettled([refresh(),health.run(),homeContent.refresh(),directoryQueries.invalidateQueries({ queryKey: ['articles'] })]).finally(() => setPulling(false)); }}
             tintColor={colors.primary}
             colors={[colors.primary]}
           />
@@ -143,16 +149,17 @@ export function HomeScreen() {
         <View style={[s.content, expanded && s.expandedContent]}>
           <View style={s.greeting}><View style={{ flex: 1, minWidth: 150, gap: 6 }}>
             <Text accessibilityRole="header" style={s.heading}>
-              {name ? `Hi, ${name}` : 'Your day'}
+              {tr(name ? `Hi, ${name}` : 'Your day')}
             </Text>
             <Text style={s.date}>
-              {now.toLocaleDateString('en-IN', {
+              {now.toLocaleDateString(locale, {
                 weekday: 'long',
                 day: 'numeric',
                 month: 'long',
                 timeZone: APP_TIMEZONE,
               })}
             </Text>
+            <Text style={s.date}>{formatTime(now)}</Text>
           </View><WeatherTile weather={homeContent.weather}/></View>
           <HomeBanner banners={homeContent.banners}/>
           <View style={s.shortcuts}>
@@ -161,9 +168,9 @@ export function HomeScreen() {
                 key={item.route}
                 accessibilityRole="button"
                 accessibilityLabel={
-                  item.title === 'Cycle'
+                  tr(item.title === 'Cycle'
                     ? 'Open private cycle tracker'
-                    : item.title
+                    : item.title)
                 }
                 onPress={() => router.navigate(item.route)}
                 style={({ pressed }) => [
@@ -174,7 +181,7 @@ export function HomeScreen() {
                 ]}
               >
                 <View style={{flexDirection:'row',width:'100%',alignItems:'center',justifyContent:'space-between'}}><AppIcon name={item.icon} size={24} color={['#14648A','#9D254B','#A05215','#4C4C9B'][index]}/><AppIcon name="right" size={14} color="#234A3C"/></View>
-                <Text style={s.shortcutLabel}>{item.title}</Text><Text style={s.shortcutDetail}>{['Track hydration','Set reminder','Track cycle','Stay active'][index]}</Text>
+                <Text style={s.shortcutLabel}>{tr(item.title)}</Text><Text style={s.shortcutDetail}>{['Track hydration','Set reminder','Track cycle','Stay active'][index]}</Text>
               </TouchTarget>
             ))}
           </View>
@@ -182,9 +189,9 @@ export function HomeScreen() {
           {error && (
             <View style={s.error} accessibilityLiveRegion="polite">
               <Text style={s.errorText}>
-                {retryLog
+                {tr(retryLog
                   ? 'Your drink could not be confirmed. Retry the log to save it safely.'
-                  : 'Your latest tracking could not be loaded. We will retry automatically. Pull down to check now.'}
+                  : 'Your latest tracking could not be loaded. We will retry automatically. Pull down to check now.')}
               </Text>
 
             </View>
@@ -193,53 +200,51 @@ export function HomeScreen() {
             <View style={expanded && s.primaryColumn}>
               <View style={s.sectionHeader}>
                 <Text accessibilityRole="header" style={s.sectionTitle}>
-                  Daily care
-                </Text>
+                  {tr("Daily care")}</Text>
                 <TouchTarget
                   accessibilityRole="button"
                   onPress={() => router.navigate('/health')}
                   style={s.textAction}
                 >
-                  <Text style={s.actionText}>View health</Text>
+                  <Text style={s.actionText}>{tr("View health")}</Text>
                   <AppIcon name="right" size={15} />
                 </TouchTarget>
               </View>
               {loading && !plan ? (
                 <View
                   key="water-loading"
-                  accessibilityLabel="Loading your daily plan"
+                  accessibilityLabel={tr("Loading your daily plan")}
                   accessibilityState={{ busy: true }}
                   style={s.water}
                 >
                   <ActivityIndicator color={colors.primary} />
-                  <Text style={s.body}>Loading your day...</Text>
+                  <Text style={s.body}>{tr("Loading your day...")}</Text>
                 </View>
               ) : plan && water ? (
                 <View key="water-ready" style={[s.water,{backgroundColor:colors.subtle,overflow:'hidden'}]}><Image source={require('../../../assets/home/reference-v2/water-glass.png')} accessible={false} style={{position:'absolute',right:-10,top:25,width:105,height:150,opacity:.7}} resizeMode="contain"/>
                   <View style={[s.sectionHeader, s.waterHeader]}>
                     <View style={s.labelRow}>
                       <AppIcon name="drop" size={24} />
-                      <Text style={s.title}>Water</Text>
+                      <Text style={s.title}>{tr("Water")}</Text>
                     </View>
                     <TouchTarget
                       accessibilityRole="button"
-                      accessibilityLabel="View water plan"
+                      accessibilityLabel={tr("View water plan")}
                       onPress={() => router.push('/water')}
                       style={s.textAction}
                     >
-                      <Text style={s.actionText}>View plan</Text>
+                      <Text style={s.actionText}>{tr("View plan")}</Text>
                     </TouchTarget>
                   </View>
                   <Text style={[s.waterAmount,{paddingRight:60}]}>
-                    {water.totalMl.toLocaleString('en-IN')}{' '}
+                    {water.totalMl.toLocaleString(locale)}{' '}
                     <Text style={s.target}>
-                      of {plan.targetMl.toLocaleString('en-IN')} ml today
-                    </Text>
+                      {tr("of ")}{plan.targetMl.toLocaleString(locale)} {tr(" ml today")}</Text>
                   </Text>
                   <View
                     accessible
                     accessibilityRole="progressbar"
-                    accessibilityLabel="Daily water target"
+                    accessibilityLabel={tr("Daily water target")}
                     accessibilityValue={{
                       min: 0,
                       max: plan.targetMl,
@@ -256,7 +261,7 @@ export function HomeScreen() {
                     />
                   </View>
                   <Text style={s.body}>
-                    {water.paused
+                    {tr(water.paused
                       ? 'Reminders are paused. You can still log water.'
                       : !plan.remindersEnabled
                         ? 'Reminders are off. Log a drink whenever you like.'
@@ -268,13 +273,13 @@ export function HomeScreen() {
                               ? 'Your waking day is finished.'
                               : water.next[0]
                                 ? `Next drinking time: ${formatTime(water.next[0].snoozedUntil ?? water.next[0].at)}`
-                                : 'No more drinking times today.'}
+                                : 'No more drinking times today.')}
                   </Text>
                   <Button
                     title={
-                      retryLog
+                      tr(retryLog
                         ? 'Retry drink log'
-                        : `Log ${plan.servingMl} ml water`
+                        : `Log ${plan.servingMl} ml water`)
                     }
                     leading={
                       <AppIcon name="glass" size={21} color={colors.onPrimary} />
@@ -289,14 +294,12 @@ export function HomeScreen() {
                   <View key="water-setup" style={s.water}>
                     <View style={s.labelRow}>
                       <AppIcon name="drop" size={24} />
-                      <Text style={s.title}>Make room for water</Text>
+                      <Text style={s.title}>{tr("Make room for water")}</Text>
                     </View>
                     <Text style={s.body}>
-                      Choose a target and your waking hours. Your daily drinking
-                      plan will appear here.
-                    </Text>
+                      {tr("Choose a target and your waking hours. Your daily drinking plan will appear here.")}</Text>
                     <Button
-                      title="Set up water reminders"
+                      title={tr("Set up water reminders")}
                       onPress={() => router.push('/water')}
                     />
                   </View>
@@ -308,7 +311,7 @@ export function HomeScreen() {
                   {feedback.logId && (
                     <TouchTarget
                       accessibilityRole="button"
-                      accessibilityLabel="Undo the last water log"
+                      accessibilityLabel={tr("Undo the last water log")}
                       disabled={busy}
                       style={s.textAction}
                       onPress={() =>
@@ -324,12 +327,12 @@ export function HomeScreen() {
                         })()
                       }
                     >
-                      <Text style={s.actionText}>Undo</Text>
+                      <Text style={s.actionText}>{tr("Undo")}</Text>
                     </TouchTarget>
                   )}
                   <TouchTarget
                     accessibilityRole="button"
-                    accessibilityLabel="Dismiss message"
+                    accessibilityLabel={tr("Dismiss message")}
                     onPress={() => setFeedback(null)}
                     style={s.dismiss}
                   >
@@ -342,13 +345,12 @@ export function HomeScreen() {
             <View style={expanded ? s.secondaryColumn : undefined}>
               <View style={s.sectionHeader}>
                 <Text accessibilityRole="header" style={s.sectionTitle}>
-                  Next in your day
-                </Text>
+                  {tr("Next in your day")}</Text>
                 <AppIcon name="clock" size={19} color={colors.muted} />
               </View>
               {loading && !plan && !data.medicines?.length ? (
                 <ActivityIndicator
-                  accessibilityLabel="Loading upcoming care"
+                  accessibilityLabel={tr("Loading upcoming care")}
                   color={colors.primary}
                 />
               ) : (
@@ -367,8 +369,8 @@ export function HomeScreen() {
                           <AppIcon name={item.icon} size={21} />
                         </View>
                         <View style={s.flex}>
-                          <Text style={s.rowTitle}>{item.title}</Text>
-                          <Text style={s.caption}>{item.detail}</Text>
+                          <Text style={s.rowTitle}>{tr(item.title)}</Text>
+                          <Text style={s.caption}>{tr(item.detail)}</Text>
                           <Text style={s.taskTime}>{careTime(item.at)}</Text>
                         </View>
                         <AppIcon name="right" size={18} />
@@ -378,15 +380,15 @@ export function HomeScreen() {
                 ) : (
                   <View style={s.empty}>
                     <Text style={s.body}>
-                      {plan || data.medicines?.length
+                      {tr(plan || data.medicines?.length
                         ? 'No more upcoming times today. Your plans are always available in Health.'
-                        : 'Add a medicine or water plan to see upcoming times here.'}
+                        : 'Add a medicine or water plan to see upcoming times here.')}
                     </Text>
                     <Button
                       title={
-                        data.medicines?.length
+                        tr(data.medicines?.length
                           ? 'Manage medicines'
-                          : 'Add a medicine'
+                          : 'Add a medicine')
                       }
                       variant="secondary"
                       onPress={() => router.push('/medicines')}
@@ -398,15 +400,14 @@ export function HomeScreen() {
                 <>
                   <View style={s.sectionHeader}>
                     <Text accessibilityRole="header" style={s.sectionTitle}>
-                      Recent activity
-                    </Text>
+                      {tr("Recent activity")}</Text>
                     <TouchTarget
                       accessibilityRole="button"
-                      accessibilityLabel="View water history"
+                      accessibilityLabel={tr("View water history")}
                       onPress={() => router.push('/water')}
                       style={s.textAction}
                     >
-                      <Text style={s.actionText}>View all</Text>
+                      <Text style={s.actionText}>{tr("View all")}</Text>
                     </TouchTarget>
                   </View>
                   <View style={s.list}>
@@ -415,8 +416,7 @@ export function HomeScreen() {
                         <AppIcon name="check" size={18} />
                         <View style={s.flex}>
                           <Text style={s.rowTitle}>
-                            {log.amountMl} ml water logged
-                          </Text>
+                            {log.amountMl} {tr(" ml water logged")}</Text>
                           <Text style={s.caption}>
                             {formatTime(log.loggedAt)}
                           </Text>
@@ -429,7 +429,9 @@ export function HomeScreen() {
             </View>
           </View>
         </View>
+        <View style={[s.content, expanded && s.expandedContent]}><HomeArticles /></View>
       </ScrollView>
+      <EmergencyButton />
     </SafeAreaView>
   );
 }
@@ -450,7 +452,7 @@ return StyleSheet.create({
   },
   brand: { flex: 1, alignItems: 'center' },
   avatar: { width: 48, alignItems: 'center', justifyContent: 'center' },
-  scroll: { flexGrow: 1, paddingBottom: 40 },
+  scroll: { flexGrow: 1, paddingBottom: 104 },
   content: {
     width: '100%',
     maxWidth: 440,
@@ -633,3 +635,5 @@ return StyleSheet.create({
   pressed: { backgroundColor: colors.subtle },
 });
 };
+
+

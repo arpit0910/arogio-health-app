@@ -1,9 +1,11 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { Platform, Text, View } from "react-native";
 import { usePhoneSteps } from "./PhoneStepsProvider";
 import { useCareStyles } from "../../components/app/CareUI";
 import { usePalette } from "../../theme/AppearanceProvider";
 import { AppIcon } from "../../components/app/AppIcon";
 export function PhoneTrackingControl() {
+  const { t: tr } = useTranslation();
   const phone = usePhoneSteps(),
     colors = usePalette(),
     c = useCareStyles();
@@ -19,18 +21,17 @@ export function PhoneTrackingControl() {
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
         <AppIcon name="device" size={22} />
-        <Text style={[c.title, { flex: 1 }]}>Count steps with this phone</Text>
+        <Text style={[c.title, { flex: 1 }]}>{tr("Count steps with this phone")}</Text>
       </View>
       <Text style={c.text}>
-        {Platform.OS === 'android' ? 'No health app needed. On supported Android phones, counting continues when you close Arogio, with a step-counting notification. Force-stop or battery restrictions can interrupt counting.' : 'No health app needed. On supported phones, Arogio counts steps while it is open.'} You can turn counting off in Settings.
-      </Text>
+        {tr(Platform.OS === 'android' ? 'No health app needed. On supported Android phones, counting continues when you close Arogio, with a step-counting notification. Force-stop or battery restrictions can interrupt counting.' : 'No health app needed. On supported phones, Arogio counts steps while it is open.')} {tr(" You can turn counting off in Settings.")}</Text>
       <Text
         accessibilityLiveRegion="polite"
         style={[c.text, { color: colors.ink }]}
       >
-        {phone.status}
+        {tr(phone.status)}
       </Text>
-      {!phone.enabled && <Text style={c.text}>Manage access once in Settings. You can enter totals here without a step sensor.</Text>}
+      {!phone.enabled && <Text style={c.text}>{tr("Manage access once in Settings. You can enter totals here without a step sensor.")}</Text>}
     </View>
   );
 }

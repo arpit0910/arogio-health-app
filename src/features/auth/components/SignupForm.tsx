@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { ProfileInput } from '../../profile/components/ProfileInput';
 import { normalizeInviteCode } from '../../referrals/model';
 import { TouchTarget } from '../../../components/ui/TouchTarget';
@@ -14,6 +15,7 @@ import { AuthHeading, Checkbox, FormError, SocialDivider, useAuthStyles } from '
 import { GoogleSignInButton } from './GoogleSignInButton';
 
 export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }) {
+  const { t: tr } = useTranslation();
   const authStyles = useAuthStyles();
   const styles = useStyles();
 
@@ -42,36 +44,36 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
     try { await register(parsed.data); } catch { /* AuthContext displays the API error. */ }
   };
   return <View style={styles.container}>
-    <AuthHeading compact title="Create your account" subtitle="Join Arogio and take a step towards a healthier you." />
+    <AuthHeading compact title={tr("Create your account")} subtitle={tr("Join Arogio and take a step towards a healthier you.")} />
     <View style={styles.fields}>
-      <AuthField icon="user" placeholder="Full name" value={fullName} onChangeText={(value) => { setFullName(value); setValidationError(null); clearError(); }} autoComplete="name" textContentType="name"
+      <AuthField icon="user" placeholder={tr("Full name")} value={fullName} onChangeText={(value) => { setFullName(value); setValidationError(null); clearError(); }} autoComplete="name" textContentType="name"
         editable={!isSubmitting} autoCapitalize="words" returnKeyType="next" onSubmitEditing={() => emailRef.current?.focus()} />
-      <AuthField ref={emailRef} icon="email" placeholder="Email address" value={email} onChangeText={(value) => { setEmail(value); setValidationError(null); clearError(); }}
+      <AuthField ref={emailRef} icon="email" placeholder={tr("Email address")} value={email} onChangeText={(value) => { setEmail(value); setValidationError(null); clearError(); }}
         editable={!isSubmitting} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoComplete="email"
         textContentType="emailAddress" returnKeyType="next" onSubmitEditing={() => passwordRef.current?.focus()} />
-      <AuthField ref={passwordRef} icon="lock" password placeholder="Password" value={password} onChangeText={(value) => { setPassword(value); setValidationError(null); clearError(); }}
+      <AuthField ref={passwordRef} icon="lock" password placeholder={tr("Password")} value={password} onChangeText={(value) => { setPassword(value); setValidationError(null); clearError(); }}
         editable={!isSubmitting} autoCapitalize="none" autoCorrect={false} autoComplete="new-password" textContentType="newPassword"
-        accessibilityHint="At least 8 characters, with uppercase, lowercase, and a number"
+        accessibilityHint={tr("At least 8 characters, with uppercase, lowercase, and a number")}
         returnKeyType="next" onSubmitEditing={() => confirmRef.current?.focus()} />
-      <AuthField ref={confirmRef} icon="lock" password placeholder="Confirm password" value={confirmation} onChangeText={(value) => { setConfirmation(value); setValidationError(null); clearError(); }}
+      <AuthField ref={confirmRef} icon="lock" password placeholder={tr("Confirm password")} value={confirmation} onChangeText={(value) => { setConfirmation(value); setValidationError(null); clearError(); }}
         editable={!isSubmitting} autoCapitalize="none" autoCorrect={false} autoComplete="new-password" textContentType="newPassword"
         returnKeyType="go" onSubmitEditing={handleSubmit} />
     </View>
-    <View style={{ marginTop: 12 }}><ProfileInput label="Referral code (optional)" icon="users" placeholder="Code from a friend" value={referralCode} onChangeText={value => { setReferralCode(value.toUpperCase()); setValidationError(null); clearError(); }} editable={!isSubmitting} autoCapitalize="characters" autoCorrect={false} maxLength={12} /><Text style={[authStyles.small, { marginTop: 6 }]}>Enter a friend&apos;s code, or add it during account setup.</Text></View>
+    <View style={{ marginTop: 12 }}><ProfileInput label={tr("Referral code (optional)")} icon="users" placeholder={tr("Code from a friend")} value={referralCode} onChangeText={value => { setReferralCode(value.toUpperCase()); setValidationError(null); clearError(); }} editable={!isSubmitting} autoCapitalize="characters" autoCorrect={false} maxLength={12} /><Text style={[authStyles.small, { marginTop: 6 }]}>{tr("Enter a friend's code, or add it during account setup.")}</Text></View>
     <View style={styles.agreement}>
-      <Checkbox checked={accepted} onChange={() => setAccepted(!accepted)} label="Agree to Terms of Service and Privacy Policy" disabled={isSubmitting}>
-        <Text style={[authStyles.small, styles.legalCopy]}>I agree to the{' '}
-          <Text accessibilityRole="link" style={authStyles.link} onPress={() => router.push('/terms')}>Terms of Service</Text> and{' '}
-          <Text accessibilityRole="link" style={authStyles.link} onPress={() => router.push('/privacy')}>Privacy Policy</Text>.
+      <Checkbox checked={accepted} onChange={() => setAccepted(!accepted)} label={tr("Agree to Terms of Service and Privacy Policy")} disabled={isSubmitting}>
+        <Text style={[authStyles.small, styles.legalCopy]}>{tr("I agree to the")}{' '}
+          <Text accessibilityRole="link" style={authStyles.link} onPress={() => router.push('/terms')}>{tr("Terms of Service")}</Text> {tr(" and")}{' '}
+          <Text accessibilityRole="link" style={authStyles.link} onPress={() => router.push('/privacy')}>{tr("Privacy Policy")}</Text>.
         </Text>
       </Checkbox>
     </View>
     <FormError message={validationError || error} />
     <View style={[styles.spacer, compact && styles.compactSpacer]} />
-    <View style={styles.action}><Button title="Create Account" onPress={handleSubmit} loading={isSubmitting} trailing={<AuthIcon name="arrow" />} /></View>
+    <View style={styles.action}><Button title={tr("Create Account")} onPress={handleSubmit} loading={isSubmitting} trailing={<AuthIcon name="arrow" />} /></View>
     <SocialDivider compact /><GoogleSignInButton disabled={isSubmitting || !accepted || (!!referralCode.trim() && !referralCodeSchema.safeParse(referralCode).success)} referralCode={referralCode.trim() || undefined} />
-    <View style={[authStyles.footer, styles.footer]}><Text style={authStyles.small}>Already have an account?</Text>
-      <TouchTarget accessibilityRole="link" disabled={isSubmitting} onPress={onSwitchToLogin} style={authStyles.footerLink}><Text style={authStyles.footerLinkText}>Log In</Text></TouchTarget>
+    <View style={[authStyles.footer, styles.footer]}><Text style={authStyles.small}>{tr("Already have an account?")}</Text>
+      <TouchTarget accessibilityRole="link" disabled={isSubmitting} onPress={onSwitchToLogin} style={authStyles.footerLink}><Text style={authStyles.footerLinkText}>{tr("Log In")}</Text></TouchTarget>
     </View>
   </View>;
 }

@@ -1,0 +1,7 @@
+# Jeeva chat
+
+31 October 2026: replaces the Jeeva AI placeholder with a session-only conversation in the existing emerald theme. The NVIDIA integration lives in the backend; see `D:/arogio_health_backend/JEEVA.md` for configuration, API, privacy, limits and verification.
+
+Users can send a question, choose an example prompt, read selectable replies, retry/edit a failed question and start a new chat. The screen discloses that messages go to NVIDIA and that saved profile, activity, water, medicine and cycle summaries are attached when the visible record-access switch is on. The backend selects records only for the authenticated account, excludes identifiers/free-text notes, and refreshes the summary for every question. Device-only Health Connect and phone-sensor readings are not included. Turning record access off starts a new chat and removes earlier record-based replies from follow-up context. It supports pending, disabled, error and empty states. Follow-up context drops whole oldest turns to respect backend limits; account changes and unmounting clear the in-memory session and abort pending client requests.
+
+Synthetic preview fixtures can be regenerated with `node scripts/preview-jeeva.cjs 390 welcome` and `node scripts/preview-jeeva.cjs 320 error`. These verify layout only, not native keyboard or assistive-technology behavior. Chat uses the configured Arogio backend `/chat/messages` endpoint. Backend deployment and a rebuilt app are needed; build 30 does not contain this feature.

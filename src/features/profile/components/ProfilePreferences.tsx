@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { StyleSheet, Text, View } from 'react-native';
 import { Checkbox } from '../../auth/components/AuthPrimitives';
@@ -12,10 +13,11 @@ export function ProfilePreferences({ values, onChange, disabled = false }: {
   onChange: (key: Preference, checked: boolean) => void;
   disabled?: boolean;
 }) {
+  const { t: tr } = useTranslation();
   const styles = useStyles();
 
   return <>
-    <ProfileHeading title="Stay in the loop" subtitle="Choose the updates you would like. These choices are optional." />
+    <ProfileHeading title={tr("Stay in the loop")} subtitle={tr("Choose the updates you would like. These choices are optional.")} />
     {([
       { key: 'healthReminders', title: 'Health reminders', subtitle: 'Reminders when this feature becomes available' },
       { key: 'tipsAndInsights', title: 'Tips and insights', subtitle: 'Health and wellbeing updates' },
@@ -25,9 +27,9 @@ export function ProfilePreferences({ values, onChange, disabled = false }: {
       return <View key={preference.key} style={styles.preference}>
         <Checkbox checked={values[preference.key]} onChange={toggle} disabled={disabled}
           label={`${preference.title}. ${preference.subtitle}`}>
-          <Text style={styles.copy} onPress={disabled ? undefined : toggle}>{preference.title}</Text>
+          <Text style={styles.copy} onPress={disabled ? undefined : toggle}>{tr(preference.title)}</Text>
         </Checkbox>
-        <Text style={styles.description} onPress={disabled ? undefined : toggle}>{preference.subtitle}</Text>
+        <Text style={styles.description} onPress={disabled ? undefined : toggle}>{tr(preference.subtitle)}</Text>
       </View>;
     })}
   </>;

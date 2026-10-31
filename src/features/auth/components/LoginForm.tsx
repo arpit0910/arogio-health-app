@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { TouchTarget } from '../../../components/ui/TouchTarget';
 import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -11,6 +12,7 @@ import { AuthHeading, Checkbox, FormError, SocialDivider, useAuthStyles } from '
 import { GoogleSignInButton } from './GoogleSignInButton';
 
 export function LoginForm({ onSwitchToSignup }: { onSwitchToSignup?: () => void }) {
+  const { t: tr } = useTranslation();
   const authStyles = useAuthStyles();
   const styles = useStyles();
 
@@ -29,27 +31,27 @@ export function LoginForm({ onSwitchToSignup }: { onSwitchToSignup?: () => void 
     try { await login(parsed.data, remember); } catch { /* AuthContext displays the API error. */ }
   };
   return <View>
-    <AuthHeading title="Welcome Back!" subtitle="Good to see you again. Continue your health journey with Arogio." />
+    <AuthHeading title={tr("Welcome Back!")} subtitle={tr("Good to see you again. Continue your health journey with Arogio.")} />
     <View style={authStyles.form}>
-      <AuthField icon="email" placeholder="Email address" value={email} onChangeText={(value) => { setEmail(value); setValidationError(null); clearError(); }} editable={!isSubmitting}
+      <AuthField icon="email" placeholder={tr("Email address")} value={email} onChangeText={(value) => { setEmail(value); setValidationError(null); clearError(); }} editable={!isSubmitting}
         keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoComplete="email" textContentType="emailAddress"
         returnKeyType="next" onSubmitEditing={() => passwordRef.current?.focus()} />
-      <AuthField ref={passwordRef} icon="lock" password placeholder="Password" value={password} onChangeText={(value) => { setPassword(value); setValidationError(null); clearError(); }}
+      <AuthField ref={passwordRef} icon="lock" password placeholder={tr("Password")} value={password} onChangeText={(value) => { setPassword(value); setValidationError(null); clearError(); }}
         editable={!isSubmitting} autoCapitalize="none" autoCorrect={false} autoComplete="current-password" textContentType="password"
         returnKeyType="go" onSubmitEditing={handleSubmit} />
     </View>
     <View style={styles.options}>
-      <Checkbox checked={remember} onChange={() => setRemember(!remember)} label="Remember me" disabled={isSubmitting} />
+      <Checkbox checked={remember} onChange={() => setRemember(!remember)} label={tr("Remember me")} disabled={isSubmitting} />
       <Pressable accessibilityRole="link" disabled={isSubmitting} onPress={() => router.push('/forgot-password')} style={styles.forgot}>
-        <Text style={authStyles.link}>Forgot password?</Text>
+        <Text style={authStyles.link}>{tr("Forgot password?")}</Text>
       </Pressable>
     </View>
     <FormError message={validationError || error} />
-    <View style={styles.action}><Button title="Log In" onPress={handleSubmit} loading={isSubmitting} trailing={<AuthIcon name="arrow" />} /></View>
+    <View style={styles.action}><Button title={tr("Log In")} onPress={handleSubmit} loading={isSubmitting} trailing={<AuthIcon name="arrow" />} /></View>
     <SocialDivider /><GoogleSignInButton disabled={isSubmitting} />
-    <View style={authStyles.footer}><Text style={authStyles.small}>Don&apos;t have an account?</Text>
+    <View style={authStyles.footer}><Text style={authStyles.small}>{tr("Don't have an account?")}</Text>
       <TouchTarget accessibilityRole="link" disabled={isSubmitting} onPress={onSwitchToSignup} style={authStyles.footerLink}>
-        <Text style={authStyles.footerLinkText}>Sign Up</Text>
+        <Text style={authStyles.footerLinkText}>{tr("Sign Up")}</Text>
       </TouchTarget>
     </View>
   </View>;

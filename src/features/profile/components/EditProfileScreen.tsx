@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { useAppTheme, usePalette } from '../../../theme/AppearanceProvider';
 import { useState } from "react";
 import {
@@ -28,6 +29,7 @@ import { UnitSelector } from "./ProfilePrimitives";
 import { ProfileInput } from "./ProfileInput";
 
 export function EditProfileScreen() {
+  const { t: tr } = useTranslation();
   const a = useAppStyles();
   const t = useAppTheme();
   const colors = usePalette();
@@ -126,11 +128,11 @@ export function EditProfileScreen() {
     }
   };
   return (
-    <AppScreen back title="Edit Profile">
+    <AppScreen back title={tr("Edit Profile")}>
       <View style={s.form}>
         <TouchTarget
           accessibilityRole="button"
-          accessibilityLabel="Change profile photo"
+          accessibilityLabel={tr("Change profile photo")}
           disabled={photoBusy || isSubmitting}
           onPress={() => void choosePhoto()}
           style={s.avatar}
@@ -138,16 +140,16 @@ export function EditProfileScreen() {
           <Avatar photo={photo} size={106} camera />
           {photoBusy && (
             <ActivityIndicator
-              accessibilityLabel="Preparing photo"
+              accessibilityLabel={tr("Preparing photo")}
               color={t.teal}
             />
           )}
         </TouchTarget>
         <ProfileInput
-          label="Full name"
+          label={tr("Full name")}
           icon="user"
           value={fullName}
-          placeholder="Enter your full name"
+          placeholder={tr("Enter your full name")}
           maxLength={100}
           editable={!isSubmitting}
           onChangeText={(v) => {
@@ -156,10 +158,10 @@ export function EditProfileScreen() {
           }}
         />
         <ProfileInput
-          label="Date of birth"
+          label={tr("Date of birth")}
           icon="calendar"
           value={draft.dateOfBirth ? formatBirthday(draft.dateOfBirth) : ""}
-          placeholder="Select your date of birth"
+          placeholder={tr("Select your date of birth")}
           editable={!isSubmitting}
           onPress={() => {
             Keyboard.dismiss();
@@ -167,35 +169,34 @@ export function EditProfileScreen() {
           }}
         />
         <View style={s.genderGroup}>
-          <Text style={a.sectionTitle}>Gender</Text>
-          <View accessibilityRole="radiogroup" accessibilityLabel="Gender" style={s.genderGroup}>
+          <Text style={a.sectionTitle}>{tr("Gender")}</Text>
+          <View accessibilityRole="radiogroup" accessibilityLabel={tr("Gender")} style={s.genderGroup}>
             {genders.map((option) => <TouchTarget key={option.value}
               accessibilityRole="radio" accessibilityLabel={option.label}
               accessibilityState={{ checked: draft.gender === option.value, disabled: isSubmitting }}
               disabled={isSubmitting} onPress={() => set("gender", option.value)}
               style={[s.genderOption, draft.gender === option.value && s.genderSelected]}>
-              <Text style={[s.genderText, draft.gender === option.value && s.genderSelectedText]}>{option.label}</Text>
+              <Text style={[s.genderText, draft.gender === option.value && s.genderSelectedText]}>{tr(option.label)}</Text>
             </TouchTarget>)}
           </View>
         </View>
         <ProfileInput
-          label="Location"
+          label={tr("Location")}
           icon="location"
           value={draft.location}
-          placeholder="Enter your city"
+          placeholder={tr("Enter your city")}
           editable={!isSubmitting}
           onChangeText={(value) => set('location', value)}
         />
         <Text accessibilityRole="header" style={a.sectionTitle}>
-          Body details
-        </Text>
+          {tr("Body details")}</Text>
         <View style={s.body}>
           <View style={s.measurement}>
             <ProfileInput
-              label="Weight"
+              label={tr("Weight")}
               icon="weight"
               value={draft.weightValue}
-              placeholder="Weight"
+              placeholder={tr("Weight")}
               keyboardType="decimal-pad"
               editable={!isSubmitting}
               suffix={draft.weightUnit === "lb" ? "lbs" : "kg"}
@@ -222,10 +223,10 @@ export function EditProfileScreen() {
           </View>
           <View style={s.measurement}>
             <ProfileInput
-              label="Height"
+              label={tr("Height")}
               icon="height"
               value={draft.heightValue}
-              placeholder="Height"
+              placeholder={tr("Height")}
               keyboardType="decimal-pad"
               editable={!isSubmitting}
               suffix={draft.heightUnit === "in" ? "inch" : "cm"}
@@ -254,7 +255,7 @@ export function EditProfileScreen() {
         <FormError message={error} />
         <TouchTarget
           accessibilityRole="button"
-          accessibilityLabel="Save Changes"
+          accessibilityLabel={tr("Save Changes")}
           accessibilityState={{ busy: isSubmitting }}
           disabled={isSubmitting || photoBusy}
           onPress={() => void save()}
@@ -263,7 +264,7 @@ export function EditProfileScreen() {
           {isSubmitting ? (
             <ActivityIndicator color={colors.onPrimary} />
           ) : (
-            <Text style={a.buttonText}>Save Changes</Text>
+            <Text style={a.buttonText}>{tr("Save Changes")}</Text>
           )}
         </TouchTarget>
       </View>

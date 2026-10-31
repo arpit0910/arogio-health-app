@@ -39,3 +39,8 @@ export function connectableHealthApps(apps: HealthApp[]): HealthApp[] {
 export function appHealthMetrics(app: HealthApp): HealthMetric[] {
   return app.metrics ? allHealthMetrics.filter(metric => app.metrics!.includes(metric)) : allHealthMetrics;
 }
+export function sourceSharingInstructions(id: string, name: string): string {
+  if (id === 'com.pebble.ring.app') return 'Sync your Pebble device in Pebble Halo, then enable Health Connect sharing in Pebble Halo. If it shares through another app, select that writing app in Arogio.';
+  if (id === 'com.sec.android.app.shealth') return 'In Samsung Health, open Settings > Health Connect > App permissions > Samsung Health and allow writing the data you want to share. Sync your wearable in Samsung Health, then return to Arogio.';
+  return `Open ${name}, enable its Health Connect data sharing, then return here. Your wearable may need to sync with that app first.`;
+}

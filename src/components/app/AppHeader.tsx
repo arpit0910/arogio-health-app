@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { canEnterApp } from '../../features/profile/setupStatus';
 import { Text, View, StyleSheet, useWindowDimensions, type ViewStyle } from 'react-native';
 import type { ReactNode } from 'react';
@@ -12,6 +13,7 @@ import { AppIcon } from './AppIcon';
 import { CareBrand } from './CareUI';
 /** The same navigation positions on every signed-in screen. */
 export function AppHeader({ title, back = false, action, style }: { title?: string; back?: boolean; action?: ReactNode; style?: ViewStyle }) {
+  const { t: tr } = useTranslation();
   const { user } = useAuth(), colors = usePalette();
   const { width } = useWindowDimensions();
   const canOpenMenu = canEnterApp(user);
@@ -20,8 +22,8 @@ export function AppHeader({ title, back = false, action, style }: { title?: stri
   return <View style={[s.header, width >= 1024 && { maxWidth: 880 }, style]}>
     {canOpenMenu && <View style={s.row}><SidebarButton /><View style={s.brand}><CareBrand /></View><NotificationBell /></View>}
     {(back || title || action) && <View style={s.pageRow}>
-      {back && <TouchTarget accessibilityRole="button" accessibilityLabel="Go back" onPress={goBack} style={s.control}><AppIcon name="back" color={colors.ink} size={20} /></TouchTarget>}
-      <Text accessibilityRole="header" style={[s.title, { color: colors.ink }]}>{title}</Text>{action}
+      {back && <TouchTarget accessibilityRole="button" accessibilityLabel={tr("Go back")} onPress={goBack} style={s.control}><AppIcon name="back" color={colors.ink} size={20} /></TouchTarget>}
+      <Text accessibilityRole="header" style={[s.title, { color: colors.ink }]}>{tr(title)}</Text>{action}
     </View>}
   </View>;
 }

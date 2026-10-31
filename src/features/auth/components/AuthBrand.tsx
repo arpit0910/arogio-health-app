@@ -1,18 +1,20 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { StyleSheet, Text, View } from 'react-native';
 import { fonts } from '../../../theme/tokens';
 import { AuthIcon } from './AuthIcon';
 
 export function AuthBrand() {
+  const { t: tr } = useTranslation();
   const styles = useStyles();
 
   return (
-    <View style={styles.brand} accessibilityLabel="Arogio. Your Health Companion">
+    <View style={styles.brand} accessibilityLabel={tr("Arogio. Your Health Companion")}>
       <View style={styles.row}>
         <AuthIcon name="brand" />
-        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={styles.wordmark}>Arogio</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65} style={styles.wordmark}>{tr("Arogio")}</Text>
       </View>
-      <Text style={styles.tagline}>Your Health Companion</Text>
+      <Text style={styles.tagline}>{tr("Your Health Companion")}</Text>
     </View>
   );
 }

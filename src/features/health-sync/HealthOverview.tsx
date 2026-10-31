@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { TouchTarget } from "../../components/ui/TouchTarget";
@@ -38,6 +39,7 @@ const icons: Record<HealthMetric, AppIconName> = {
   Hydration: "drop",
 };
 export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
+  const { t: tr, locale } = useTranslation();
   const c = useCareStyles(),
     colors = usePalette();
   const { data } = useWellness();
@@ -59,7 +61,7 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
   const summary = healthSummary(snapshot, metric);
   const goal = data.activityTracking?.goals[metric as ActivityMetric];
   const date = (value: string) =>
-    new Intl.DateTimeFormat("en-IN", {
+    new Intl.DateTimeFormat(locale, {
       day: "numeric",
       month: "short",
       timeZone: "Asia/Kolkata",
@@ -68,17 +70,15 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
     <View style={{ marginTop: 28, gap: 16 }}>
       <View style={{ gap: 6 }}>
         <Text accessibilityRole="header" style={c.title}>
-          Explore your readings
-        </Text>
+          {tr("Explore your readings")}</Text>
         <Text style={c.text}>
-          Choose a metric, then tap a day to see the detail.
-        </Text>
+          {tr("Choose a metric, then tap a day to see the detail.")}</Text>
       </View>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator
         accessibilityRole="radiogroup"
-        accessibilityLabel="Health metric"
+        accessibilityLabel={tr("Health metric")}
         contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
       >
         {healthMetrics
@@ -124,7 +124,7 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
                   },
                 ]}
               >
-                {item.title}
+                {tr(item.title)}
               </Text>
             </TouchTarget>
           ))}
@@ -140,7 +140,7 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <AppIcon name={icons[metric]} size={24} />
           <Text style={[c.title, { flex: 1 }]}>
-            {latestWeight ? "Latest weight" : info.title}
+            {tr(latestWeight ? "Latest weight" : info.title)}
           </Text>
         </View>
         <Text
@@ -159,12 +159,13 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
           )}
         </Text>
         <Text style={c.text}>
-          {latestWeight
+          {tr(latestWeight
             ? `Recorded ${formatDateTime(latestWeight.at)}`
             : day
               ? `${day.day === localDay() ? "Today" : date(day.day)}${["HeartRate", "RestingHeartRate", "Weight"].includes(metric) ? " · Average of recorded measurements" : " · Daily total"}`
-              : "No recorded day available"}
+              : "No recorded day available")}
         </Text>
+        {!latestWeight && day?.readings[metric]?.checkedAt && <Text style={c.text}>{tr("Reading checked ")}{formatDateTime(day.readings[metric]!.checkedAt!)}</Text>}
         {goal != null && day?.day === localDay() && (
           <DailyTargetProgress
             value={value ?? null}
@@ -175,12 +176,10 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
       </View>
       {summary.recorded > 0 && <><View style={{ gap: 6 }}>
         <Text accessibilityRole="header" style={c.title}>
-          Your week
-        </Text>
+          {tr("Your week")}</Text>
         <Text style={[c.text, { fontSize: 13 }]}>
           {snapshot.days[0] ? date(snapshot.days[0].day) : ""} –{" "}
-          {snapshot.days.at(-1) ? date(snapshot.days.at(-1)!.day) : ""} · IST
-        </Text>
+          {snapshot.days.at(-1) ? date(snapshot.days.at(-1)!.day) : ""} {tr(" · IST")}</Text>
       </View>
       <HealthChart
         snapshot={snapshot}
@@ -201,25 +200,22 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
         }}
       >
         {summary.average != null && <View style={{ flex: 1, minWidth: 100, gap: 5 }}>
-          <Text style={c.text}>Daily average</Text>
+          <Text style={c.text}>{tr("Daily average")}</Text>
           <Text style={c.title}>
             {formatHealthValue(metric, summary.average)}
-            {summary.average != null && metric !== "SleepSession"
+            {tr(summary.average != null && metric !== "SleepSession"
               ? ` ${info.unit}`
-              : ""}
+              : "")}
           </Text>
           <Text style={[c.text, { fontSize: 12 }]}>
-            {summary.completed} completed days
-          </Text>
+            {summary.completed} {tr(" completed days")}</Text>
         </View>}
         <View style={{ flex: 1, minWidth: 100, gap: 5 }}>
-          <Text style={c.text}>Data coverage</Text>
+          <Text style={c.text}>{tr("Data coverage")}</Text>
           <Text style={c.title}>
-            {summary.recorded} / {snapshot.days.length} days
-          </Text>
+            {summary.recorded} / {snapshot.days.length} {tr(" days")}</Text>
           <Text style={[c.text, { fontSize: 12 }]}>
-            Includes today if recorded
-          </Text>
+            {tr("Includes today if recorded")}</Text>
         </View>
       </View>
       {summary.completed >= 2 && <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 12 }}>
@@ -228,7 +224,7 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
           {comparisonCopy(snapshot, metric)}
         </Text>
       </View>}
-      <CareDisclosure title="Daily readings & details">
+      <CareDisclosure title={tr("Daily readings & details")}>
         {[...snapshot.days].filter(item => hasHealthValue(item.readings[metric]?.value)).reverse().map((item) => (
           <View
             key={item.day}
@@ -245,9 +241,9 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
             <Text style={c.text}>{date(item.day)}</Text>
             <Text style={[c.text, { color: colors.ink }]}>
               {formatHealthValue(metric, item.readings[metric]?.value)}
-              {item.readings[metric]?.value != null && metric !== "SleepSession"
+              {tr(item.readings[metric]?.value != null && metric !== "SleepSession"
                 ? ` ${info.unit}`
-                : ""}
+                : "")}
             </Text>
           </View>
         ))}

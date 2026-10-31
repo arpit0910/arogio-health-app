@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { useEffect, useRef, useState } from "react";
 import { Platform, Text, View } from "react-native";
 import { Button } from "../../components/ui/Button";
@@ -17,6 +18,7 @@ export function NotificationPermissionStep({
   disabled: boolean;
   onBusyChange: (busy: boolean) => void;
 }) {
+  const { t: tr } = useTranslation();
   const c = useCareStyles(),
     colors = usePalette();
   const [access, setAccess] = useState<NotificationAccess | null>(null),
@@ -62,11 +64,9 @@ export function NotificationPermissionStep({
   if (Platform.OS === "web")
     return (
       <View style={{ marginTop: 24, gap: 12 }}>
-        <Text style={c.title}>Reminders in the Arogio app</Text>
+        <Text style={c.title}>{tr("Reminders in the Arogio app")}</Text>
         <Text style={c.text}>
-          Install Arogio on your phone to receive device reminders. You can
-          finish setup and keep your records here.
-        </Text>
+          {tr("Install Arogio on your phone to receive device reminders. You can finish setup and keep your records here.")}</Text>
       </View>
     );
   return (
@@ -81,31 +81,29 @@ export function NotificationPermissionStep({
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
         <AppIcon name="bell" size={23} />
-        <Text style={c.title}>Would you like reminders?</Text>
+        <Text style={c.title}>{tr("Would you like reminders?")}</Text>
       </View>
       <Text style={c.text}>
-        Allow notifications for medicine, water and cycle reminders you choose
-        to turn on. No reminders are created until you set them up.
-      </Text>
+        {tr("Allow notifications for medicine, water and cycle reminders you choose to turn on. No reminders are created until you set them up.")}</Text>
       <Text accessibilityLiveRegion="polite" style={c.text}>
-        {access === "allowed"
+        {tr(access === "allowed"
           ? "Notifications are allowed. You control which reminders to use."
           : access === "blocked"
             ? "Notifications are off on this device. You can enable them later in Settings."
             : skipped
               ? "You can turn on notifications later in Settings."
-              : "You can finish setup with notifications off."}
+              : "You can finish setup with notifications off.")}
       </Text>
       {!skipped && access !== "allowed" && access !== "blocked" && (
         <>
           <Button
-            title="Allow notifications"
+            title={tr("Allow notifications")}
             onPress={() => void allow()}
             loading={busy}
             disabled={disabled}
           />
           <Button
-            title="Not now"
+            title={tr("Not now")}
             variant="secondary"
             disabled={busy || disabled}
             onPress={() => setSkipped(true)}
@@ -117,7 +115,7 @@ export function NotificationPermissionStep({
           accessibilityRole="alert"
           style={[c.text, { color: colors.error }]}
         >
-          {error}
+          {tr(error)}
         </Text>
       )}
     </View>

@@ -21,9 +21,9 @@ export function profileDraft(user: SafeUser): SetupDraft {
     productUpdates: p.productUpdates === true,
   };
 }
-export function formatBirthday(value: string): string {
+export function formatBirthday(value: string, locale = "en-GB"): string {
   return validBirthDate(value)
-    ? new Date(value + "T00:00:00Z").toLocaleDateString("en-GB", {
+    ? new Date(value + "T00:00:00Z").toLocaleDateString(locale, {
         day: "numeric",
         month: "short",
         year: "numeric",

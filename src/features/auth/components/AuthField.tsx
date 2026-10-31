@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { useFieldFocus } from '../../../components/ui/FocusScrollView';
 import { useRef, useState, type ComponentRef, type Ref } from 'react';
@@ -10,6 +11,7 @@ export type AuthFieldRef = ComponentRef<typeof TextInput>;
 type Props = Omit<TextInputProps, 'ref'> & { icon: 'user' | 'email' | 'lock'; password?: boolean; invalid?: boolean; ref?: Ref<AuthFieldRef> };
 
 export function AuthField({ icon, password, invalid, ref, ...props }: Props) {
+  const { t: tr } = useTranslation();
   const colors = usePalette();
   const styles = useStyles();
 
@@ -25,7 +27,7 @@ export function AuthField({ icon, password, invalid, ref, ...props }: Props) {
       onBlur={(event) => { setFocused(false); reveal(null); props.onBlur?.(event); }}
       style={styles.input} placeholderTextColor={colors.placeholder} selectionColor={colors.primary}
       secureTextEntry={password && !visible} />
-    {password && <Pressable accessibilityRole="button" accessibilityLabel={`${visible ? 'Hide' : 'Show'} ${props.placeholder?.toLowerCase() ?? 'password'}`}
+    {password && <Pressable accessibilityRole="button" accessibilityLabel={tr(`${visible ? 'Hide' : 'Show'} ${props.placeholder?.toLowerCase() ?? 'password'}`)}
       accessibilityState={{ selected: visible }} aria-pressed={visible} hitSlop={2} onPress={() => setVisible(!visible)} style={[styles.visibility, { minHeight: minimum, minWidth: minimum }]}>
       <View style={{ opacity: visible ? 0.5 : 1 }}><AuthIcon name="eye" /></View>
     </Pressable>}

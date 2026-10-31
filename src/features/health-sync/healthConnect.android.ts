@@ -45,104 +45,50 @@ async function grantedTypes() {
   const permissions = await Health.getGrantedPermissions();
   return healthMetrics.map((item) => item.key).filter((metric) => permissions.some((p) => p.accessType === 'read' && p.recordType === metric));
 }
-/** A fresh reader captures exactly one source; no mutable global source can leak across reads. */
+type NativeAggregate = {
+  dataOrigins?: string[]; COUNT_TOTAL?: number; SLEEP_DURATION_TOTAL?: number;
+  BPM_AVG?: number; MEASUREMENTS_COUNT?: number; FLOORS_CLIMBED_TOTAL?: number;
+  WEIGHT_AVG?: { inKilograms?: number }; ENERGY_TOTAL?: { inKilocalories?: number };
+  DISTANCE?: { inKilometers?: number }; ACTIVE_CALORIES_TOTAL?: { inKilocalories?: number };
+  EXERCISE_DURATION_TOTAL?: { inSeconds?: number }; VOLUME_TOTAL?: { inLiters?: number };
+};
+function normalizeAggregate(metric: HealthMetric, result: NativeAggregate, source: string): Reading {
+  const sources = result.dataOrigins ?? [];
+  const values: Partial<Record<HealthMetric, number | undefined>> = {
+    Steps: result.COUNT_TOTAL, SleepSession: result.SLEEP_DURATION_TOTAL == null ? undefined : result.SLEEP_DURATION_TOTAL / 3600,
+    HeartRate: (result.MEASUREMENTS_COUNT ?? 0) > 0 ? result.BPM_AVG : undefined,
+    Weight: result.WEIGHT_AVG?.inKilograms, Nutrition: result.ENERGY_TOTAL?.inKilocalories,
+    Distance: result.DISTANCE?.inKilometers, ActiveCaloriesBurned: result.ACTIVE_CALORIES_TOTAL?.inKilocalories,
+    TotalCaloriesBurned: result.ENERGY_TOTAL?.inKilocalories,
+    ExerciseSession: result.EXERCISE_DURATION_TOTAL?.inSeconds == null ? undefined : result.EXERCISE_DURATION_TOTAL.inSeconds / 60,
+    FloorsClimbed: result.FLOORS_CLIMBED_TOTAL, RestingHeartRate: result.BPM_AVG, Hydration: result.VOLUME_TOTAL?.inLiters,
+  };
+  const validSource = sources.length > 0 && sources.every(origin => origin === source), value = values[metric];
+  return { value: validSource && value != null && Number.isFinite(value) && value >= 0 ? value : null,
+    sources: validSource ? sources : [] };
+}
+/** Every native request stays scoped to the selected app. IST has fixed 24h days. */
 function createReader(source: string): HealthReader {
   const dataOriginFilter = [source];
   return {
     granted: grantedTypes,
     async aggregate(metric, start, end): Promise<Reading> {
-      const timeRangeFilter = {
-        operator: 'between' as const,
-        startTime: start,
-        endTime: end,
-      };
       if (start === end) return { value: null, sources: [] };
-      let value: number | null = null,
-        sources: string[] = [];
-      if (metric === 'Steps') {
-        const result = await Health.aggregateRecord({
-          recordType: 'Steps',
-          timeRangeFilter,
-          dataOriginFilter,
-        });
-        sources = result.dataOrigins;
-        value = result.COUNT_TOTAL;
-      }
-      if (metric === 'SleepSession') {
-        const result = await Health.aggregateRecord({
-          recordType: 'SleepSession',
-          timeRangeFilter,
-          dataOriginFilter,
-        });
-        sources = result.dataOrigins;
-        value = result.SLEEP_DURATION_TOTAL / 3600;
-      }
-      if (metric === 'HeartRate') {
-        const result = await Health.aggregateRecord({
-          recordType: 'HeartRate',
-          timeRangeFilter,
-          dataOriginFilter,
-        });
-        sources = result.dataOrigins;
-        value = result.MEASUREMENTS_COUNT > 0 ? result.BPM_AVG : null;
-      }
-      if (metric === 'Weight') {
-        const result = await Health.aggregateRecord({
-          recordType: 'Weight',
-          timeRangeFilter,
-          dataOriginFilter,
-        });
-        sources = result.dataOrigins;
-        value = result.WEIGHT_AVG?.inKilograms ?? null;
-      }
-      if (metric === 'Nutrition') {
-      const result = await Health.aggregateRecord({ recordType: 'Nutrition', timeRangeFilter, dataOriginFilter });
-      sources = result.dataOrigins;
-      value = result.ENERGY_TOTAL?.inKilocalories ?? null;
-    }
-    if (metric === 'Distance') {
-        const result = await Health.aggregateRecord({ recordType: 'Distance', timeRangeFilter, dataOriginFilter });
-        sources = result.dataOrigins;
-        value = result.DISTANCE.inKilometers;
-      }
-      if (metric === 'ActiveCaloriesBurned') {
-        const result = await Health.aggregateRecord({ recordType: 'ActiveCaloriesBurned', timeRangeFilter, dataOriginFilter });
-        sources = result.dataOrigins;
-        value = result.ACTIVE_CALORIES_TOTAL.inKilocalories;
-      }
-      if (metric === 'TotalCaloriesBurned') {
-        const result = await Health.aggregateRecord({ recordType: 'TotalCaloriesBurned', timeRangeFilter, dataOriginFilter });
-        sources = result.dataOrigins;
-        value = result.ENERGY_TOTAL.inKilocalories;
-      }
-      if (metric === 'ExerciseSession') {
-        const result = await Health.aggregateRecord({ recordType: 'ExerciseSession', timeRangeFilter, dataOriginFilter });
-        sources = result.dataOrigins;
-        value = result.EXERCISE_DURATION_TOTAL.inSeconds / 60;
-      }
-      if (metric === 'FloorsClimbed') {
-        const result = await Health.aggregateRecord({ recordType: 'FloorsClimbed', timeRangeFilter, dataOriginFilter });
-        sources = result.dataOrigins;
-        value = result.FLOORS_CLIMBED_TOTAL;
-      }
-      if (metric === 'RestingHeartRate') {
-        const result = await Health.aggregateRecord({ recordType: 'RestingHeartRate', timeRangeFilter, dataOriginFilter });
-        sources = result.dataOrigins;
-        value = result.BPM_AVG;
-      }
-      if (metric === 'Hydration') {
-        const result = await Health.aggregateRecord({ recordType: 'Hydration', timeRangeFilter, dataOriginFilter });
-        sources = result.dataOrigins;
-        value = result.VOLUME_TOTAL.inLiters;
-      }
-      return {
-        value:
-          sources.length && sources.every((origin) => origin === source) && value != null && Number.isFinite(value)
-            ? value
-            : null,
-        sources: sources.every((origin) => origin === source) ? sources : [],
-      };
+      return normalizeAggregate(metric, await Health.aggregateRecord({ recordType: metric,
+        timeRangeFilter: { operator: 'between', startTime: start, endTime: end }, dataOriginFilter }), source);
     },
+    // One weekly request per metric instead of seven daily requests per metric.
+    aggregateDays: typeof Health.aggregateGroupByDuration === 'function' ? async (metric, ranges) => {
+      const first = ranges[0], last = ranges.at(-1);
+      if (!first || !last || first.start === last.end) return ranges.map(() => ({ value: null, sources: [] }));
+      const buckets = await Health.aggregateGroupByDuration({ recordType: metric, dataOriginFilter,
+        timeRangeFilter: { operator: 'between', startTime: first.start, endTime: last.end },
+        timeRangeSlicer: { duration: 'DAYS', length: 1 } });
+      return ranges.map(range => {
+        const bucket = buckets.find(item => Date.parse(item.startTime) === Date.parse(range.start));
+        return bucket ? normalizeAggregate(metric, bucket.result, source) : { value: null, sources: [] };
+      });
+    } : undefined,
     async latestWeight(startTime, endTime) {
       const response = await Health.readRecords('Weight', {
         timeRangeFilter: { operator: 'between', startTime, endTime },

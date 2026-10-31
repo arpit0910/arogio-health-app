@@ -5,10 +5,26 @@ import {
   healthDayRanges,
   metricAverage,
   readHealthSnapshot,
+  mergeHealthSnapshot,
+  permittedSnapshot,
+  type HealthSnapshot,
   type HealthReader,
 } from '../src/features/health-sync/model.ts';
 
 describe('Device-only health analytics', () => {
+  it('retains failed cells with their original check time but clears successful empty reads, revoked metrics and other sources', () => {
+    const previous: HealthSnapshot = { source: 'com.pebble.ring.app', syncedAt: '2026-10-31T08:00:00Z', granted: ['Steps', 'SleepSession'], failed: [], latestWeight: null,
+      days: [{ day: '2026-10-31', readings: { Steps: { value: 3210, sources: ['com.pebble.ring.app'] }, SleepSession: { value: 7, sources: ['com.pebble.ring.app'] } } }] };
+    const next: HealthSnapshot = { ...previous, syncedAt: '2026-10-31T09:00:00Z', failed: ['Steps'], days: [{ day: '2026-10-31', readings: { SleepSession: { value: null, sources: [] } } }] };
+    const merged = mergeHealthSnapshot(previous, next);
+    assert.equal(merged.days[0].readings.Steps?.value, 3210);
+    assert.equal(merged.days[0].readings.Steps?.checkedAt, previous.syncedAt);
+    assert.equal(merged.days[0].readings.SleepSession?.value, null);
+    assert.equal(mergeHealthSnapshot(previous, { ...next, granted: ['SleepSession'] }).days[0].readings.Steps, undefined);
+    assert.equal(mergeHealthSnapshot(previous, { ...next, source: 'com.sec.android.app.shealth' }).days[0].readings.Steps, undefined);
+    assert.equal(permittedSnapshot(previous, ['Steps'])?.days[0].readings.SleepSession, undefined);
+    assert.equal(previous.days[0].readings.Steps?.checkedAt, undefined);
+  });
   const now = new Date('2026-10-28T18:40:00Z');
   it('uses seven IST day windows, including a partial current day', () => {
     const ranges = healthDayRanges(now);

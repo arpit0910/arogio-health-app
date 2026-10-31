@@ -1,0 +1,239 @@
+Sign in with your existing account within 30 days to restore your profile and records automatically. After 30 days, sign-in recovery is unavailable.|30 दिनों के भीतर अपने खाते से साइन इन करके प्रोफ़ाइल और रिकॉर्ड अपने आप बहाल करें। 30 दिन बाद साइन इन से खाता बहाल नहीं होगा।
+Sign-in on your device|अपने डिवाइस पर साइन इन
+Silent mode, Do Not Disturb and battery settings can affect reminders. Reopen Arogio regularly to keep upcoming reminders scheduled.|साइलेंट मोड, परेशान न करें और बैटरी सेटिंग्स रिमाइंडर पर असर डाल सकती हैं। आने वाले रिमाइंडर जारी रखने के लिए आरोगियो नियमित खोलें।
+Skip for now|अभी छोड़ें
+Skip task|कार्य छोड़ें
+Skipped|छोड़ा गया
+Sleep|नींद
+Snooze 15 minutes|15 मिनट बाद याद दिलाएँ
+Snoozed|बाद के लिए टाला गया
+Some access was unavailable. You can still track in Arogio and manage access in Settings.|कुछ अनुमतियाँ उपलब्ध नहीं थीं। आरोगियो में रिकॉर्ड रख सकते हैं और सेटिंग्स में अनुमति बदल सकते हैं।
+Some health readings could not refresh. Previous values keep their earlier check time. Pull down to retry.|कुछ स्वास्थ्य आँकड़े रिफ्रेश नहीं हो सके। पुराने मान के साथ पिछली जाँच का समय बना रहेगा। फिर प्रयास के लिए नीचे खींचें।
+Sound & delivery|ध्वनि और सूचना पहुँचाना
+Source app unavailable|स्रोत ऐप उपलब्ध नहीं है
+Start with what you know|जो जानते हैं, उससे शुरू करें
+Started {0}. End the record when your period finishes.|शुरुआत {0}। माहवारी समाप्त होने पर रिकॉर्ड समाप्त करें।
+Stay active|सक्रिय रहें
+Stay in the loop|जानकारी पाते रहें
+Step|चरण
+Steps|कदम
+Steps, exercise, sleep and more|कदम, व्यायाम, नींद और बहुत कुछ
+Sun|रवि
+Swipe sideways to see the full week, or use the check-in date field below.|पूरा सप्ताह देखने के लिए बाएँ-दाएँ स्वाइप करें या नीचे चेक-इन की तारीख चुनें।
+Symptoms|लक्षण
+Syncing automatically|अपने आप सिंक हो रहा है
+System|सिस्टम
+Target|लक्ष्य
+Target reached|लक्ष्य पूरा हुआ
+Targets saved. Your progress uses these goals throughout Arogio.|लक्ष्य सहेज दिए गए। पूरे आरोगियो में आपकी प्रगति इन्हीं लक्ष्यों से मापी जाएगी।
+Terms of Service|सेवा की शर्तें
+Terms of service|सेवा की शर्तें
+Test medicine & cycle sound|दवा और माहवारी की ध्वनि जाँचें
+Test scheduled in 3 seconds. Listen for your notification sound.|परीक्षण 3 सेकंड बाद होगा। सूचना की ध्वनि सुनें।
+Test water reminder sound|पानी के रिमाइंडर की ध्वनि जाँचें
+The current app sends your email address and password to the Arogio authentication service when you sign in or register. Registration can include your name. Google sign-in sends a Google identity token to that service.|साइन इन या पंजीकरण पर मौजूदा ऐप आपका ईमेल और पासवर्ड आरोगियो की प्रमाणीकरण सेवा को भेजता है। पंजीकरण में नाम शामिल हो सकता है। Google साइन इन उस सेवा को Google पहचान टोकन भेजता है।
+The current profile supports height, weight, and BMI. Providing health information requires care; the final policy must describe the backend’s processing and access practices.|मौजूदा प्रोफ़ाइल में लंबाई, वज़न और BMI हैं। स्वास्थ्य जानकारी सावधानी से देनी चाहिए; अंतिम नीति में सर्वर पर डेटा के उपयोग और पहुँच की प्रक्रियाएँ बतानी होंगी।
+The health source was not connected. You can review it in Settings.|स्वास्थ्य डेटा का स्रोत नहीं जुड़ा। सेटिंग्स में इसकी समीक्षा कर सकते हैं।
+The service operator and privacy contact, purposes and legal grounds, retention periods, hosting locations, third parties, and user rights procedures require confirmation. This draft does not make claims about backend practices that have not been verified.|सेवा संचालक, गोपनीयता संपर्क, उद्देश्य, कानूनी आधार, डेटा रखने की अवधि, होस्टिंग स्थान, तीसरे पक्ष और उपयोगकर्ता अधिकारों की प्रक्रियाओं की पुष्टि बाकी है। यह मसौदा अप्रमाणित सर्वर प्रक्रियाओं के बारे में दावे नहीं करता।
+The service operator, eligibility rules, support contact, account closure process, applicable law, and dispute terms still need to be confirmed.|सेवा संचालक, पात्रता नियम, सहायता संपर्क, खाता बंद करने की प्रक्रिया, लागू कानून और विवाद की शर्तों की पुष्टि अभी बाकी है।
+These details give your health profile a useful starting point.|इन जानकारियों से आपकी स्वास्थ्य प्रोफ़ाइल की शुरुआत होती है।
+Thinking…|सोच रहा है…
+This app build does not include Google sign-in yet. Please install a new Arogio development build.|इस ऐप संस्करण में Google साइन इन अभी नहीं है। नया आरोगियो डेवलपमेंट बिल्ड इंस्टॉल करें।
+This health app could not connect. Check that it is installed and sharing data with Health Connect, then try again.|यह स्वास्थ्य ऐप नहीं जुड़ सका। जाँचें कि वह इंस्टॉल है और Health Connect से डेटा साझा कर रहा है, फिर प्रयास करें।
+This invite looks incomplete.|यह आमंत्रण अधूरा लग रहा है।
+This is a soft deletion. Your basic details and saved records are retained; they are not permanently erased.|यह अस्थायी निष्क्रियकरण है। आपकी मूल जानकारी और सहेजे रिकॉर्ड रखे जाते हैं; वे स्थायी रूप से नहीं मिटते।
+This link could not open. You can copy the bank address or phone number below.|लिंक नहीं खुल सका। नीचे से बैंक का पता या फ़ोन नंबर कॉपी कर सकते हैं।
+This period is still ongoing|यह माहवारी अभी जारी है
+This permanently removes all period dates, daily check-ins, preferences and cycle reminders.|इससे माहवारी की सभी तारीखें, दैनिक चेक-इन, प्राथमिकताएँ और माहवारी रिमाइंडर स्थायी रूप से हट जाते हैं।
+This permanently removes your water plan and all water logs.|इससे पानी की योजना और पानी के सभी रिकॉर्ड स्थायी रूप से हट जाते हैं।
+This photo is too large. Please choose another photo.|यह फ़ोटो बहुत बड़ी है। दूसरी फ़ोटो चुनें।
+This removes Arogio targets, logged totals and phone counts.|इससे आरोगियो के लक्ष्य, दर्ज कुल मान और फ़ोन की गिनती हट जाती है।
+This removes the medicine and its future reminders.|इससे दवा और उसके आने वाले रिमाइंडर हट जाते हैं।
+Thu|गुरु
+Tips and insights|सुझाव और जानकारी
+Today|आज
+Today’s logs|आज के रिकॉर्ड
+Total for this day|इस दिन का कुल मान
+Track cycle|माहवारी की निगरानी करें
+Track drinks and manage reminders|पानी का रिकॉर्ड और रिमाइंडर सँभालें
+Track hydration|पानी पीने का रिकॉर्ड रखें
+Tracking preferences|निगरानी की प्राथमिकताएँ
+Tracking preferences saved.|निगरानी की प्राथमिकताएँ सहेज दी गईं।
+Tracking preferences saved. Device notifications are off.|निगरानी की प्राथमिकताएँ सहेज दी गईं। डिवाइस की सूचनाएँ बंद हैं।
+Tracking works with notifications off. You can allow access whenever you want reminders.|सूचनाएँ बंद होने पर भी रिकॉर्ड रख सकते हैं। रिमाइंडर चाहिए तो कभी भी अनुमति दें।
+Tue|मंगल
+Turn off background updates|बैकग्राउंड अपडेट बंद करें
+Unable to check notification permissions. Try again, or save with reminders turned off.|सूचनाओं की अनुमति नहीं जाँची जा सकी। फिर प्रयास करें या रिमाइंडर बंद रखकर सहेजें।
+Unable to load profile.|प्रोफ़ाइल लोड नहीं हो सकी।
+Unable to load tracking. Try again.|रिकॉर्ड लोड नहीं हो सका। फिर प्रयास करें।
+Unable to log out. Please try again.|लॉग आउट नहीं हो सका। फिर प्रयास करें।
+Unable to open photos. Please try again.|फ़ोटो नहीं खुल सकीं। फिर प्रयास करें।
+Unable to refresh session.|सत्र रिफ्रेश नहीं हो सका।
+Unable to save changes. Please try again.|बदलाव सहेजे नहीं जा सके। फिर प्रयास करें।
+Unable to save preferences. Please try again.|प्राथमिकताएँ सहेजी नहीं जा सकीं। फिर प्रयास करें।
+Unable to save. Check your connection and retry.|सहेजा नहीं जा सका। कनेक्शन जाँचें और फिर प्रयास करें।
+Unable to save. Please try again.|सहेजा नहीं जा सका। फिर प्रयास करें।
+Unable to sign in with Google. Please try again or use your email.|Google से साइन इन नहीं हो सका। फिर प्रयास करें या ईमेल का उपयोग करें।
+Unable to sign in with Google. Please try again.|Google से साइन इन नहीं हो सका। फिर प्रयास करें।
+Unable to skip setup. Please try again.|सेटअप छोड़ा नहीं जा सका। फिर प्रयास करें।
+Unable to update your profile.|प्रोफ़ाइल अपडेट नहीं हो सकी।
+Unavailable ? pull to retry|उपलब्ध नहीं ? फिर प्रयास के लिए नीचे खींचें
+Under 0.1|0.1 से कम
+Undo|वापस लें
+Undo the last water log|पानी का पिछला रिकॉर्ड वापस लें
+Undo this log|यह रिकॉर्ड वापस लें
+Upcoming|आने वाला
+Update Health Connect|Health Connect अपडेट करें
+Update Health Connect to connect your health apps.|अपने स्वास्थ्य ऐप जोड़ने के लिए Health Connect अपडेट करें।
+Update my location|मेरा स्थान अपडेट करें
+Updating readings...|आँकड़े अपडेट हो रहे हैं…
+Use 50 km radius|50 km का दायरा रखें
+Use Arogio lawfully and respectfully. Do not interfere with the service, misuse its features, or upload information you do not have permission to share.|आरोगियो का उपयोग कानून और सम्मान के साथ करें। सेवा में बाधा न डालें, सुविधाओं का दुरुपयोग न करें, और बिना अनुमति की जानकारी अपलोड न करें।
+Use Arogio on its own|आरोगियो का स्वतंत्र उपयोग करें
+Use accurate account information and keep your sign-in credentials private. Do not use another person’s account or attempt to access information without permission.|खाते में सही जानकारी दें और साइन इन की जानकारी निजी रखें। दूसरे का खाता इस्तेमाल न करें और बिना अनुमति जानकारी तक पहुँचने की कोशिश न करें।
+Use an hour from 1–12 and minutes from 00–59.|घंटा 1–12 और मिनट 00–59 के बीच रखें।
+Use discreet notification wording|सूचनाओं में निजी विषय छिपाएँ
+Use my location|मेरे स्थान का उपयोग करें
+Use saved health records|सहेजे स्वास्थ्य रिकॉर्ड उपयोग करें
+Use saved health records. Changing this starts a new chat.|सहेजे स्वास्थ्य रिकॉर्ड उपयोग करें। इसे बदलने पर नई चैट शुरू होगी।
+Using the app|ऐप का उपयोग
+Usual cycle length (days)|सामान्य चक्र की अवधि (दिन)
+Usual period length (days)|सामान्य माहवारी की अवधि (दिन)
+View all|सभी देखें
+View all {0} drinking tasks|पानी पीने के सभी {0} कार्य देखें
+View health|स्वास्थ्य देखें
+View health and activity|स्वास्थ्य और गतिविधि देखें
+View water history|पानी का इतिहास देखें
+View water plan|पानी की योजना देखें
+View your profile|अपनी प्रोफ़ाइल देखें
+Waiting for {0} to share readings|{0} से आँकड़े मिलने की प्रतीक्षा है
+Waking hours:|जागने का समय:
+Water|पानी
+Water log|पानी का रिकॉर्ड
+Water log removed|पानी का रिकॉर्ड हटा दिया गया
+Water logged toward your target|आपके लक्ष्य में पानी दर्ज किया गया
+Water logs are saved to your account. Deleting water tracking removes the plan, logs and water reminders.|पानी के रिकॉर्ड आपके खाते में सहेजे जाते हैं। पानी की निगरानी हटाने से योजना, रिकॉर्ड और पानी के रिमाइंडर हटते हैं।
+Water plan saved.|पानी की योजना सहेज दी गई।
+Water reminder sound|पानी के रिमाइंडर की ध्वनि
+Water reminders scheduled through|इस समय तक पानी के रिमाइंडर तय हैं
+Water reminders use a short droplet sound in the installed app. Silent mode, Do Not Disturb and your notification settings control whether it plays.|इंस्टॉल ऐप में पानी के रिमाइंडर पर बूँद की छोटी ध्वनि आती है। साइलेंट मोड, परेशान न करें और सूचना सेटिंग्स तय करती हैं कि ध्वनि बजेगी या नहीं।
+We spread up to 16 tasks across your waking hours. Each day’s tasks add up to your target. All times use IST (Indian Standard Time).|जागने के समय में अधिकतम 16 कार्य रखे जाते हैं। हर दिन के कार्य मिलकर आपका लक्ष्य पूरा करते हैं। सभी समय भारतीय मानक समय (IST) में हैं।
+We use location once to find your city. You can also enter it yourself.|शहर खोजने के लिए स्थान एक बार उपयोग होता है। शहर खुद भी डाल सकते हैं।
+We're working on this feature. You can continue managing your profile and health preferences.|हम इस सुविधा पर काम कर रहे हैं। आप प्रोफ़ाइल और स्वास्थ्य की प्राथमिकताएँ बदलना जारी रख सकते हैं।
+We&apos;re working on this feature. You can continue managing your profile and health preferences.|हम इस सुविधा पर काम कर रहे हैं। आप प्रोफ़ाइल और स्वास्थ्य की प्राथमिकताएँ बदलना जारी रख सकते हैं।
+Weather service offline|मौसम सेवा उपलब्ध नहीं है
+Weather unavailable. Open profile to enter your city.|मौसम उपलब्ध नहीं है। शहर डालने के लिए प्रोफ़ाइल खोलें।
+Weather unavailable. Pull down to retry. Open profile to check city.|मौसम उपलब्ध नहीं है। फिर प्रयास के लिए नीचे खींचें। शहर जाँचने के लिए प्रोफ़ाइल खोलें।
+Wed|बुध
+Weight|वज़न
+Weight, height and profile|वज़न, लंबाई और प्रोफ़ाइल
+Welcome Back!|फिर स्वागत है!
+Wellness priorities, activity level and updates|सेहत की प्राथमिकताएँ, गतिविधि का स्तर और अपडेट
+What matters to you?|आपके लिए क्या ज़रूरी है?
+Would you like reminders?|क्या आप रिमाइंडर चाहेंगे?
+Write a question first.|पहले सवाल लिखें।
+You|आप
+You can change access later in Settings. Arogio does not measure sleep, heart rate or calories with phone motion alone.|बाद में सेटिंग्स में अनुमति बदल सकते हैं। आरोगियो केवल फ़ोन की गति से नींद, हृदय गति या कैलोरी नहीं मापता।
+You can finish setup anytime from Profile.|प्रोफ़ाइल से कभी भी सेटअप पूरा कर सकते हैं।
+You can finish setup with notifications off.|सूचनाएँ बंद रखकर भी सेटअप पूरा कर सकते हैं।
+You can keep tracking here. Device reminders are available in the Android and iOS app.|यहाँ रिकॉर्ड रखना जारी रख सकते हैं। डिवाइस रिमाइंडर Android और iOS ऐप में उपलब्ध हैं।
+You can sign out from the app. The final policy must explain how to request access, correction, export, or deletion of account information. Those request processes are not yet configured here.|आप ऐप से साइन आउट कर सकते हैं। अंतिम नीति में खाते की जानकारी तक पहुँच, सुधार, निर्यात या हटाने का अनुरोध करने का तरीका होना चाहिए। ये प्रक्रियाएँ यहाँ अभी तैयार नहीं हैं।
+You can turn counting off in Settings.|सेटिंग्स में गिनती बंद कर सकते हैं।
+You can turn on notifications later in Settings.|बाद में सेटिंग्स में सूचनाएँ चालू कर सकते हैं।
+You can use Google to sign in if it is linked to your account, or return to log in with your password.|खाते से जुड़ा होने पर Google से साइन इन करें, या वापस जाकर पासवर्ड से लॉग इन करें।
+Your Health Companion|आपका स्वास्थ्य साथी
+Your account|आपका खाता
+Your account will be deactivated and you’ll be signed out of all sessions. Arogio reminders on this device will stop.|आपका खाता निष्क्रिय होगा और सभी सत्रों से साइन आउट हो जाएगा। इस डिवाइस पर आरोगियो के रिमाइंडर रुक जाएँगे।
+Your activity|आपकी गतिविधि
+Your activity and everyday care, together.|आपकी गतिविधि और रोज़ की देखभाल, एक साथ।
+Your activity level|आपकी गतिविधि का स्तर
+Your calendar|आपका कैलेंडर
+Your care|आपकी देखभाल
+Your changes could not be confirmed. They are still here. Check your connection and try Save again.|बदलावों की पुष्टि नहीं हुई। वे यहाँ मौजूद हैं। कनेक्शन जाँचें और फिर सहेजें।
+Your choices|आपके चुनाव
+Your choices are applied, but setup could not be saved. Try Continue again.|आपके चुनाव लागू हैं, लेकिन सेटअप सहेजा नहीं जा सका। आगे बढ़ें फिर चुनें।
+Your city|आपका शहर
+Your city could not be found. Please enter it below.|आपका शहर नहीं मिला। नीचे खुद डालें।
+Your code could not be loaded. Please try again.|आपका कोड लोड नहीं हो सका। फिर प्रयास करें।
+Your daily readings and goals|आपके दैनिक आँकड़े और लक्ष्य
+Your daily targets|आपके दैनिक लक्ष्य
+Your data|आपका डेटा
+Your day|आपका दिन
+Your drink could not be confirmed. Retry the log to save it safely.|पानी के रिकॉर्ड की पुष्टि नहीं हुई। सुरक्षित रूप से सहेजने के लिए फिर प्रयास करें।
+Your drink was saved.|पानी का रिकॉर्ड सहेज दिया गया।
+Your drinking tasks|पानी पीने के आपके कार्य
+Your estimated date has passed.|आपकी अनुमानित तारीख बीत गई है।
+Your friend’s referral code|आपके मित्र का आमंत्रण कोड
+Your health|आपका स्वास्थ्य
+Your health,|आपकी सेहत,
+Your height|आपकी लंबाई
+Your latest tracking could not be loaded. We will retry automatically. Pull down to check now.|आपका नवीनतम रिकॉर्ड लोड नहीं हुआ। हम अपने आप फिर प्रयास करेंगे। अभी जाँचने के लिए नीचे खींचें।
+Your location could not be found. Check device location services, retry, or search by city.|आपका स्थान नहीं मिला। डिवाइस की स्थान सेवा जाँचें, फिर प्रयास करें या शहर से खोजें।
+Your logged activity|आपकी दर्ज गतिविधि
+Your logged totals and phone activity.|आपके दर्ज कुल मान और फ़ोन की गतिविधि।
+Your medicines|आपकी दवाएँ
+Your next period, estimated.|आपकी अगली माहवारी का अनुमान।
+Your passwords do not match. Please check them.|आपके पासवर्ड मेल नहीं खाते। उन्हें जाँचें।
+Your period is in progress.|आपकी माहवारी जारी है।
+Your plan starts at {0}|आपकी योजना {0} से शुरू होती है
+Your preferences|आपकी प्राथमिकताएँ
+Your private dates and check-ins|आपकी निजी तारीखें और चेक-इन
+Your profile is saved. Let’s make room for a little care.|आपकी प्रोफ़ाइल सहेज दी गई। अब थोड़ी देखभाल के लिए समय निकालें।
+Your question for Jeeva|जीवा के लिए आपका सवाल
+Your recorded cycles vary. This estimate may be less reliable.|आपके दर्ज चक्र अलग-अलग हैं। यह अनुमान कम भरोसेमंद हो सकता है।
+Your referral code: {0}|आपका आमंत्रण कोड: {0}
+Your reminders|आपके रिमाइंडर
+Your saved logs in ml. No logs appear as zero; today is still in progress.|आपके सहेजे रिकॉर्ड ml में। रिकॉर्ड न होने पर शून्य दिखता है; आज का दिन अभी जारी है।
+Your target is complete.|आपका लक्ष्य पूरा है।
+Your updates|आपके अपडेट
+Your waking day is finished.|आपके जागने का दिन पूरा हुआ।
+Your water plan|आपकी पानी की योजना
+Your water today|आज आपका पानी
+Your week|आपका सप्ताह
+Your weight|आपका वज़न
+You’re ready.|आप तैयार हैं।
+across recorded days. Each slice is one day’s share.|दर्ज दिनों में। हर भाग एक दिन का हिस्सा है।
+and a little care for yourself.|और अपनी थोड़ी देखभाल के लिए समय निकालें।
+at your pace.|आपकी अपनी गति से।
+completed days|पूरे हुए दिन
+cycle length|चक्र की अवधि
+days before|दिन पहले
+drinking tasks logged|पानी पीने के कार्य दर्ज हैं
+e.g. 1 tablet or 5 ml|जैसे 1 गोली या 5 ml
+e.g. After breakfast|जैसे नाश्ते के बाद
+e.g. Vitamin D|जैसे विटामिन D
+ml water logged|ml पानी दर्ज है
+not recorded|दर्ज नहीं है
+not selected|नहीं चुना गया
+of 3|कुल 3
+or continue with|या इसके साथ जारी रखें
+period length|माहवारी की अवधि
+your health app|आपका स्वास्थ्य ऐप
+your usual cycle length|आपके चक्र की सामान्य अवधि
+{0} - Automatic updates|{0} - अपने आप अपडेट
+{0} appearance|{0} दिखावट
+{0} by day: {1}|दिन के अनुसार {0}: {1}
+{0} degrees Celsius in {1}. {2}{3}. Open profile to change city.|{1} में {0} डिग्री सेल्सियस। {2}{3}। शहर बदलने के लिए प्रोफ़ाइल खोलें।
+{0} is unavailable. Choose another app in Settings > Connected health.|{0} उपलब्ध नहीं है। सेटिंग्स > जुड़े स्वास्थ्य डेटा में दूसरा ऐप चुनें।
+{0} km away · straight-line|{0} km दूर · सीधी रेखा में
+{0} medicine{1} with reminders on|{0} दवा{1} के रिमाइंडर चालू हैं
+{0} ml|{0} ml
+{0} ml logged|{0} ml दर्ज है
+{0} ml logged.|{0} ml दर्ज है।
+{0} ml to your target|लक्ष्य के लिए {0} ml बाकी
+{0} mode selected|{0} मोड चुना गया
+{0} of {1} millilitres logged|{1} में से {0} मिलीलीटर दर्ज हैं
+{0} of {1} ml today|आज {1} में से {0} ml
+{0} of {1} {2}|{1} में से {0} {2}
+{0} recorded cycle intervals|{0} दर्ज चक्र अंतराल
+{0} saved medicines|{0} सहेजी दवाएँ
+{0} {1} to target|लक्ष्य के लिए {0} {1} बाकी
+{0} · Manage timing and discreet wording|{0} · समय और निजी शब्दावली बदलें
+{0}, hour, 1 to 12|{0}, घंटा, 1 से 12
+{0}, last 7 days. {1}|{0}, पिछले 7 दिन। {1}
+{0}, minutes, 0 to 59|{0}, मिनट, 0 से 59
+{0}, {1} percent|{0}, {1} प्रतिशत
+{0}: {1} millilitres|{0}: {1} मिलीलीटर
+{0}: {1}. {2}. View activity|{0}: {1}। {2}। गतिविधि देखें
+{0}: {1}; {2}; mood: {3}; {4}|{0}: {1}; {2}; मन की स्थिति: {3}; {4}
+{0}–{1} · based on {2}.|{0}–{1} · {2} के आधार पर।

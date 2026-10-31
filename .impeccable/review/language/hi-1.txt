@@ -1,0 +1,194 @@
+Home|होम
+Health|स्वास्थ्य
+Jeeva AI|जीवा AI
+Explore|खोजें
+Profile|प्रोफ़ाइल
+Settings|सेटिंग्स
+Language|भाषा
+Choose your app language. You can change it anytime.|ऐप की भाषा चुनें। आप इसे कभी भी बदल सकते हैं।
+Saving language…|भाषा सहेजी जा रही है…
+Language saved.|भाषा सहेज दी गई।
+Language could not be restored. Choose a language to try again.|भाषा बहाल नहीं हो सकी। दोबारा प्रयास करने के लिए भाषा चुनें।
+Language could not be saved. Please try again.|भाषा सहेजी नहीं जा सकी। कृपया दोबारा प्रयास करें।
+24-hour listings|24 घंटे खुलने वाली सूचीबद्ध सेवाएँ
+24-hour listings only: off|केवल 24 घंटे वाली सेवाएँ: बंद
+24-hour listings only: on|केवल 24 घंटे वाली सेवाएँ: चालू
+30 days to change your mind|अपना निर्णय बदलने के लिए 30 दिन
+A cycle runs from the first day of one period to the first day of the next. These starting values only guide estimates.|चक्र एक माहवारी के पहले दिन से अगली माहवारी के पहले दिन तक होता है। ये शुरुआती मान केवल अनुमान के लिए हैं।
+A friend invited you to Arogio. Use their code when you create an account, or add it before finishing setup.|एक मित्र ने आपको आरोगियो में आमंत्रित किया है। खाता बनाते समय या सेटअप पूरा करने से पहले उनका कोड डालें।
+A healthier you.|आपकी बेहतर सेहत।
+A little about you|आपके बारे में थोड़ा जानें
+A little care goes further together. Invite a friend to join Arogio with your personal code.|मिलकर देखभाल करना आसान होता है। अपने कोड से मित्र को आरोगियो में आमंत्रित करें।
+A little care.|थोड़ी सी देखभाल।
+A little knowledge. Better everyday care.|थोड़ी जानकारी। हर दिन बेहतर देखभाल।
+A sign-in request is already in progress.|साइन इन का अनुरोध पहले से चल रहा है।
+AI guidance, not medical care. Changing record access starts a new chat.|AI मार्गदर्शन चिकित्सा देखभाल का विकल्प नहीं है। रिकॉर्ड की अनुमति बदलने पर नई चैट शुरू होगी।
+About Arogio|आरोगियो के बारे में
+About connected app targets|जुड़े ऐप के लक्ष्यों के बारे में
+Access allowed|अनुमति मिली
+Access setup is complete. Activity will update automatically.|अनुमतियों का सेटअप पूरा है। गतिविधि अपने आप अपडेट होगी।
+Account could not be deleted. Please try again.|खाता हटाया नहीं जा सका। कृपया दोबारा प्रयास करें।
+Account data was deleted. Phone counts could not be cleared. Try again.|खाते का डेटा हटा दिया गया। फ़ोन की कदम गिनती साफ़ नहीं हो सकी। दोबारा प्रयास करें।
+Activity|गतिविधि
+Activity & targets|गतिविधि और लक्ष्य
+Activity Level|गतिविधि का स्तर
+Activity data deleted.|गतिविधि का डेटा हटा दिया गया।
+Activity day|गतिविधि का दिन
+Activity saved.|गतिविधि सहेज दी गई।
+Activity source|गतिविधि का स्रोत
+Add a medicine|दवा जोड़ें
+Add a medicine and reminder times|दवा और रिमाइंडर का समय जोड़ें
+Add a medicine or water plan to see upcoming times here.|आने वाले समय यहाँ देखने के लिए दवा या पानी की योजना जोड़ें।
+Add a medicine, then set a time and amount for each dose. You can pause or edit it anytime.|दवा जोड़ें, फिर हर खुराक का समय और मात्रा तय करें। इसे कभी भी रोक या बदल सकते हैं।
+Add another dose time|खुराक का एक और समय जोड़ें
+Add anything you want to remember|जो याद रखना चाहते हैं, वह जोड़ें
+Add city|शहर जोड़ें
+Add medicine|दवा जोड़ें
+Add medicines and choose dose times|दवाएँ जोड़ें और खुराक का समय चुनें
+Add your details whenever you are ready|जब तैयार हों, अपनी जानकारी जोड़ें
+Agree to Terms of Service and Privacy Policy|सेवा की शर्तें और गोपनीयता नीति स्वीकार करें
+All|सभी
+All times use IST (Indian Standard Time). Reminders require estimates to be enabled.|सभी समय भारतीय मानक समय (IST) में हैं। रिमाइंडर के लिए अनुमान चालू होना आवश्यक है।
+Allow notifications|सूचनाओं की अनुमति दें
+Allow notifications for medicine, water and cycle reminders you choose to turn on. No reminders are created until you set them up.|दवा, पानी और माहवारी के चुने हुए रिमाइंडर के लिए सूचनाओं की अनुमति दें। सेटअप करने से पहले कोई रिमाइंडर नहीं बनेगा।
+Allow reminders when you’re ready|तैयार होने पर रिमाइंडर की अनुमति दें
+Already have an account?|पहले से खाता है?
+Already installed Arogio? Open the app. If you install it later, keep this code to enter during setup.|आरोगियो पहले से इंस्टॉल है? ऐप खोलें। बाद में इंस्टॉल करने पर सेटअप में डालने के लिए यह कोड रखें।
+Amount|मात्रा
+Amount (ml)|मात्रा (ml)
+Another account request is already in progress.|खाते का एक अन्य अनुरोध पहले से चल रहा है।
+Another account request is in progress.|खाते का एक अन्य अनुरोध चल रहा है।
+Another change is being saved. Please try again in a moment.|एक अन्य बदलाव सहेजा जा रहा है। थोड़ी देर बाद प्रयास करें।
+Apheresis|अफेरेसिस
+App access|ऐप की अनुमतियाँ
+Appearance|दिखावट
+Appearance and notifications|दिखावट और सूचनाएँ
+Appearance could not be restored. Choose a mode to try again.|दिखावट बहाल नहीं हो सकी। दोबारा प्रयास के लिए मोड चुनें।
+Appearance could not be saved. Please try again.|दिखावट सहेजी नहीं जा सकी। दोबारा प्रयास करें।
+Apps, permissions and last sync|ऐप, अनुमतियाँ और पिछला सिंक
+Arogio cycle history|आरोगियो माहवारी का इतिहास
+Arogio cycle history — recorded information|आरोगियो माहवारी का इतिहास — दर्ज जानकारी
+Arogio editorial|आरोगियो संपादकीय
+Arogio provides tools to help you follow your health journey. These draft terms describe the intended use of the app. Final service terms must be approved before public launch.|आरोगियो आपको अपनी सेहत पर नज़र रखने के साधन देता है। शर्तों का यह मसौदा ऐप के उपयोग का वर्णन करता है। सार्वजनिक लॉन्च से पहले अंतिम शर्तों की स्वीकृति आवश्यक है।
+Arogio reminders on this device, up to 120 recent reminders from the last 90 days. A reminder appearing here does not mean it was completed.|इस डिवाइस पर पिछले 90 दिनों के अधिकतम 120 हाल के आरोगियो रिमाइंडर। यहाँ रिमाइंडर दिखने का अर्थ उसका पूरा होना नहीं है।
+Arogio will retry automatically. Pull down on Home to check now.|आरोगियो अपने आप दोबारा प्रयास करेगा। अभी जाँचने के लिए होम पर नीचे खींचें।
+Arogio. Your Health Companion|आरोगियो। आपका स्वास्थ्य साथी
+Article|लेख
+Articles|लेख
+Ask Jeeva…|जीवा से पूछें…
+Ask your friend to share their invite link again. You can also enter their code manually during signup.|मित्र से आमंत्रण लिंक दोबारा भेजने को कहें। साइन अप के दौरान उनका कोड खुद भी डाल सकते हैं।
+At least 8 characters, with uppercase, lowercase, and a number|कम से कम 8 अक्षर, जिनमें एक बड़ा अक्षर, एक छोटा अक्षर और एक अंक हो
+Back to Log In|लॉग इन पर वापस जाएँ
+Back to today|आज पर वापस जाएँ
+Backend unavailable|सर्वर उपलब्ध नहीं है
+Backend {0}|सर्वर {0}
+Background refresh could not be turned off. Revoke background access in Health Connect settings.|बैकग्राउंड रिफ्रेश बंद नहीं हो सका। Health Connect की सेटिंग्स में इसकी अनुमति हटाएँ।
+Background refresh is unavailable or access was declined. Foreground refresh will continue.|बैकग्राउंड रिफ्रेश उपलब्ध नहीं है या अनुमति नहीं मिली। ऐप खुले होने पर रिफ्रेश जारी रहेगा।
+Background tasks unavailable|बैकग्राउंड कार्य उपलब्ध नहीं हैं
+Banner {0}: {1}|बैनर {0}: {1}
+Bars show daily totals.|स्तंभ हर दिन का कुल मान दिखाते हैं।
+Before these terms are published|इन शर्तों के प्रकाशित होने से पहले
+Before this policy is published|इस नीति के प्रकाशित होने से पहले
+Before you leave|जाने से पहले
+Blood banks|ब्लड बैंक
+Blood banks could not load. Check your connection and retry.|ब्लड बैंक लोड नहीं हो सके। इंटरनेट कनेक्शन जाँचें और फिर प्रयास करें।
+Blood-bank directory|ब्लड बैंक की सूची
+Body details|शरीर की जानकारी
+Browse all articles|सभी लेख देखें
+Build a record that is yours.|अपना स्वास्थ्य रिकॉर्ड बनाएँ।
+Call blood bank|ब्लड बैंक को कॉल करें
+Call emergency contact|आपातकालीन संपर्क को कॉल करें
+Call for service details|सेवाओं की जानकारी के लिए कॉल करें
+Call to confirm blood availability and opening hours.|रक्त की उपलब्धता और खुलने का समय जानने के लिए कॉल करें।
+Calories and distance|कैलोरी और दूरी
+Cancel|रद्द करें
+Cancel editing|बदलाव रद्द करें
+Cancel period editing|माहवारी के बदलाव रद्द करें
+Change profile photo|प्रोफ़ाइल फ़ोटो बदलें
+Check again|दोबारा जाँचें
+Check city in profile|प्रोफ़ाइल में शहर जाँचें
+Check read access|पढ़ने की अनुमति जाँचें
+Check the values and try again.|मान जाँचें और फिर प्रयास करें।
+Check-in - {0}|चेक-इन - {0}
+Check-in date|चेक-इन की तारीख
+Check-in history|चेक-इन का इतिहास
+Check-in saved.|चेक-इन सहेज दिया गया।
+Checked|जाँचा गया
+Checking backend|सर्वर की जाँच हो रही है
+Checking health access|स्वास्थ्य डेटा की अनुमति जाँची जा रही है
+Checking notification access…|सूचनाओं की अनुमति जाँची जा रही है…
+Checking phone step preferences...|फ़ोन के कदमों की सेटिंग्स जाँची जा रही हैं…
+Checking readings...|आँकड़े जाँचे जा रहे हैं…
+Choose a cycle length of 10–120 days, period length of 1–30 days and reminder lead time of 0–7 days.|चक्र की अवधि 10–120 दिन, माहवारी की अवधि 1–30 दिन और रिमाइंडर 0–7 दिन पहले चुनें।
+Choose a date within the last 90 days.|पिछले 90 दिनों की कोई तारीख चुनें।
+Choose a look that feels comfortable. System follows your device.|अपनी पसंद की दिखावट चुनें। सिस्टम विकल्प डिवाइस के अनुसार चलता है।
+Choose a metric, then tap a day to see the detail.|माप चुनें, फिर जानकारी देखने के लिए किसी दिन पर टैप करें।
+Choose a source for steps, exercise, sleep, distance and calories. Health Connect will let you choose which readings to share.|कदम, व्यायाम, नींद, दूरी और कैलोरी का स्रोत चुनें। Health Connect में चुन सकते हैं कि कौन सा डेटा साझा करना है।
+Choose a target from 100–6000 ml, a serving from 50–1000 ml and waking hours between 2 and 22 hours.|100–6000 ml का लक्ष्य, 50–1000 ml की मात्रा और जागने की अवधि 2–22 घंटे चुनें।
+Choose a valid date of birth that is not in the future.|जन्म की सही तारीख चुनें, जो भविष्य की न हो।
+Choose an alert sound in device settings|डिवाइस सेटिंग्स में सूचना की ध्वनि चुनें
+Choose an app and allow read access. Your readings update automatically.|ऐप चुनें और डेटा पढ़ने की अनुमति दें। आँकड़े अपने आप अपडेट होंगे।
+Choose any that fit today. You can leave these blank.|आज के अनुसार चुनें। इन्हें खाली भी छोड़ सकते हैं।
+Choose date|तारीख चुनें
+Choose how Arogio looks, reminds you and records your day.|आरोगियो की दिखावट, रिमाइंडर और दिन का रिकॉर्ड रखने का तरीका चुनें।
+Choose how active you are in daily life.|रोज़मर्रा में अपनी सक्रियता का स्तर चुनें।
+Choose one or more goals. You can change them anytime.|एक या अधिक लक्ष्य चुनें। इन्हें कभी भी बदल सकते हैं।
+Choose the activity level that feels closest to your routine.|अपनी दिनचर्या के सबसे करीब गतिविधि का स्तर चुनें।
+Choose the updates you would like. These choices are optional.|मनचाहे अपडेट चुनें। ये विकल्प वैकल्पिक हैं।
+Choose your birthday|जन्मदिन चुनें
+Choose your date of birth.|अपनी जन्म तारीख चुनें।
+Choose your own target. Follow your clinician’s advice if you have a fluid restriction.|अपना लक्ष्य चुनें। तरल पदार्थ की सीमा होने पर अपने चिकित्सक की सलाह मानें।
+City|शहर
+City (optional)|शहर (वैकल्पिक)
+City can be entered in your profile.|प्रोफ़ाइल में शहर डाल सकते हैं।
+City detection took too long. Try again or enter your city.|शहर ढूँढने में अधिक समय लगा। दोबारा प्रयास करें या शहर खुद डालें।
+City found. Check it below; only your city is saved.|शहर मिल गया। नीचे जाँचें; केवल शहर का नाम सहेजा जाता है।
+City lookup was unavailable; you can enter it in Profile.|शहर नहीं ढूँढा जा सका; प्रोफ़ाइल में खुद डाल सकते हैं।
+City, pincode or bank name|शहर, पिनकोड या बैंक का नाम
+City, pincode or blood-bank name|शहर, पिनकोड या ब्लड बैंक का नाम
+Clear|साफ़ करें
+Clear chat and start again|चैट साफ़ करके फिर शुरू करें
+Close menu|मेन्यू बंद करें
+Close navigation menu|नेविगेशन मेन्यू बंद करें
+Code from a friend|मित्र का कोड
+Coming soon|जल्द आ रहा है
+Components|रक्त के घटक
+Confirm password|पासवर्ड की पुष्टि करें
+Connect|जोड़ें
+Connect a compatible app|संगत ऐप जोड़ें
+Connect an app for automatic readings|अपने आप आँकड़े पाने के लिए ऐप जोड़ें
+Connect your health app|अपना स्वास्थ्य ऐप जोड़ें
+Connected|जुड़ा हुआ
+Connected app|जुड़ा ऐप
+Connected health|जुड़ा स्वास्थ्य डेटा
+Connected health data|जुड़े ऐप का स्वास्थ्य डेटा
+Connected to|इससे जुड़ा है
+Connecting {0}...|{0} से जुड़ रहा है…
+Connection|कनेक्शन
+Connection could not be restored. Choose your health app again.|कनेक्शन बहाल नहीं हो सका। स्वास्थ्य ऐप दोबारा चुनें।
+Continue|आगे बढ़ें
+Continue account setup|खाते का सेटअप जारी रखें
+Continue to Arogio|आरोगियो पर आगे बढ़ें
+Continue with Google|Google से जारी रखें
+Continue without optional access|वैकल्पिक अनुमति के बिना जारी रखें
+Continue writing|लिखना जारी रखें
+Could not find your city. Enter it below.|शहर नहीं मिल सका। नीचे खुद डालें।
+Could not mark notifications as read. Please try again.|सूचनाएँ पढ़ी हुई चिह्नित नहीं हो सकीं। दोबारा प्रयास करें।
+Could not open settings. Try again.|सेटिंग्स नहीं खुल सकीं। फिर प्रयास करें।
+Could not refresh|रिफ्रेश नहीं हो सका
+Could not schedule the sound test. Try again.|ध्वनि का परीक्षण तय नहीं हो सका। दोबारा प्रयास करें।
+Count steps on supported phones while Arogio is open.|संगत फ़ोन पर आरोगियो खुले होने पर कदम गिनें।
+Count steps with this phone|इस फ़ोन से कदम गिनें
+Counting phone steps in the background. Android shows a step-counting notification.|बैकग्राउंड में फ़ोन के कदम गिने जा रहे हैं। Android कदम गिनने की सूचना दिखाता है।
+Counting steps while Arogio is open. Background steps are not included.|आरोगियो खुले होने पर कदम गिने जा रहे हैं। बैकग्राउंड के कदम शामिल नहीं हैं।
+Create Account|खाता बनाएँ
+Create account|खाता बनाएँ
+Create an account|खाता बनाएँ
+Create your account|अपना खाता बनाएँ
+Currently using {0} mode|अभी {0} मोड उपयोग हो रहा है
+Cycle|माहवारी
+Cycle journal|माहवारी की डायरी
+Cycle reminders are on.|माहवारी के रिमाइंडर चालू हैं।
+Cycle reminders are paused.|माहवारी के रिमाइंडर रुके हुए हैं।
+Cycle tracking|माहवारी की निगरानी
+Cycle tracking is optional. Your records are saved to your account and can be deleted here at any time.|माहवारी की निगरानी वैकल्पिक है। रिकॉर्ड आपके खाते में सहेजे जाते हैं और यहाँ कभी भी हटा सकते हैं।

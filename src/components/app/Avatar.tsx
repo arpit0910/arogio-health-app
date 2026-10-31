@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { Image, StyleSheet, View } from "react-native";
 import { AppIcon } from "./AppIcon";
 export function Avatar({
@@ -9,10 +10,11 @@ export function Avatar({
   size?: number;
   camera?: boolean;
 }) {
+  const { t: tr } = useTranslation();
   return (
     <View style={{ width: size, height: size }}>
       <Image
-        accessibilityLabel="Profile photo"
+        accessibilityLabel={tr("Profile photo")}
         source={
           photo ? { uri: photo } : require("../../../assets/home/avatar.png")
         }

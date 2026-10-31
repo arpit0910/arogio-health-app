@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette, useAppearance } from '../../../theme/AppearanceProvider';
 import { useEffect, useState } from 'react';
 import { Keyboard, Platform } from 'react-native';
@@ -35,6 +36,7 @@ function AndroidBirthDatePicker(props: BirthDatePickerProps) {
 }
 
 export function ProfileBirthDatePicker(props: BirthDatePickerProps) {
+  const { t: tr } = useTranslation();
   const colors = usePalette();
   const { scheme } = useAppearance();
 
@@ -42,15 +44,15 @@ export function ProfileBirthDatePicker(props: BirthDatePickerProps) {
   if (Platform.OS === 'android') return <AndroidBirthDatePicker {...props} />;
   return (
     <ProfileDialog
-      title="Date of birth"
-      subtitle="Choose your date of birth."
+      title={tr("Date of birth")}
+      subtitle={tr("Choose your date of birth.")}
       value={birthDateValue(date)}
       onChange={() => {}}
       onSave={() => props.onSelect(birthDateValue(date))}
       onClose={props.onClose}
     >
       <DateTimePicker
-        accessibilityLabel="Date of birth"
+        accessibilityLabel={tr("Date of birth")}
         mode="date"
         display="spinner"
         value={date}

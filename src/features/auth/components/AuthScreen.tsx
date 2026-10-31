@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { CareIllustration } from '../../../components/app/CareIllustration';
 import type { ReactNode } from 'react';
@@ -13,13 +14,14 @@ import { AuthBrand } from './AuthBrand';
 import { useScreenLayout } from '../../../components/ui/useScreenLayout';
 
 export function AuthShell({ children, signup = false }: { children: ReactNode; signup?: boolean }) {
+  const { t: tr } = useTranslation();
   const styles = useStyles();
 
   const { isSubmitting } = useAuth();
   const { compact } = useScreenLayout();
   return <AuthCanvas background={signup ? 'backgroundSignup' : 'backgroundLogin'}>
         <View style={[styles.top, compact && styles.compactTop]}>
-          <Pressable accessibilityRole="button" accessibilityLabel="Go back" disabled={isSubmitting} hitSlop={2} style={styles.back}
+          <Pressable accessibilityRole="button" accessibilityLabel={tr("Go back")} disabled={isSubmitting} hitSlop={2} style={styles.back}
             onPress={() => router.canGoBack() ? router.back() : router.replace('/')}>
             <AuthIcon name="back" />
           </Pressable>
@@ -30,13 +32,14 @@ export function AuthShell({ children, signup = false }: { children: ReactNode; s
 }
 
 export function AuthScreen({ initialTab = 'login' }: { initialTab?: 'login' | 'signup' }) {
+  const { t: tr } = useTranslation();
   const colors = usePalette();
   const styles = useStyles();
 
   const { clearError, isLoading } = useAuth();
   const signup = initialTab === 'signup';
   const switchRoute = (route: '/login' | '/signup') => { clearError(); router.replace(route); };
-  if (isLoading) return <View style={styles.loading}><ActivityIndicator color={colors.primary} accessibilityLabel="Restoring your session" /></View>;
+  if (isLoading) return <View style={styles.loading}><ActivityIndicator color={colors.primary} accessibilityLabel={tr("Restoring your session")} /></View>;
   return <AuthShell signup={signup}>{signup
     ? <SignupForm onSwitchToLogin={() => switchRoute('/login')} />
     : <LoginForm onSwitchToSignup={() => switchRoute('/signup')} />}

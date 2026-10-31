@@ -1,3 +1,4 @@
+import { useTranslation } from "../../../localization/LanguageProvider";
 import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { exchangeCodeAsync } from 'expo-auth-session';
@@ -12,18 +13,20 @@ import { GoogleIcon } from './GoogleIcon';
 WebBrowser.maybeCompleteAuthSession();
 
 export function GoogleSignInButton({ disabled, referralCode }: { disabled?: boolean; referralCode?: string }) {
+  const { t: tr } = useTranslation();
   const [configurationError, setConfigurationError] = useState(false);
   // Android and iOS use GoogleSignInButton.native.tsx via Metro resolution.
   const clientId = env.googleClientId;
   if (!clientId) return <View>
-    <Button title="Continue with Google" variant="secondary" leading={<GoogleIcon />} disabled={disabled}
+    <Button title={tr("Continue with Google")} variant="secondary" leading={<GoogleIcon />} disabled={disabled}
       onPress={() => setConfigurationError(true)} />
-    <FormError message={configurationError ? 'Google sign-in is not available on this device yet. Please sign in with email.' : null} />
+    <FormError message={tr(configurationError ? 'Google sign-in is not available on this device yet. Please sign in with email.' : null)} />
   </View>;
   return <ConfiguredGoogleSignInButton disabled={disabled} clientId={clientId} referralCode={referralCode} />;
 }
 
 function ConfiguredGoogleSignInButton({ disabled, clientId, referralCode }: { disabled?: boolean; clientId: string; referralCode?: string }) {
+  const { t: tr } = useTranslation();
   const { loginWithGoogle, isSubmitting, beginExternalSignIn, endExternalSignIn } = useAuth();
   const mounted = useRef(true);
   const ownsOperation = useRef(false);
@@ -69,6 +72,6 @@ function ConfiguredGoogleSignInButton({ disabled, clientId, referralCode }: { di
       if (mounted.current) setPending(false);
     }
   };
-  return <View><Button title="Continue with Google" variant="secondary" leading={<GoogleIcon />}
+  return <View><Button title={tr("Continue with Google")} variant="secondary" leading={<GoogleIcon />}
     onPress={handlePress} loading={pending} disabled={disabled || isSubmitting || !request} /><FormError message={error} /></View>;
 }

@@ -6,6 +6,8 @@
     <service android:name="expo.modules.healthsources.PhoneStepsService" android:exported="false" android:foregroundServiceType="health" android:stopWithTask="false" />
   </application>
   <queries>
+    <package android:name="com.pebble.ring.app" />
+    <package android:name="com.sec.android.app.shealth" />
     <intent>
       <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
     </intent>

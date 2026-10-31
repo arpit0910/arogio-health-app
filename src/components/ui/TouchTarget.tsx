@@ -1,3 +1,4 @@
+import { useTranslation } from '../../localization/LanguageProvider';
 import { createContext, useContext } from 'react';
 import { Pressable, StyleSheet, type PressableProps } from 'react-native';
 
@@ -9,8 +10,9 @@ export function useTouchTarget() {
 }
 
 export function TouchTarget({ style, ...props }: PressableProps) {
+  const {t: tr} = useTranslation();
   const { minimum } = useTouchTarget();
-  return <Pressable {...props} style={(state) => {
+  return <Pressable {...props} accessibilityLabel={tr(props.accessibilityLabel)} accessibilityHint={tr(props.accessibilityHint)} style={(state) => {
     const resolved = typeof style === 'function' ? style(state) : style;
     const requested = StyleSheet.flatten(resolved)?.minHeight;
     return [resolved, { minHeight: Math.max(minimum, typeof requested === 'number' ? requested : 0) }];

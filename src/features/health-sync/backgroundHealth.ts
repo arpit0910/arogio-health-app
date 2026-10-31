@@ -10,7 +10,7 @@ import { healthMetrics, type HealthMetric, type HealthSnapshot } from './model';
 const TASK = 'arogio-health-refresh';
 const CONFIG = 'arogio.health.background';
 const CACHE = 'arogio.health.cache';
-const CHUNKS = 32;
+const CHUNKS = 64;
 type Configuration = { owner: string; selected: HealthMetric[]; source: string; generation: string };
 let operations = Promise.resolve();
 function serialize<T>(work: () => Promise<T>): Promise<T> {
@@ -63,6 +63,18 @@ export async function cachedBackgroundHealth(owner: string, source: string): Pro
     const chunks = await Promise.all(Array.from({ length: parsed.chunks }, (_, i) => SecureStore.getItemAsync(`${CACHE}.${i}`)));
     if (chunks.some((part) => part == null)) return null;
     return JSON.parse(chunks.join('')) as HealthSnapshot;
+  });
+}
+/** Foreground results must also survive process restarts when background access is off. */
+export async function cacheHealthSnapshot(owner: string, source: string, snapshot: HealthSnapshot, isCurrent = () => true) {
+  if (Platform.OS !== 'android' || snapshot.source !== source) return;
+  await serialize(async () => {
+    if (!isCurrent()) return;
+    const chunks = JSON.stringify(snapshot).match(/[\s\S]{1,400}/g) ?? [];
+    if (chunks.length > CHUNKS) throw new Error('Health cache exceeds limit');
+    await clearCache();
+    for (const [index, chunk] of chunks.entries()) await SecureStore.setItemAsync(`${CACHE}.${index}`, chunk);
+    await SecureStore.setItemAsync(CACHE, JSON.stringify({ owner, source, chunks: chunks.length }));
   });
 }
 if (Platform.OS === 'android') TaskManager.defineTask(TASK, async () => {

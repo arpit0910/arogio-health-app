@@ -1,3 +1,4 @@
+import { useTranslation } from "../../localization/LanguageProvider";
 import { usePalette, useAppearance } from '../../theme/AppearanceProvider';
 import { useState } from 'react';
 import { Keyboard, Platform, Text, View } from 'react-native';
@@ -20,6 +21,7 @@ export function CalendarField({
   onChange: (value: string) => void;
   mode: 'date' | 'time';
 }) {
+  const { t: tr, locale } = useTranslation();
   const colors = usePalette();
   const { scheme } = useAppearance();
   const c = useCareStyles();
@@ -49,17 +51,17 @@ export function CalendarField({
   };
   return (
     <View style={{ gap: 7 }}>
-      <Text style={c.text}>{label}</Text>
+      <Text style={c.text}>{tr(label)}</Text>
       <Button
         variant="secondary"
         title={
-          value
-            ? new Intl.DateTimeFormat('en-IN', {
+          tr(value
+            ? new Intl.DateTimeFormat(locale, {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric',
               }).format(date)
-            : 'Choose date'
+            : 'Choose date')
         }
         leading={<AppIcon name="calendar" size={21} />}
         onPress={show}
@@ -74,7 +76,7 @@ export function CalendarField({
             textColor={colors.ink}
             onValueChange={(_event, selected) => select(selected)}
           />
-          <Button title="Done" onPress={() => setOpen(false)} />
+          <Button title={tr("Done")} onPress={() => setOpen(false)} />
         </>
       )}
     </View>
