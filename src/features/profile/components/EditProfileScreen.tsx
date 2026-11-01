@@ -15,6 +15,7 @@ import { useAuth } from "../../auth/context/AuthContext";
 import { updateProfileSchema } from "../../auth/types";
 import { FormError } from "../../auth/components/AuthPrimitives";
 import { AppScreen, useAppStyles } from "../../../components/app/AppScreen";
+import { AppIcon } from "../../../components/app/AppIcon";
 import { Avatar } from "../../../components/app/Avatar";
 import { TouchTarget } from "../../../components/ui/TouchTarget";
 
@@ -176,6 +177,7 @@ export function EditProfileScreen() {
               accessibilityState={{ checked: draft.gender === option.value, disabled: isSubmitting }}
               disabled={isSubmitting} onPress={() => set("gender", option.value)}
               style={[s.genderOption, draft.gender === option.value && s.genderSelected]}>
+              <AppIcon name={option.value === "female" ? "female" : option.value === "male" ? "male" : option.value === "other" ? "users" : "user"} size={22} color={draft.gender === option.value ? colors.primary : colors.muted} />
               <Text style={[s.genderText, draft.gender === option.value && s.genderSelectedText]}>{tr(option.label)}</Text>
             </TouchTarget>)}
           </View>
@@ -286,7 +288,7 @@ const useStyles = () => {
   const colors = usePalette();
 return StyleSheet.create({
   genderGroup: { gap: 8 },
-  genderOption: { minHeight: 52, paddingHorizontal: 16, paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: t.border },
+  genderOption: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, paddingHorizontal: 16, paddingVertical: 14, borderRadius: 12, borderWidth: 1, borderColor: t.border },
   genderSelected: { backgroundColor: t.teal, borderColor: t.teal },
   genderText: { color: t.ink, fontFamily: t.fonts.medium, fontSize: 16 },
   genderSelectedText: { color: colors.onPrimary },

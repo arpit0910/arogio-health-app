@@ -37,6 +37,7 @@ export function TodayActivity() {
       {metrics.map(metric => {
         const value = activityReading(metric.key, day, mode, tracking, health.snapshot, phone).value;
         const available = hasHealthValue(value), goal = tracking.goals[metric.key];
+        if (!available) return null;
         const week = Array.from({ length: 7 }, (_, index) => activityReading(metric.key, addDays(day, index - 6), mode, tracking, health.snapshot, phone).value);
         const max = Math.max(1, ...week.filter(hasHealthValue));
         const reading = mode === 'connected' ? health.snapshot?.days.find(item => item.day === day)?.readings[metric.key] : null;

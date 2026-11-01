@@ -4,6 +4,8 @@ import Svg, { Circle, Path, Rect } from "react-native-svg";
 
 
 const paths = {
+  female: 'M16 8a5 5 0 1 1-10 0 5 5 0 0 1 10 0ZM11 13v9M7 18h8',
+  male: 'M14 14a5 5 0 1 1-7-7 5 5 0 0 1 7 7ZM14 7l7-6m-6 0h6v6',
   search: 'M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z',
   up: 'm5 15 7-7 7 7',
   send: 'm22 2-7 20-4-9-9-4Zm0 0L11 13',

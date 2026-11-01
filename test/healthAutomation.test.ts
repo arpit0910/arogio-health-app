@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import { randomUUID } from 'node:crypto';
 import ts from 'typescript';
+import { sleepIntervals } from '../src/features/health-sync/sleep.ts';
 import { healthMetrics, type HealthSnapshot } from '../src/features/health-sync/model.ts';
 
 const require = createRequire(import.meta.url);
@@ -26,22 +27,18 @@ describe('Expanded native health import', () => {
     let aggregates = 0;
     const native = { initialize: async () => true,
       getGrantedPermissions: async () => [{ recordType: 'Steps', accessType: 'read' }],
-      aggregateRecord: async () => { throw new Error('Daily calls must not be used'); },
-      aggregateGroupByDuration: async ({ timeRangeFilter, timeRangeSlicer, dataOriginFilter }: { timeRangeFilter: { startTime: string; endTime: string }; timeRangeSlicer: { duration: string; length: number }; dataOriginFilter: string[] }) => {
-        aggregates++;
-        assert.equal(timeRangeSlicer.duration, 'DAYS'); assert.equal(timeRangeSlicer.length, 1);
+      aggregateRecord: async ({ timeRangeFilter, dataOriginFilter }: { timeRangeFilter: { startTime: string; endTime: string }; dataOriginFilter: string[] }) => {
+        const index = aggregates++;
         assert.deepEqual(Array.from(dataOriginFilter), ['com.pebble.ring.app']);
-        const ranges = model.healthDayRanges(new Date(timeRangeFilter.endTime));
-        assert.equal(timeRangeFilter.startTime, ranges[0].start);
-        return ranges.flatMap((range: { start: string; end: string }, index: number) => index === 2 ? [] : [{ startTime: range.start, endTime: range.end,
-          result: { COUNT_TOTAL: index === 0 ? 0 : index * 100, dataOrigins: index === 4 ? ['other.health'] : ['com.pebble.ring.app'] } }]);
+        assert.ok(Date.parse(timeRangeFilter.endTime) > Date.parse(timeRangeFilter.startTime));
+        return { COUNT_TOTAL: index === 0 ? 0 : index * 100, dataOrigins: index === 2 ? [] : index === 4 ? ['other.health'] : ['com.pebble.ring.app'] };
       },
     };
     const api = load('../src/features/health-sync/healthConnect.android.ts', {
-      'react-native': { Platform: { Version: 36 } }, './model': model, 'react-native-health-connect': native,
+      'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
     }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot> };
     const snapshot = await api.syncHealth(['Steps'], 'com.pebble.ring.app');
-    assert.equal(aggregates, 1);
+    assert.equal(aggregates, 7);
     assert.equal(snapshot.days[0].readings.Steps?.value, 0);
     assert.equal(snapshot.days[2].readings.Steps?.value, null);
     assert.equal(snapshot.days[3].readings.Steps?.value, 300);
@@ -63,7 +60,7 @@ describe('Expanded native health import', () => {
       },
     };
     const api = load('../src/features/health-sync/healthConnect.android.ts', {
-      'react-native': { Platform: { Version: 36 } }, './model': model, 'react-native-health-connect': native,
+      'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
     }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot> };
     await assert.rejects(api.syncHealth(['Steps'], ''), /Choose one health app/);
     assert.equal(queries, 0);
@@ -81,7 +78,7 @@ describe('Expanded native health import', () => {
       }, readRecords: async () => ({ records: [] }),
     };
     const api = load('../src/features/health-sync/healthConnect.android.ts', {
-      'react-native': { Platform: { Version: 36 } }, './model': model, 'react-native-health-connect': native,
+      'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
     }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot> };
     const [first, second] = await Promise.all([api.syncHealth(['Steps'], 'example.source'), api.syncHealth(['Steps'], 'other.source')]);
     assert.equal(first.source, 'example.source'); assert.equal(second.source, 'other.source');
@@ -105,10 +102,14 @@ describe('Expanded native health import', () => {
         return permissions;
       },
       aggregateRecord: async ({ recordType, dataOriginFilter }: { recordType: string; dataOriginFilter: string[] }) => { assert.deepEqual(Array.from(dataOriginFilter), ['example.source']); return { ...values[recordType], dataOrigins: ['example.source'] }; },
-      readRecords: async (_type: string, options: { dataOriginFilter: string[] }) => { assert.deepEqual(Array.from(options.dataOriginFilter), ['example.source']); return { records: [] }; },
+      readRecords: async (type: string, options: { dataOriginFilter: string[]; timeRangeFilter: { startTime: string } }) => {
+        assert.deepEqual(Array.from(options.dataOriginFilter), ['example.source']);
+        const ranges = model.healthDayRanges();
+        return { records: type === 'SleepSession' ? ranges.map((r: { start: string }) => ({ startTime: new Date(Date.parse(r.start) - 3600000).toISOString(), endTime: new Date(Date.parse(r.start) + 23400000).toISOString(), metadata: { dataOrigin: 'example.source' } })) : [] };
+      },
     };
     const api = load('../src/features/health-sync/healthConnect.android.ts', {
-      'react-native': { Platform: { Version: 36 } }, './model': model, 'react-native-health-connect': native,
+      'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
     }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot>; connectHealth: (selected: string[]) => Promise<string[]> };
     const selected = healthMetrics.map((item) => item.key);
     assert.equal((await api.connectHealth(selected)).length, 12);

@@ -162,6 +162,7 @@ export function HomeScreen() {
             </Text>
 
           </View><WeatherTile weather={homeContent.weather}/></View>
+          <HomeBanner banners={homeContent.banners}/>
           {error && (
             <View style={s.error} accessibilityLiveRegion="polite">
               <Text style={s.errorText}>
@@ -411,7 +412,7 @@ export function HomeScreen() {
             </View>
           </View>
         </View>
-        <View style={[s.content, expanded && s.expandedContent]}><TodayActivity /><View style={{ marginTop: 28 }}><HomeBanner banners={homeContent.banners}/></View><HomeArticles /></View>
+        <View style={[s.content, expanded && s.expandedContent]}><TodayActivity /><HomeArticles /></View>
       </ScrollView>
     </SafeAreaView>
   );

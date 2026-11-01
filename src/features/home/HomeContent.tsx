@@ -36,7 +36,7 @@ export function WeatherTile({weather}:{weather:z.infer<typeof weatherSchema>}) {
   const condition = tr(weather.condition === 'Clear' ? 'Clear sky' : weather.condition);
   return <TouchTarget accessibilityRole="button" accessibilityLabel={tr(`${weather.temperature} degrees Celsius in ${weather.city}. ${condition}${weather.forecast ? tr(' forecast') : ''}. Open profile to change city.`)} onPress={openCity} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, borderRadius: 16, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, minWidth: 114 }}>
     <AppIcon name={weather.condition === 'Clear' ? 'sun' : 'cloud'} size={26} color="#E3B441" />
-    <View style={{ flexShrink: 1 }}><Text style={{ fontFamily: fonts.semibold, fontSize: 18, lineHeight: 25, color: colors.ink }}>{weather.temperature}?C</Text><Text style={{ fontFamily: fonts.regular, fontSize: 12, lineHeight: 18, color: colors.muted }}>{weather.city}</Text><Text style={{ fontFamily: fonts.regular, fontSize: 12, lineHeight: 18, color: colors.muted }}>{condition}{weather.forecast ? tr(' forecast') : ''}</Text></View>
+    <View style={{ flexShrink: 1 }}><Text style={{ fontFamily: fonts.semibold, fontSize: 18, lineHeight: 25, color: colors.ink }}>{weather.temperature}{'\u00b0'}C</Text><Text style={{ fontFamily: fonts.regular, fontSize: 12, lineHeight: 18, color: colors.muted }}>{weather.city}</Text><Text style={{ fontFamily: fonts.regular, fontSize: 12, lineHeight: 18, color: colors.muted }}>{condition}{weather.forecast ? tr(' forecast') : ''}</Text></View>
   </TouchTarget>;
 }
 export function HomeBanner({banners}:{banners:z.infer<typeof bannerSchema>}){

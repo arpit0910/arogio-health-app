@@ -70,13 +70,14 @@ export async function loadArticles(
   signal?: AbortSignal,
   options: {
     category?: string;
-    sort?: ArticleSort;
+    sort?: ArticleSort | "random";
+    limit?: number;
     language?: "en" | "hi";
   } = {},
 ) {
   return articleListSchema.parse(
     await apiClient.request({
-      path: `/articles?limit=12&page=${page}&search=${encodeURIComponent(search)}&category=${encodeURIComponent(options.category ?? "")}&sort=${options.sort ?? "newest"}&language=${options.language ?? "en"}`,
+      path: `/articles?limit=${options.limit ?? 12}&page=${page}&search=${encodeURIComponent(search)}&category=${encodeURIComponent(options.category ?? "")}&sort=${options.sort ?? "newest"}&language=${options.language ?? "en"}`,
       signal,
     }),
   );

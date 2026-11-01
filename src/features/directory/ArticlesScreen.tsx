@@ -96,7 +96,7 @@ export function HomeArticles() {
     c = useCareStyles();
   const query = useQuery({
     queryKey: ["articles", "home"],
-    queryFn: ({ signal }) => loadArticles("", 1, signal),
+    queryFn: ({ signal }) => loadArticles("", 1, signal, { sort: "random", limit: 3 }),
     staleTime: 300000,
   });
   return (
@@ -146,11 +146,10 @@ export function ArticlesScreen() {
   const [search, setSearch] = useState(""),
     [term, setTerm] = useState(""),
     [page, setPage] = useState(1);
-  const [override, setHindi] = useState<boolean | null>(null),
-    [category, setCategory] = useState("");
+  const [category, setCategory] = useState("");
   const [sort, setSort] = useState<ArticleSort>("newest"),
     [sortOpen, setSortOpen] = useState(false);
-  const hindi = override ?? language === "hi",
+  const hindi = language === "hi",
     readingLanguage = hindi ? "hi" : "en";
   const categories = useQuery({
     queryKey: ["article-categories"],
@@ -188,7 +187,6 @@ export function ArticlesScreen() {
       key={page}
       title={tr("Articles")}
       back
-      action={<TouchTarget accessibilityRole="button" onPress={() => {setHindi(!hindi); setPage(1);}} style={{paddingHorizontal: 8, justifyContent: 'center'}}><Text style={[c.text, {color: colors.primary}]}>{hindi ? 'Read in English' : 'हिन्दी में पढ़ें'}</Text></TouchTarget>}
       onRefresh={() => {
         void query.refetch();
         void categories.refetch();
@@ -514,8 +512,7 @@ export function ArticleScreen() {
     { id } = useLocalSearchParams<{ id: string }>(),
     c = useCareStyles(),
     colors = usePalette();
-  const [override, setHindi] = useState<boolean | null>(null),
-    hindi = override ?? language === "hi";
+  const hindi = language === "hi";
   const query = useQuery({
     queryKey: ["articles", id],
     queryFn: async ({ signal }) =>
@@ -562,13 +559,6 @@ export function ArticleScreen() {
               {article.author_name || tr("Arogio editorial")} ·{" "}
               {new Date(article.created_at).toLocaleDateString(locale)}
             </Text>
-            {!!article.content_hi && (
-              <Button
-                title={hindi ? "Read in English" : "हिन्दी में पढ़ें"}
-                variant="secondary"
-                onPress={() => setHindi(!hindi)}
-              />
-            )}
             <Text
               selectable
               style={[

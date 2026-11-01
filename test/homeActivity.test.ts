@@ -9,9 +9,9 @@ function render(width: number, mode: string) {
   return readFileSync(resolve(`.impeccable/review/home-sync/${mode}-${width}.html`), 'utf8').replace(/<!--[\s\S]*?-->/g, '');
 }
 describe('Home health and activity rendering', () => {
-  it('keeps all three cards and recovery controls visible when no app readings exist', () => {
+  it('hides empty metric cards while keeping recovery controls visible', () => {
     const html = render(390, 'empty');
-    for (const metric of ['Steps', 'Movement', 'Sleep']) assert.match(html, new RegExp(`${metric}: No reading today`));
+    for (const metric of ['Steps', 'Movement', 'Sleep']) assert.doesNotMatch(html, new RegExp(`${metric}: No reading today`));
     assert.match(html, /Health &amp; activity/);
     assert.match(html, /Manage health apps/);
     assert.match(html, /Refresh readings/);
@@ -25,6 +25,6 @@ describe('Home health and activity rendering', () => {
     assert.match(html, /2:30 PM IST/);
     assert.match(html, /Some readings could not refresh/);
     assert.match(html, /Pebble Halo/);
-    assert.match(html, /Movement: No reading today/);
+    assert.doesNotMatch(html, /Movement: No reading today/);
   });
 });

@@ -1,3 +1,4 @@
+import { sleepIntervals } from './sleep.ts';
 import { Linking, Platform } from 'react-native';
 import {
   readHealthSnapshot,
@@ -70,25 +71,45 @@ function normalizeAggregate(metric: HealthMetric, result: NativeAggregate, sourc
 /** Every native request stays scoped to the selected app. IST has fixed 24h days. */
 function createReader(source: string): HealthReader {
   const dataOriginFilter = [source];
-  return {
+  const thisReader: HealthReader = {
     granted: grantedTypes,
     async aggregate(metric, start, end): Promise<Reading> {
       if (start === end) return { value: null, sources: [] };
       return normalizeAggregate(metric, await Health.aggregateRecord({ recordType: metric,
         timeRangeFilter: { operator: 'between', startTime: start, endTime: end }, dataOriginFilter }), source);
     },
-    // One weekly request per metric instead of seven daily requests per metric.
-    aggregateDays: typeof Health.aggregateGroupByDuration === 'function' ? async (metric, ranges) => {
+    // Read exact day windows. Duration buckets can omit the partial current day
+    // on older providers; sleep belongs to the day the session ends.
+    aggregateDays: async (metric, ranges) => {
+      if (metric !== 'SleepSession') {
+        const readings: Reading[] = [];
+        for (const range of ranges) readings.push(await thisReader.aggregate(metric, range.start, range.end));
+        return readings;
+      }
       const first = ranges[0], last = ranges.at(-1);
-      if (!first || !last || first.start === last.end) return ranges.map(() => ({ value: null, sources: [] }));
-      const buckets = await Health.aggregateGroupByDuration({ recordType: metric, dataOriginFilter,
-        timeRangeFilter: { operator: 'between', startTime: first.start, endTime: last.end },
-        timeRangeSlicer: { duration: 'DAYS', length: 1 } });
-      return ranges.map(range => {
-        const bucket = buckets.find(item => Date.parse(item.startTime) === Date.parse(range.start));
-        return bucket ? normalizeAggregate(metric, bucket.result, source) : { value: null, sources: [] };
-      });
-    } : undefined,
+      if (!first || !last) return [];
+      const sessions: { startTime: string; endTime: string }[] = [];
+      let pageToken: string | undefined;
+      do {
+        const response = await Health.readRecords('SleepSession', {
+          dataOriginFilter, pageSize: 1000, pageToken,
+          timeRangeFilter: { operator: 'between', startTime: new Date(Date.parse(first.start) - 86400000).toISOString(), endTime: last.end },
+        });
+        sessions.push(...response.records.filter(record => record.metadata?.dataOrigin === source));
+        pageToken = response.pageToken || undefined;
+      } while (pageToken);
+      const readings: Reading[] = [];
+      for (const range of ranges) {
+        const intervals = sleepIntervals(sessions, range.start, range.end);
+        let total = 0, found = false;
+        for (const interval of intervals) {
+          const reading = await thisReader.aggregate('SleepSession', interval.startTime, interval.endTime);
+          if (reading.value != null) { total += reading.value; found = true; }
+        }
+        readings.push({ value: found ? total : null, sources: found ? [source] : [] });
+      }
+      return readings;
+    },
     async latestWeight(startTime, endTime) {
       const response = await Health.readRecords('Weight', {
         timeRangeFilter: { operator: 'between', startTime, endTime },
@@ -106,6 +127,7 @@ function createReader(source: string): HealthReader {
         : null;
     },
   };
+  return thisReader;
 }
 export async function syncHealth(metrics: HealthMetric[], source: string) {
   if (!source || !/^[a-zA-Z][\w]*(\.[a-zA-Z][\w]*)+$/.test(source)) throw new Error('Choose one health app before syncing.');

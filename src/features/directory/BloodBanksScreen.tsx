@@ -30,19 +30,24 @@ export function EmergencyButton({ inline = false }: { inline?: boolean }) {
         position: inline ? "relative" : "absolute",
         right: inline ? undefined : 16,
         bottom: inline ? undefined : 16,
-        alignSelf: "flex-end",
+        alignSelf: inline ? "stretch" : "flex-end",
+        justifyContent: "center",
+        paddingVertical: 14,
         minHeight: 52,
         paddingHorizontal: 18,
         borderRadius: 14,
-        backgroundColor: pressed ? colors.ink : colors.error,
+        backgroundColor: colors.errorSurface,
+        borderWidth: 1,
+        borderColor: colors.error,
+        opacity: pressed ? 0.75 : 1,
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
       })}
     >
-      <AppIcon name="drop" color={colors.onPrimary} size={22} />
+      <AppIcon name="drop" color={colors.error} size={22} />
       <Text
-        style={{ color: colors.onPrimary, fontSize: 16, fontWeight: "600" }}
+        style={{ color: colors.error, fontSize: 16, fontWeight: "600" }}
       >
         {tr("Emergency")}</Text>
     </TouchTarget>
@@ -295,7 +300,7 @@ export function BloodBanksScreen() {
           title={tr(coords ? "Update my location" : "Find near me")}
           loading={locating}
           leading={
-            <AppIcon name="location" color={colors.onPrimary} size={20} />
+            <AppIcon name="location" color={colors.error} size={20} />
           }
           onPress={() => void locate()}
         />
@@ -373,7 +378,7 @@ export function BloodBanksScreen() {
               >
                 <Text
                   style={{
-                    color: group === value ? colors.onPrimary : colors.ink,
+                    color: group === value ? colors.error : colors.ink,
                   }}
                 >
                   {value || "All"}
