@@ -14,6 +14,7 @@ import { activityReading, emptyActivity } from './model';
 import { addDays, localDay } from '../wellness/domain';
 import { useTrackingClock } from '../wellness/useTrackingClock';
 import { formatHealthValue, hasHealthValue } from '../health-sync/model';
+import { GoalProgress } from '../../components/app/GoalProgress';
 
 const metrics = [
   { key: 'Steps', title: 'Steps', icon: 'walk', unit: 'steps' },
@@ -44,18 +45,18 @@ export function TodayActivity() {
         const missing = health.busy || !health.ready || !wellness.ready ? 'Checking readings...' : mode === 'connected' ?
           !health.selectedMetrics.includes(metric.key) ? 'Not selected for sync' : !health.snapshot?.granted.includes(metric.key) ? 'Check read access' : health.snapshot.failed.includes(metric.key) ? 'Could not refresh' : 'No reading today' : 'No reading today';
         return <TouchTarget key={metric.key} accessibilityRole="button" accessibilityLabel={tr(`${metric.title}: ${available ? formatHealthValue(metric.key, value) : tr(missing)}. ${source}. View activity`)} onPress={open}
-          style={({ pressed }) => ({ flexGrow: 1, flexBasis: fontScale > 1.25 || width < 390 ? '45%' : '29%', minWidth: 100, padding: 14, borderRadius: 16, backgroundColor: pressed ? colors.subtle : colors.surface, gap: 8 })}>
+          style={({ pressed }) => ({ flexGrow: 1, flexBasis: fontScale > 1.25 || width < 390 ? '100%' : '29%', minWidth: 100, padding: 16, borderRadius: 16, backgroundColor: pressed ? colors.subtle : colors.surface, gap: 10 })}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}><View style={{ flexShrink: 0 }}><AppIcon name={metric.icon} size={20} /></View><Text style={[c.text, { fontSize: 12, flexShrink: 1 }]}>{tr(metric.title)}</Text></View>
           <Text style={{ fontFamily: fonts.semibold, color: colors.ink, fontSize: 24, lineHeight: 32, fontVariant: ['tabular-nums'] }}>{available ? formatHealthValue(metric.key, value) : '--'}</Text>
           <Text style={[c.text, { fontSize: 12, lineHeight: 18 }]}>{tr(available ? metric.unit : missing)}</Text>
           {goal != null && <Text style={[c.text, { fontSize: 12, lineHeight: 18 }]}>{tr("Target ")}{goal.toLocaleString(locale)}{tr(metric.key === 'SleepSession' ? 'h' : metric.key === 'ExerciseSession' ? ' min' : '')}</Text>}
-          {available && goal != null && <View style={{ height: 5, borderRadius: 3, backgroundColor: colors.border }}><View style={{ height: 5, width: `${Math.min(1, value / goal) * 100}%`, backgroundColor: colors.primary, borderRadius: 3 }} /></View>}
+          {available && goal != null && <GoalProgress value={value} target={goal} label={tr(`${metric.title} toward your daily target`)} />}
           {week.some(hasHealthValue) && <View accessible accessibilityLabel={tr("Last seven days; gaps mean no recorded value")} style={{ height: 22, flexDirection: 'row', alignItems: 'flex-end', gap: 4 }}>{week.map((entry, index) => <View key={index} style={{ flex: 1, height: hasHealthValue(entry) ? Math.max(3, entry / max * 22) : 0, borderRadius: 3, backgroundColor: colors.primary }} />)}</View>}
-          <Text style={[c.text, { fontSize: 11, lineHeight: 17 }]}>{tr(source)}</Text>
-          {checked && Number.isFinite(Date.parse(checked)) && <Text style={[c.text, { fontSize: 11, lineHeight: 17 }]}>{tr("Checked ")}{formatDateTime(checked)}</Text>}
+          {checked && checked !== health.snapshot?.syncedAt && Number.isFinite(Date.parse(checked)) && <Text style={[c.text, { fontSize: 12, lineHeight: 19 }]}>{tr("Reading checked ")}{formatDateTime(checked)}</Text>}
         </TouchTarget>;
       })}
     </View>
+    <Text style={[c.text, { fontSize: 12, lineHeight: 19 }]}>{tr(mode === 'connected' ? `From ${health.source?.name ?? 'your health app'}` : phone.enabled ? 'Phone steps and your logged activity' : 'Your logged activity')}{tr(' · Last seven days; gaps mean no reading')}</Text>
     {health.snapshot && Number.isFinite(Date.parse(health.snapshot.syncedAt)) && <Text style={[c.text, { fontSize: 12 }]}>{tr(health.busy ? 'Refreshing - ' : 'Last checked ')}{formatDateTime(health.snapshot.syncedAt)}</Text>}
     {Boolean(health.error) && <Text accessibilityLiveRegion="polite" style={[c.text, { fontSize: 13, color: colors.error }]}>{tr(health.error)}</Text>}
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>

@@ -7,13 +7,12 @@ import { useCareStyles } from '../../components/app/CareUI';
 import { Button } from '../../components/ui/Button';
 import { TrackingIntro } from './TrackingVisuals';
 import { TrackingFeedback, useTrackingFeedback } from './TrackingFeedback';
-import { AppIcon } from '../../components/app/AppIcon';
 import { useWellness } from './WellnessContext';
 import { type Medicine } from './domain';
 import { Check, Field, Group, TrackingStatus, confirmDelete, useTrackingStyles } from './TrackingUI';
 import { TimeField } from './TimeField';
 import { requestReminderPermission } from './notifications';
-import { formatClock } from '../../lib/time';
+import { MedicineCard } from './MedicineCard';
 
 export function MedicineScreen() {
   const { t: tr } = useTranslation();
@@ -41,11 +40,11 @@ export function MedicineScreen() {
     } finally { setSubmitting(false); }
 
   }
-  return <AppScreen back title={tr("Medicine reminders")}><TrackingIntro name="medicine" title={tr("Medicines")} description={tr("Keep each medicine and its daily doses together. All times use IST.")} /><TrackingStatus />
+  return <AppScreen back><TrackingIntro name="medicine" title={tr("Medicines")} description={tr("Keep each medicine and its daily doses together. All times use IST.")} /><TrackingStatus />
     <TrackingFeedback value={feedback} />
     {!draft && !loading && <>
       {medicines.length === 0 && <View style={s.panel}><Text style={c.title}>{tr("No medicines saved")}</Text><Text style={c.text}>{tr("Add a medicine, then set a time and amount for each dose. You can pause or edit it anytime.")}</Text></View>}
-      <Group title={tr("Your medicines")}><Button title={tr("Add a medicine")} disabled={busy || medicines.length >= 30} onPress={() => {setFeedback(''); setDraft({ id: Crypto.randomUUID(), name: '', notes: '', enabled: true, doses: [{ time: '08:00', amount: '' }] });}} />{medicines.map(m => <View key={m.id} style={s.row}><Text style={c.title}>{m.name}</Text><Text style={c.text}>{tr(m.enabled ? 'Daily reminders on' : 'Reminders paused')}</Text>{[...m.doses].sort((a,b) => a.time.localeCompare(b.time)).map(d => <View key={d.time} style={[s.inline, { alignItems: 'center', gap: 8 }]}><AppIcon name="clock" size={18} /><Text style={c.text}>{formatClock(d.time)}</Text><Text style={c.text}>{d.amount}</Text></View>)}{!!m.notes && <Text style={c.text}>{m.notes}</Text>}<Button title={tr("Edit medicine")} variant="secondary" disabled={busy} onPress={() => { setFeedback(''); setDraft({ ...m, doses: m.doses.map(d => ({ ...d })) }); }} /></View>)}</Group>
+      <Group title={tr("Your medicines")}><Button title={tr("Add a medicine")} disabled={busy || medicines.length >= 30} onPress={() => {setFeedback(''); setDraft({ id: Crypto.randomUUID(), name: '', notes: '', enabled: true, doses: [{ time: '08:00', amount: '' }] });}} />{medicines.map(m => <MedicineCard key={m.id} medicine={m} disabled={busy} onEdit={() => { setFeedback(''); setDraft({ ...m, doses: m.doses.map(d => ({ ...d })) }); }} />)}</Group>
     </>}
     {draft && <Group title={tr(medicines.some(m => m.id === draft.id) ? 'Edit medicine' : 'Add medicine')}>
       <Field label={tr("Medicine name")} icon="pill" placeholder={tr("e.g. Vitamin D")} value={draft.name} onChange={name => change({ name })} />

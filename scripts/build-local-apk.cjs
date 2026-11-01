@@ -19,6 +19,13 @@ async function main() {
   const config = await getPrebuildConfigAsync(root, { platforms: ['android'] });
   config.exp.android = { ...config.exp.android, versionCode };
   await compileModsAsync(config.exp, { projectRoot: root, platforms: ['android'] });
+  // Gradle does not track Expo public environment variables as bundle inputs.
+  // Always regenerate JS when switching from local QA to production API builds.
+  await new Promise((resolve, reject) => {
+    const bundle = spawn('cmd.exe', ['/d', '/c', path.join(root, 'android', 'gradlew.bat'), ':app:createBundleReleaseJsAndAssets', '--rerun-tasks', ...(process.argv.includes('--online') ? [] : ['--offline']), '--console=plain'], { cwd: path.join(root, 'android'), env: process.env, stdio: 'inherit' });
+    bundle.on('error', reject);
+    bundle.on('exit', code => code === 0 ? resolve() : reject(new Error(`JS bundle failed (${code})`)));
+  });
   const child = spawn('cmd.exe', ['/d', '/c', path.join(root, 'android', 'gradlew.bat'), ':app:assembleRelease', ...(process.argv.includes('--online') ? [] : ['--offline']), '-PreactNativeArchitectures=arm64-v8a,armeabi-v7a', '-Pandroid.enableMinifyInReleaseBuilds=false', '-Pandroid.enableShrinkResourcesInReleaseBuilds=false', '--console=plain'], { cwd: path.join(root, 'android'), env: process.env, stdio: 'inherit' });
   child.on('error', error => { console.error(error.message); process.exitCode = 1; });
   child.on('exit', code => { if (code === 0) { const output = path.join(root, `dist/apk-qa/arogio-build${versionCode}-local.apk`); fs.mkdirSync(path.dirname(output), { recursive: true }); fs.copyFileSync(path.join(root, 'android/app/build/outputs/apk/release/app-release.apk'), output); console.log('APK: ' + output); } process.exitCode = code ?? 1; });

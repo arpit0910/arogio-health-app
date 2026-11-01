@@ -35,6 +35,7 @@ function medicineForm(allowed: boolean) {
     "../../components/app/CareUI": { useCareStyles: () => ({}) },
     "../../components/ui/Button": { Button: component },
     "./TrackingVisuals": { TrackingIntro: component },
+    "./MedicineCard": { MedicineCard: component },
     "./TrackingFeedback": {
       TrackingFeedback: component,
       useTrackingFeedback: () => ({

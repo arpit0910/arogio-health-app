@@ -11,7 +11,7 @@ import { useInbox } from './InboxProvider';
 export function NotificationsScreen() {
   const { t: tr } = useTranslation();
   const { items, loading, error, markRead } = useInbox(), c = useCareStyles(), colors = usePalette();
-  return <AppScreen back title={tr("Notifications")}>
+  return <AppScreen back>
     <View style={{ gap: 8 }}><Text style={c.heading}>{tr("Your updates")}</Text><Text style={c.text}>{tr("Arogio reminders on this device, up to 120 recent reminders from the last 90 days. A reminder appearing here does not mean it was completed.")}</Text></View>
     <CareRow icon="settings" title={tr("Notification settings")} detail={tr("Permissions, sound and reminders")} onPress={() => router.push('/notification-settings')} />
     {!!error && <Text accessibilityRole="alert" style={[c.text, { color: colors.error }]}>{tr(error)}</Text>}

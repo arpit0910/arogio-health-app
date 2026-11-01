@@ -1,7 +1,7 @@
 import { useTranslation } from "../../localization/LanguageProvider";
 import { canEnterApp } from '../profile/setupStatus';
-import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import { ActivityIndicator, Platform, ScrollView, Text, View } from 'react-native';
+import { useEffect, useEffectEvent, useRef, useState, type PropsWithChildren } from 'react';
+import { Platform, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import * as Location from 'expo-location';
@@ -15,18 +15,37 @@ import { AppIcon } from '../../components/app/AppIcon';
 import { Button } from '../../components/ui/Button';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { usePalette } from '../../theme/AppearanceProvider';
+import { requestInitialAccess } from './initialAccess';
 const key = (id: string) => `arogio.access.v3.${id}`;
 export function AppAccessGate({ children }: PropsWithChildren) {
   const { user } = useAuth();
   return <AccessSession key={user && canEnterApp(user)?user.id:'out'} owner={user && canEnterApp(user) ? user.id : null}>{children}</AccessSession>;
 }
 function AccessSession({ owner, children }: PropsWithChildren<{owner:string|null}>) {
-  const [checked,setChecked]=useState(false),[done,setDone]=useState(false);
-  const colors=usePalette();
-  useEffect(()=>{let alive=true;if(!owner||Platform.OS==='web')return;void SecureStore.getItemAsync(key(owner)).then(value=>{if(alive)setDone(value==='done');}).catch(()=>{}).finally(()=>{if(alive)setChecked(true);});return()=>{alive=false;};},[owner]);
-  if(!owner||Platform.OS==='web')return children;
-  if(!checked)return <View style={{flex:1,backgroundColor:colors.background,justifyContent:'center'}}><ActivityIndicator color={colors.primary}/></View>;
-  if(!done)return <AccessSetup onComplete={()=>setDone(true)}/>;
+  const phone = usePhoneSteps();
+  const ready = phone.ready;
+  const requestMotion = useEffectEvent(async () => { if (!phone.enabled) await phone.toggle(); });
+  const started = useRef(false);
+  // Keep Home mounted underneath the OS dialogs. No interstitial or permission wall.
+  useEffect(() => {
+    if (!owner || Platform.OS === 'web' || !ready || started.current) return;
+    started.current = true;
+    let active = true;
+    const timer = setTimeout(() => {
+      void (async () => {
+        try {
+          await requestInitialAccess({
+            alreadyAsked: async () => await SecureStore.getItemAsync(key(owner)) === 'done',
+            rememberAttempt: () => SecureStore.setItemAsync(key(owner), 'done'),
+            notifications: requestReminderPermission,
+            motion: requestMotion,
+            active: () => active,
+          });
+        } catch { /* Home and manual tracking stay available. */ }
+      })();
+    }, 700);
+    return () => { active = false; clearTimeout(timer); started.current = false; };
+  }, [owner, ready]);
   return children;
 }
 export function AppAccessScreen(){return <AccessSetup onComplete={()=>router.canGoBack()?router.back():router.replace('/home')}/>;}

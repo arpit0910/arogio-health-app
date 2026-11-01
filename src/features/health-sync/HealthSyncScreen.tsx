@@ -25,7 +25,7 @@ export function HealthSyncScreen() {
     setError('');
     try { await work(); } catch (e) { setError(e instanceof Error ? e.message : 'Could not open settings. Try again.'); }
   }
-  return <AppScreen back title={tr("Health apps")} refreshing={health.busy || health.appsLoading} onRefresh={() => void Promise.allSettled([health.checkAvailability(), health.run()])}>
+  return <AppScreen back refreshing={health.busy || health.appsLoading} onRefresh={() => void Promise.allSettled([health.checkAvailability(), health.run()])}>
     <View style={{ gap: 8, marginBottom: 20 }}>
       <Text accessibilityRole="header" style={c.heading}>{tr("Connect your health app")}</Text>
       <Text style={c.text}>{tr("Choose an app and allow read access. Your readings update automatically.")}</Text>

@@ -19,7 +19,7 @@ export function CareRow({ title, detail, onPress, icon }: { title: string; detai
   const s = useStyles();
 
   return <TouchTarget accessibilityRole="button" accessibilityLabel={`${title}${detail ? `. ${detail}` : ''}`} onPress={onPress} style={({ pressed }) => [s.row, pressed && s.pressed]}>
-    {icon && <AppIcon name={icon} size={22} />}<View style={s.copy}><Text style={s.rowTitle}>{tr(title)}</Text>{detail && <Text style={s.detail}>{tr(detail)}</Text>}</View><AppIcon name="right" size={18} />
+    {icon && <View style={s.rowIcon}><AppIcon name={icon} size={23} /></View>}<View style={s.copy}><Text style={s.rowTitle}>{tr(title)}</Text>{detail && <Text style={s.detail}>{tr(detail)}</Text>}</View><AppIcon name="right" size={16} />
   </TouchTarget>;
 }
 export function CareDisclosure({ title, children, divider = true }: { title: string; children: ReactNode; divider?: boolean }) {
@@ -47,7 +47,8 @@ return StyleSheet.create({
   brand: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   wordmark: { fontFamily: fonts.semibold, fontSize: 24, color: colors.ink, letterSpacing: -0.7 },
   pressed: { backgroundColor: colors.subtle, borderRadius: 12 },
-  row: { backgroundColor: colors.surface, borderRadius: 14, paddingHorizontal: 14, marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 16 },
+  row: { backgroundColor: colors.surface, borderRadius: 16, paddingHorizontal: 16, marginTop: 10, flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 18 },
+  rowIcon: { width: 44, height: 44, borderRadius: 14, backgroundColor: colors.subtle, alignItems: 'center', justifyContent: 'center' },
   copy: { flex: 1, minWidth: 0 },
   rowTitle: { fontFamily: fonts.medium, fontSize: 16, lineHeight: 23, color: colors.ink },
   detail: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 20, marginTop: 3, color: colors.muted },

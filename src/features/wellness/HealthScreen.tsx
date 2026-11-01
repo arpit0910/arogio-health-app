@@ -9,6 +9,7 @@ import { TodayActivity } from '../activity/TodayActivity';
 import { TrackingStatus } from './TrackingUI';
 import { homeWater } from '../home/homeModel';
 import { useTrackingClock } from './useTrackingClock';
+import { FeatureCard } from '../../components/app/FeatureCard';
 
 export function HealthScreen() {
   const { t: tr, locale } = useTranslation();
@@ -18,16 +19,16 @@ export function HealthScreen() {
     <Text accessibilityRole="header" style={c.heading}>{tr("Your health")}</Text>
     <Text style={[c.text, { marginTop: 8 }]}>{tr("Your activity and everyday care, together.")}</Text>
     <TrackingStatus />
-    <View style={{ marginTop: 20 }}>
-      <CareRow icon="sync" title={tr("Health apps")} detail={tr(health.connected ? `${health.source?.name ?? 'Health app'} - Automatic updates` : 'Connect an app for automatic readings')} onPress={() => router.push('/connected-health')} />
-      <CareRow icon="goal" title={tr("Activity & targets")} detail={tr("Log activity and manage your daily goals")} onPress={() => router.push('/activity')} />
+    <View style={{ marginTop: 28, gap: 14 }}><Text accessibilityRole="header" style={c.title}>{tr("Daily care")}</Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+        <FeatureCard title="Water" detail={water ? `${water.totalMl.toLocaleString(locale)} of ${data.waterPlan!.targetMl.toLocaleString(locale)} ml today` : 'Set a target and log drinks'} icon="drop" route="/water" tone="blue" />
+        <FeatureCard title="Medicines" detail={data.medicines?.length ? `${data.medicines.length} saved medicines` : 'Keep your dose times together'} icon="pill" route="/medicines" tone="rose" />
+      </View>
+      <CareRow icon="calendar" title={tr("Cycle journal")} detail={tr("Your private dates and check-ins")} onPress={() => router.push('/cycle')} />
     </View>
+    <CareRow icon="goal" title={tr("Activity & targets")} detail={tr("Log activity and manage your daily goals")} onPress={() => router.push('/activity')} />
     <TodayActivity />
-    <View style={{ marginTop: 24 }}><Text accessibilityRole="header" style={c.title}>{tr("Daily care")}</Text>
-      <CareRow icon="drop" title={tr("Water")} detail={tr(water ? `${water.totalMl.toLocaleString(locale)} of ${data.waterPlan!.targetMl.toLocaleString(locale)} ml today` : 'Set a target and log drinks')} onPress={() => router.push('/water')} />
-      <CareRow icon="pill" title={tr("Medicines")} detail={tr(data.medicines?.length ? `${data.medicines.length} saved medicines` : 'Add a medicine and reminder times')} onPress={() => router.push('/medicines')} />
-      <CareRow icon="calendar" title={tr("Cycle")} detail={tr("Your private dates and check-ins")} onPress={() => router.push('/cycle')} />
-    </View>
+    <View style={{ marginTop: 24 }}><CareRow icon="sync" title={tr("Health apps")} detail={tr(health.connected ? `${health.source?.name ?? 'Health app'} - Automatic updates` : 'Connect an app for automatic readings')} onPress={() => router.push('/connected-health')} /></View>
     <View style={{ marginTop: 24 }}><CareRow icon="user" title={tr("Body details")} detail={tr("Weight, height and profile")} onPress={() => router.push('/profile')} /></View>
   </AppScreen>;
 }

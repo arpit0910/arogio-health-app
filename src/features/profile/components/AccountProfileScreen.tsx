@@ -57,10 +57,10 @@ function Detail({ label, value }: { label: string; value: string }) {
 const useStyles = () => {
   const colors = usePalette();
   return StyleSheet.create({
-    identity: { alignItems: 'center', paddingTop: 16, paddingBottom: 28, gap: 8 },
+    identity: { alignItems: 'center', paddingTop: 24, paddingBottom: 24, paddingHorizontal: 16, backgroundColor: colors.surface, borderRadius: 16, gap: 10 },
     center: { textAlign: 'center', maxWidth: '100%' },
     city: { flexDirection: 'row', alignItems: 'center', gap: 5, maxWidth: '100%', flexWrap: 'wrap', justifyContent: 'center' },
-    measurements: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, paddingVertical: 24, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.border },
+    measurements: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, paddingVertical: 22, marginTop: 12, backgroundColor: colors.subtle, borderRadius: 16 },
     measurement: { flex: 1, minWidth: 72, gap: 6, alignItems: 'center' },
     measureValue: { fontFamily: fonts.semibold, fontSize: 23, lineHeight: 31, color: colors.ink, fontVariant: ['tabular-nums'] },
     unit: { fontFamily: fonts.regular, fontSize: 13, color: colors.muted },

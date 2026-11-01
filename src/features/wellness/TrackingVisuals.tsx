@@ -13,7 +13,7 @@ export function TrackingIntro({ name, title, description }: { name: Illustration
   const styles = useStyles();
 
   const { fontScale } = useWindowDimensions();
-  return <View style={styles.intro}><View style={styles.copy}><Text accessibilityRole="header" style={c.heading}>{tr(title)}</Text><Text style={c.text}>{description}</Text></View>{fontScale <= 1.3 && <CareIllustration name={name} size={64} />}</View>;
+  return <View style={[styles.intro, fontScale > 1.2 && styles.stacked]}><View style={styles.copy}><Text accessibilityRole="header" style={c.heading}>{tr(title)}</Text><Text style={c.text}>{tr(description)}</Text></View>{fontScale <= 1.2 && <View style={styles.art}><CareIllustration name={name} size={76} /></View>}</View>;
 }
 
 export function LogChoice({ label, detail, icon, selected = false, disabled = false, onPress, multiple = false }: { label: string; detail?: string; icon: AppIconName; selected?: boolean; disabled?: boolean; onPress: () => void; multiple?: boolean }) {
@@ -31,7 +31,8 @@ export function LogChoice({ label, detail, icon, selected = false, disabled = fa
 const useStyles = () => {
   const colors = usePalette();
 return StyleSheet.create({
-  intro: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 8 }, stacked: { flexDirection: 'column-reverse', alignItems: 'flex-start' },
+  intro: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 8 }, stacked: { flexDirection: 'column', alignItems: 'flex-start' },
+  art: { width: 88, height: 96, borderRadius: 16, backgroundColor: colors.subtle, alignItems: 'center', justifyContent: 'center' },
   copy: { flex: 1, gap: 8 }, choiceCopy: { flexShrink: 1, gap: 3 },
   choice: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 12, borderRadius: 12, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, flexGrow: 1, flexBasis: '43%' },
   selected: { backgroundColor: colors.primary, borderColor: colors.primary }, selectedText: { color: colors.onPrimary },

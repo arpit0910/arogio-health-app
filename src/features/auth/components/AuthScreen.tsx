@@ -2,11 +2,10 @@ import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { CareIllustration } from '../../../components/app/CareIllustration';
 import type { ReactNode } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { useAuth } from '../context/AuthContext';
-import { AuthIcon } from './AuthIcon';
 import { LoginForm } from './LoginForm';
 import { SignupForm } from './SignupForm';
 import { AuthCanvas } from './AuthCanvas';
@@ -14,17 +13,10 @@ import { AuthBrand } from './AuthBrand';
 import { useScreenLayout } from '../../../components/ui/useScreenLayout';
 
 export function AuthShell({ children, signup = false }: { children: ReactNode; signup?: boolean }) {
-  const { t: tr } = useTranslation();
   const styles = useStyles();
-
-  const { isSubmitting } = useAuth();
   const { compact } = useScreenLayout();
   return <AuthCanvas background={signup ? 'backgroundSignup' : 'backgroundLogin'}>
         <View style={[styles.top, compact && styles.compactTop]}>
-          <Pressable accessibilityRole="button" accessibilityLabel={tr("Go back")} disabled={isSubmitting} hitSlop={2} style={styles.back}
-            onPress={() => router.canGoBack() ? router.back() : router.replace('/')}>
-            <AuthIcon name="back" />
-          </Pressable>
           <AuthBrand />
         </View>
         <View style={[styles.body, compact && styles.compactBody, signup && styles.signupBody, signup && compact && styles.compactSignupBody]}><View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[styles.illustration, compact && styles.compactIllustration]}><CareIllustration name={signup ? 'signup' : 'login'} width="100%" height="100%" /></View>{children}</View>

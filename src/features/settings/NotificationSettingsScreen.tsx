@@ -39,7 +39,7 @@ export function NotificationSettingsScreen() {
   }
   const title = access === 'allowed' ? 'Notifications are allowed' : access === 'blocked' ? 'Notifications are off' : access === 'not-requested' ? 'Allow reminders when you’re ready' : access === 'unavailable' ? 'Reminders need the mobile app' : 'Checking notification access…';
   const enabledMedicines = data.medicines?.filter(m => m.enabled).length ?? 0;
-  return <AppScreen back title={tr("Notifications")}>
+  return <AppScreen back>
     <Text style={c.heading}>{tr("Reminder preferences")}</Text>
     <Text style={[c.text, { marginTop: 8 }]}>{tr("Manage reminder access here. Choose times and frequency inside each tracker.")}</Text>
     <View style={{ marginTop: 24, padding: 20, backgroundColor: colors.subtle, borderRadius: 16, gap: 12 }}>

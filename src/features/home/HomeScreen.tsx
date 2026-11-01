@@ -36,6 +36,7 @@ import { AppIcon, type AppIconName } from '../../components/app/AppIcon';
 import { Button } from '../../components/ui/Button';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { fonts } from '../../theme/tokens';
+import { GoalProgress } from '../../components/app/GoalProgress';
 
 const shortcuts: {
   title: string;
@@ -159,33 +160,8 @@ export function HomeScreen() {
                 timeZone: APP_TIMEZONE,
               })}
             </Text>
-            <Text style={s.date}>{formatTime(now)}</Text>
+
           </View><WeatherTile weather={homeContent.weather}/></View>
-          <HomeBanner banners={homeContent.banners}/>
-          <View style={s.shortcuts}>
-            {shortcuts.map((item, index) => (
-              <TouchTarget
-                key={item.route}
-                accessibilityRole="button"
-                accessibilityLabel={
-                  tr(item.title === 'Cycle'
-                    ? 'Open private cycle tracker'
-                    : item.title)
-                }
-                onPress={() => router.navigate(item.route)}
-                style={({ pressed }) => [
-                  s.shortcut,
-                  {backgroundColor: ['#BEE2F7','#F4C4D1','#FAE2B8','#C8C8FB'][index]},
-                  (fontScale > 1.3 || width < 360) && s.largeShortcut,
-                  pressed && s.pressed,
-                ]}
-              >
-                <View style={{flexDirection:'row',width:'100%',alignItems:'center',justifyContent:'space-between'}}><AppIcon name={item.icon} size={24} color={['#14648A','#9D254B','#A05215','#4C4C9B'][index]}/><AppIcon name="right" size={14} color="#234A3C"/></View>
-                <Text style={s.shortcutLabel}>{tr(item.title)}</Text><Text style={s.shortcutDetail}>{tr(['Track hydration','Set reminder','Track cycle','Stay active'][index])}</Text>
-              </TouchTarget>
-            ))}
-          </View>
-          <TodayActivity />
           {error && (
             <View style={s.error} accessibilityLiveRegion="polite">
               <Text style={s.errorText}>
@@ -241,25 +217,7 @@ export function HomeScreen() {
                     <Text style={s.target}>
                       {tr("of ")}{plan.targetMl.toLocaleString(locale)} {tr(" ml today")}</Text>
                   </Text>
-                  <View
-                    accessible
-                    accessibilityRole="progressbar"
-                    accessibilityLabel={tr("Daily water target")}
-                    accessibilityValue={{
-                      min: 0,
-                      max: plan.targetMl,
-                      now: Math.min(water.totalMl, plan.targetMl),
-                      text: `${water.totalMl} of ${plan.targetMl} millilitres logged`,
-                    }}
-                    style={s.progress}
-                  >
-                    <View
-                      style={[
-                        s.progressFill,
-                        { width: `${water.progress * 100}%` },
-                      ]}
-                    />
-                  </View>
+                  <GoalProgress value={water.totalMl} target={plan.targetMl} label={tr("Daily water target")} />
                   <Text style={s.body}>
                     {tr(water.paused
                       ? 'Reminders are paused. You can still log water.'
@@ -305,6 +263,30 @@ export function HomeScreen() {
                   </View>
                 )
               )}
+              <View style={{ marginTop: 20 }}><View style={s.shortcuts}>
+            {shortcuts.map((item, index) => (
+              <TouchTarget
+                key={item.route}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  tr(item.title === 'Cycle'
+                    ? 'Open private cycle tracker'
+                    : item.title)
+                }
+                onPress={() => router.navigate(item.route)}
+                style={({ pressed }) => [
+                  s.shortcut,
+                  {backgroundColor: ['#BEE2F7','#F4C4D1','#FAE2B8','#C8C8FB'][index]},
+                  (fontScale > 1.3 || width < 360) && s.largeShortcut,
+                  pressed && s.pressed,
+                ]}
+              >
+                <View style={{flexDirection:'row',width:'100%',alignItems:'center',justifyContent:'space-between'}}><AppIcon name={item.icon} size={24} color={['#14648A','#9D254B','#A05215','#4C4C9B'][index]}/><AppIcon name="right" size={14} color="#234A3C"/></View>
+                <Text style={s.shortcutLabel}>{tr(item.title)}</Text><Text style={s.shortcutDetail}>{tr(['Track hydration','Set reminder','Track cycle','Stay active'][index])}</Text>
+              </TouchTarget>
+            ))}
+          </View></View>
+              <View style={{ marginTop: 16 }}><EmergencyButton inline /></View>
               {feedback && (
                 <View style={s.feedback} accessibilityLiveRegion="polite">
                   <Text style={[s.body, s.flex]}>{feedback.text}</Text>
@@ -429,9 +411,8 @@ export function HomeScreen() {
             </View>
           </View>
         </View>
-        <View style={[s.content, expanded && s.expandedContent]}><HomeArticles /></View>
+        <View style={[s.content, expanded && s.expandedContent]}><TodayActivity /><View style={{ marginTop: 28 }}><HomeBanner banners={homeContent.banners}/></View><HomeArticles /></View>
       </ScrollView>
-      <EmergencyButton />
     </SafeAreaView>
   );
 }
@@ -457,7 +438,7 @@ return StyleSheet.create({
     width: '100%',
     maxWidth: 440,
     alignSelf: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
   },
   expandedContent: { maxWidth: 880 },
   greeting: { flexDirection:'row', flexWrap:'wrap', alignItems:'center', gap:12, paddingTop:16, paddingBottom:18 },
@@ -486,10 +467,10 @@ return StyleSheet.create({
     gap: 8,
     marginBottom: 0,
   },
-  shortcut: { flexGrow:0, flexShrink:0, flexBasis:'23%', minWidth:60, minHeight:104, alignItems:'flex-start', gap:9, padding:12, borderRadius:16 },
+  shortcut: { flexGrow:1, flexShrink:1, flexBasis:'43%', minWidth:130, minHeight:108, alignItems:'flex-start', gap:7, padding:16, borderRadius:16 },
   largeShortcut: { flexBasis:'45%' },
-  shortcutLabel: {fontFamily:fonts.semibold,fontSize:12,lineHeight:18,color:'#102D25'},
-  shortcutDetail: {fontFamily:fonts.regular,fontSize:10,lineHeight:14,color:'#28483F'},
+  shortcutLabel: {fontFamily:fonts.semibold,fontSize:14,lineHeight:21,color:'#102D25'},
+  shortcutDetail: {fontFamily:fonts.regular,fontSize:12,lineHeight:18,color:'#28483F'},
   columns: { flexDirection: 'row', alignItems: 'flex-start', flexWrap: 'wrap', gap: 24 },
   primaryColumn: { flex: 1.1, minWidth: 280 },
   secondaryColumn: { flex: 1, minWidth: 240 },

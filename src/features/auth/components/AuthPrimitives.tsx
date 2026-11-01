@@ -49,11 +49,11 @@ export const useAuthStyles = () => {
   const colors = usePalette();
 return StyleSheet.create({
   form: { gap: 12 },
-  link: { color: colors.primary, fontFamily: fonts.semibold, fontSize: 11.5, textDecorationLine: 'underline' },
-  small: { color: colors.muted, fontFamily: fonts.regular, fontSize: 11.5, lineHeight: 17 },
+  link: { color: colors.primary, fontFamily: fonts.semibold, fontSize: 14, textDecorationLine: 'underline' },
+  small: { color: colors.muted, fontFamily: fonts.regular, fontSize: 14, lineHeight: 21 },
   footer: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', marginTop: 8 },
   footerLink: { minHeight: 48, justifyContent: 'center', paddingHorizontal: 5 },
-  footerLinkText: { color: colors.primary, fontFamily: fonts.bold, fontSize: 11.5 },
+  footerLinkText: { color: colors.primary, fontFamily: fonts.bold, fontSize: 14 },
 });
 };
 
@@ -71,7 +71,7 @@ return StyleSheet.create({
   check: { width: 18, height: 18, borderWidth: 1, borderColor: colors.primary, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   checked: { backgroundColor: colors.primary },
   tick: { width: 9, height: 5, borderLeftWidth: 2, borderBottomWidth: 2, borderColor: colors.onPrimary, transform: [{ rotate: '-45deg' }], marginTop: -2 },
-  small: { color: colors.muted, fontFamily: fonts.medium, fontSize: 11.5 },
+  small: { color: colors.muted, fontFamily: fonts.medium, fontSize: 14 },
   divider: { flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 12 },
   compactDivider: { marginVertical: 6 },
   line: { flex: 1, height: 1, backgroundColor: colors.border },

@@ -13,8 +13,9 @@ async function main() {
   const { compileModsAsync } = require('expo/config-plugins');
   // Evaluate Expo's config plugins without clearing existing build outputs.
   const config = await getPrebuildConfigAsync(projectRoot, { platforms: ['android'] });
+  config.exp.android = { ...config.exp.android, versionCode: Math.max(16, config.exp.android?.versionCode ?? 1) };
   await compileModsAsync(config.exp, { projectRoot, platforms: ['android'] });
-  const result = spawn('cmd.exe', ['/d', '/c', 'gradlew.bat', ':app:assembleRelease', '-PreactNativeArchitectures=x86_64', '-Pandroid.enableMinifyInReleaseBuilds=false', '-Pandroid.enableShrinkResourcesInReleaseBuilds=false', '--console=plain'], { cwd: path.join(projectRoot, 'android'), env: process.env, stdio: 'inherit' });
+  const result = spawn('cmd.exe', ['/d', '/c', path.join(projectRoot, 'android', 'gradlew.bat'), ':app:assembleRelease', '-PreactNativeArchitectures=x86_64', '-Pandroid.enableMinifyInReleaseBuilds=false', '-Pandroid.enableShrinkResourcesInReleaseBuilds=false', '--console=plain'], { cwd: path.join(projectRoot, 'android'), env: process.env, stdio: 'inherit' });
   result.on('error', error => { console.error(error.message); process.exitCode = 1; });
   result.on('exit', code => { process.exitCode = code ?? 1; });
 }

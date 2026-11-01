@@ -18,7 +18,7 @@ export function SettingsScreen() {
   const c = useCareStyles();
   const { colors, preference, scheme, setPreference, ready, saving, error } = useAppearance();
   const health = useHealthSync();
-  return <AppScreen back title={tr("Settings")}>
+  return <AppScreen back>
     <View style={{ gap: 8 }}><Text style={c.heading}>{tr("Preferences")}</Text><Text style={c.text}>{tr("Choose how Arogio looks, reminds you and records your day.")}</Text></View>
     <View style={{ marginTop: 32, gap: 12 }}>
       <Text accessibilityRole="header" style={c.title}>{tr('Language')}</Text>

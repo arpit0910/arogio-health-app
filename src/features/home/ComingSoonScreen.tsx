@@ -20,7 +20,7 @@ export function ComingSoonScreen({
   const t = useAppTheme();
 
   return (
-    <AppScreen back={back} title={title}>
+    <AppScreen back={back}>
       <View style={{ gap: 14, paddingTop: 48, alignItems: "center" }}>
         <AppIcon name={icon} size={40} />
         <Text accessibilityRole="header" style={a.title}>

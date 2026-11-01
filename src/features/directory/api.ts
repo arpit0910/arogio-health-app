@@ -7,6 +7,9 @@ export const articleSchema = z.object({
   excerpt_en: z.string(),
   excerpt_hi: z.string(),
   category: z.string(),
+  category_hi: z.string().default(""),
+  image_url: z.string().default(""),
+  thumbnail_url: z.string().default(""),
   author_name: z.string(),
   created_at: z.string(),
 });
@@ -36,11 +39,22 @@ export const bankSchema = z.object({
   longitude: z.number().nullable(),
   distanceKm: z.number().optional(),
 });
+export const categorySchema = z.object({
+  name: z.string(),
+  name_hi: z.string(),
+  description: z.string(),
+  image_url: z.string(),
+  count: z.number().int().nonnegative(),
+});
+export type ArticleCategory = z.infer<typeof categorySchema>;
+export type ArticleSort = "newest" | "oldest" | "title_asc" | "title_desc";
 export const articleListSchema = z.object({
   items: z.array(articleSchema),
   page: z.number(),
   hasNext: z.boolean(),
   categories: z.array(z.string()),
+  categoryDetails: z.array(categorySchema).default([]),
+  total: z.number().int().nonnegative().optional(),
 });
 export const bankListSchema = z.object({
   items: z.array(bankSchema),
@@ -54,13 +68,23 @@ export async function loadArticles(
   search = "",
   page = 1,
   signal?: AbortSignal,
+  options: {
+    category?: string;
+    sort?: ArticleSort;
+    language?: "en" | "hi";
+  } = {},
 ) {
   return articleListSchema.parse(
     await apiClient.request({
-      path: `/articles?limit=12&page=${page}&search=${encodeURIComponent(search)}`,
+      path: `/articles?limit=12&page=${page}&search=${encodeURIComponent(search)}&category=${encodeURIComponent(options.category ?? "")}&sort=${options.sort ?? "newest"}&language=${options.language ?? "en"}`,
       signal,
     }),
   );
+}
+export async function loadArticleCategories(signal?: AbortSignal) {
+  return z
+    .array(categorySchema)
+    .parse(await apiClient.request({ path: "/article-categories", signal }));
 }
 export function dialNumber(number: string | null, country: string) {
   if (!number || !/^[+\d\s()-]+$/.test(number)) return null;

@@ -18,7 +18,7 @@ export function ForgotPasswordScreen() {
       <Text style={styles.noticeTitle}>{tr("Password recovery is not available yet")}</Text>
       <Text style={styles.copy}>{tr("You can use Google to sign in if it is linked to your account, or return to log in with your password.")}</Text>
     </View>
-    <Button title={tr("Back to Log In")} onPress={() => router.replace('/login')} />
+    <Button title={tr("Sign in")} onPress={() => router.replace('/login')} />
     <Pressable accessibilityRole="link" style={styles.link} onPress={() => router.push('/privacy')}><Text style={authStyles.link}>{tr("How your sign-in information is used")}</Text></Pressable>
   </AuthShell>;
 }

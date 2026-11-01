@@ -1,4 +1,4 @@
-export type ChatMessage = { role: 'user' | 'assistant'; content: string };
+export type ChatMessage = { role: 'user' | 'assistant'; content: string; kind?: 'answer' | 'medication' | 'urgent' | 'harmful' | 'off_topic' };
 export function conversationForQuestion(history: ChatMessage[], question: string): ChatMessage[] {
   const content = question.trim();
   if (!content || content.length > 2000) throw new Error('Write a question of up to 2,000 characters.');

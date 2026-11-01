@@ -18,7 +18,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useAuth } from "../../auth/context/AuthContext";
 import { FormError } from "../../auth/components/AuthPrimitives";
 import { Button } from "../../../components/ui/Button";
-import { TouchTarget } from "../../../components/ui/TouchTarget";
 import { CareBrand, useCareStyles } from "../../../components/app/CareUI";
 import { AppIcon } from "../../../components/app/AppIcon";
 import { fonts } from "../../../theme/tokens";
@@ -162,22 +161,7 @@ export function ProfileSetupScreen() {
       >
         <View style={s.container}>
           <View style={s.header}>
-            {step > 0 ? (
-              <TouchTarget
-                accessibilityRole="button"
-                accessibilityLabel={tr("Previous step")}
-                disabled={busy || notificationBusy}
-                onPress={() => {
-                  setError(null);
-                  setStep((step - 1) as SetupStep);
-                }}
-                style={s.back}
-              >
-                <AppIcon name="back" size={21} />
-              </TouchTarget>
-            ) : (
-              <CareBrand />
-            )}
+            <CareBrand />
             <Text style={s.step}>{tr("Step ")}{activeStep + 1} {tr(" of 3")}</Text>
           </View>
           <View

@@ -29,6 +29,7 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary',
       aria-disabled={disabled || loading} aria-busy={loading}
       disabled={disabled || loading} onPress={onPress}
       style={({ pressed }) => [styles.base, { minHeight: Math.max(52, control) }, danger ? styles.danger : secondary ? styles.secondary : styles.primary,
+        pressed && styles.pressed,
         pressed && (danger ? styles.dangerPressed : secondary ? styles.secondaryPressed : styles.primaryPressed),
         (disabled || loading) && styles.disabled]}>
       {loading ? <ActivityIndicator color={danger ? colors.error : secondary ? colors.primary : colors.background} /> : <>
@@ -52,5 +53,6 @@ return StyleSheet.create({
   text: { color: colors.onPrimary, fontFamily: fonts.semibold, fontSize: 16, lineHeight: 23, flexShrink: 1, textAlign: 'center' },
   secondaryText: { color: colors.ink, fontSize: 16 },
   disabled: { opacity: 0.55 },
+  pressed: { transform: [{ scale: 0.985 }] },
 });
 };

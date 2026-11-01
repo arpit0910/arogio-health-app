@@ -7,6 +7,7 @@ import { profileAssets } from '../assets/profileAssets';
 import { fonts } from '../../../theme/tokens';
 import { TouchTarget, TouchTargetScale, useTouchTarget } from '../../../components/ui/TouchTarget';
 import { Button } from '../../../components/ui/Button';
+import { AppIcon, type AppIconName } from '../../../components/app/AppIcon';
 
 export function ProfileIcon({ name, white = false }: { name: string; white?: boolean }) {
   const colors = usePalette();
@@ -51,14 +52,16 @@ export function UnitSelector({ units, value, onChange }: { units: string[]; valu
 
   return <View accessibilityRole="radiogroup" style={s.units}>{units.map(unit => <TouchTarget key={unit} accessibilityLabel={unit} accessibilityRole="radio" accessibilityState={{ checked: value === unit }} onPress={() => onChange(unit)} style={[s.unit, unit === value && s.unitSelected]}><Text style={[s.unitText, unit === value && s.unitTextSelected]}>{unit}</Text></TouchTarget>)}</View>;
 }
-export function ChoiceCard({ title, subtitle, selected, multiple, onPress, children }: {
+export function ChoiceCard({ title, subtitle, icon, selected, multiple, onPress, children }: {
   title: string; subtitle: string; icon: string; selected?: boolean; multiple?: boolean; onPress?: () => void; children?: ReactNode;
 }) {
   const { t: tr } = useTranslation();
   const s = useStyles();
+  const choiceIcons: Record<string, AppIconName> = { fitness: 'fitness', height: 'height', activity: 'walk', sedentary: 'user', shield: 'shield', management: 'weight', food: 'food', sleep: 'moon', stress: 'leaf' };
 
   return <TouchTarget accessibilityRole={children ? undefined : multiple ? 'checkbox' : 'radio'} accessibilityLabel={children ? undefined : `${title}. ${subtitle}`} accessibilityState={children ? undefined : { checked: selected }} onPress={onPress} disabled={!onPress} style={[s.card, selected && s.selected]}>
-    <View style={s.cardCopy}><Text style={s.cardTitle}>{tr(title)}</Text><Text style={s.cardSubtitle}>{subtitle}</Text></View>
+    <View style={s.badge}><AppIcon name={choiceIcons[icon] ?? 'goal'} size={24} /></View>
+    <View style={s.cardCopy}><Text style={s.cardTitle}>{tr(title)}</Text><Text style={s.cardSubtitle}>{tr(subtitle)}</Text></View>
     {children ?? <View style={[s.mark, !multiple && { borderRadius: 20 }, selected && s.markSelected]}>{selected && (multiple ? <ProfileIcon name="check" white /> : <View style={s.radioDot} />)}</View>}
   </TouchTarget>;
 }
@@ -92,12 +95,12 @@ return StyleSheet.create({
   stage: { alignItems: 'center', width: 42, marginHorizontal: -14 }, dot: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#CBD5E1' }, dotDone: { backgroundColor: colors.primary },
   stageLabel: { fontFamily: fonts.regular, fontSize: 9, color: colors.placeholder, marginTop: 8, width: 78, textAlign: 'center' }, stageActive: { color: colors.ink, fontFamily: fonts.semibold },
   heading: { marginBottom: 6 }, title: { fontFamily: fonts.bold, fontSize: 21, lineHeight: 28, letterSpacing: -0.6, color: colors.ink }, subtitle: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 17, color: colors.muted, marginTop: 5 },
-  fieldGroup: { gap: 8, marginTop: 6 }, label: { fontFamily: fonts.semibold, color: colors.ink, fontSize: 11.5 },
+  fieldGroup: { gap: 8, marginTop: 6 }, label: { fontFamily: fonts.semibold, color: colors.ink, fontSize: 14 },
   field: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: 12, paddingHorizontal: 13, minHeight: 44, backgroundColor: colors.background },
-  fieldIcon: { width: 27, borderRightWidth: 1, borderColor: colors.border, marginRight: 12 }, input: { flex: 1, fontFamily: fonts.regular, fontSize: 13, color: colors.ink, paddingVertical: 12, minWidth: 0 }, suffix: { fontFamily: fonts.regular, fontSize: 12, color: colors.muted, marginLeft: 6 },
+  fieldIcon: { width: 27, borderRightWidth: 1, borderColor: colors.border, marginRight: 12 }, input: { flex: 1, fontFamily: fonts.regular, fontSize: 16, color: colors.ink, paddingVertical: 14, minWidth: 0 }, suffix: { fontFamily: fonts.regular, fontSize: 12, color: colors.muted, marginLeft: 6 },
   units: { flexDirection: 'row', gap: 6 }, unit: { flex: 1, borderRadius: 8, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }, unitSelected: { backgroundColor: colors.primary, borderColor: colors.primary }, unitText: { fontFamily: fonts.semibold, fontSize: 13, color: colors.muted }, unitTextSelected: { color: colors.onPrimary },
   card: { flexDirection: 'row', alignItems: 'center', padding: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 12, gap: 16, backgroundColor: colors.surface }, selected: { borderColor: colors.primary, backgroundColor: colors.subtle },
-  badge: { width: 32, height: 32, backgroundColor: colors.subtle, borderRadius: 8, alignItems: 'center', justifyContent: 'center' }, cardCopy: { flex: 1 }, cardTitle: { fontFamily: fonts.semibold, fontSize: 15, color: colors.ink, lineHeight: 22 }, cardSubtitle: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 20, color: colors.muted, marginTop: 4 },
+  badge: { width: 44, height: 44, backgroundColor: colors.subtle, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }, cardCopy: { flex: 1, minWidth: 0 }, cardTitle: { fontFamily: fonts.semibold, fontSize: 15, color: colors.ink, lineHeight: 22 }, cardSubtitle: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 20, color: colors.muted, marginTop: 4 },
   mark: { width: 18, height: 18, borderRadius: 4, borderWidth: 1, borderColor: '#CBD5E1', alignItems: 'center', justifyContent: 'center' }, markSelected: { backgroundColor: colors.primary, borderColor: colors.primary }, radioDot: { width: 5, height: 5, backgroundColor: colors.onPrimary, borderRadius: 3 },
   overlay: { flex: 1, backgroundColor: 'rgba(13,31,51,0.35)', justifyContent: 'center', padding: 24 }, dialog: { flexGrow: 0, flexShrink: 1, alignSelf: 'center', width: '100%', maxWidth: 400, maxHeight: '100%', borderRadius: 16, backgroundColor: colors.background }, dialogContent: { padding: 24, gap: 12 }, option: { padding: 12, borderRadius: 8, borderWidth: 1, borderColor: colors.border }, cancel: { alignItems: 'center', justifyContent: 'center' }, link: { fontFamily: fonts.semibold, color: colors.primary, textDecorationLine: 'underline' },
 });

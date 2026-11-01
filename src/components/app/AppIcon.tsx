@@ -1,8 +1,14 @@
 import { useAppTheme } from '../../theme/AppearanceProvider';
+import { View } from 'react-native';
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 
 
 const paths = {
+  search: 'M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z',
+  up: 'm5 15 7-7 7 7',
+  send: 'm22 2-7 20-4-9-9-4Zm0 0L11 13',
+  food: 'M5 3v7m3-7v7M2 3v7c0 3 6 3 6 0M5 13v9M17 3c-4 5-4 10 0 10h3M20 3v19',
+  fitness: 'M6 5v14M3 8v8M18 5v14M21 8v8M6 12h12',
   walk: 'M15 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM7 13l2-4 4-1 3 5h4M13 8l-2 7 5 3v4M11 15l-3 7',
   cloud: 'M6 19a4 4 0 0 1-1-8 7 7 0 0 1 13-2 5 5 0 0 1 0 10Z',
   users: 'M3 21v-3a6 6 0 0 1 12 0v3M13 4a4 4 0 0 1 0 8M18 14a5 5 0 0 1 3 4v3M12 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z',
@@ -65,6 +71,9 @@ export function AppIcon({
 }) {
   const t = useAppTheme();
   color ??= t.teal;
+
+  // Keep the shared navigation control in simple native geometry.
+  if (name === 'menu') return <View accessibilityElementsHidden importantForAccessibility="no" style={{width: size, height: size}}>{[6, 12, 18].map(y => <View key={y} style={{position: 'absolute', left: size / 6, top: (y - 0.85) * size / 24, width: size * 2 / 3, height: size * 1.7 / 24, borderRadius: size / 24, backgroundColor: color}} />)}</View>;
 
   return (
     <Svg

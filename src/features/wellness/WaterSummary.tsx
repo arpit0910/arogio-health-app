@@ -1,30 +1,32 @@
 import { useTranslation } from "../../localization/LanguageProvider";
 import { usePalette } from '../../theme/AppearanceProvider';
 import { useId } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { ClipPath, Defs, Path, Rect, Line, Text as SvgText } from 'react-native-svg';
 import { useCareStyles } from '../../components/app/CareUI';
 import { fonts } from '../../theme/tokens';
 import { addDays, type WaterLog } from './domain';
+import { GoalProgress } from '../../components/app/GoalProgress';
 
 export function WaterSummary({ total, target, done, tasks }: { total: number; target: number; done: number; tasks: number }) {
   const { t: tr, locale } = useTranslation();
   const c = useCareStyles();
   const colors = usePalette();
   const s = useStyles();
+  const { width, fontScale } = useWindowDimensions();
 
   const clip = useId().replace(/[^a-zA-Z0-9]/g, '');
   const fraction = Math.min(1, Math.max(0, total / Math.max(1, target)));
   return <View style={s.summary}>
-    <View accessible accessibilityRole="progressbar" accessibilityLabel={tr("Water logged toward your target")} accessibilityValue={{ min: 0, max: target, now: Math.min(total, target), text: `${total} of ${target} millilitres logged` }} style={s.glass}>
+    {width >= 360 && fontScale <= 1.2 && <View accessible accessibilityRole="progressbar" accessibilityLabel={tr("Water logged toward your target")} accessibilityValue={{ min: 0, max: target, now: Math.min(total, target), text: `${total} of ${target} millilitres logged` }} style={s.glass}>
       <Svg width={66} height={94} viewBox="0 0 66 94">
         <Defs><ClipPath id={clip}><Path d="M12 12H54L48 83H18Z" /></ClipPath></Defs>
         <Path d="M12 12H54L48 83H18Z" fill={colors.surface} />
         <Rect x={10} y={83 - fraction * 71} width={46} height={fraction * 71} fill={colors.primary} clipPath={`url(#${clip})`} />
         <Path d="M12 12H54L48 83H18ZM43 30H50M42 48H49M40 66H48" fill="none" stroke={colors.ink} strokeWidth={2} strokeLinejoin="round" />
       </Svg>
-    </View>
-    <View style={s.copy}><Text style={c.title}>{tr("Your water today")}</Text><Text style={s.amount}>{total.toLocaleString(locale)} <Text style={s.unit}>/ {target.toLocaleString(locale)} {tr(" ml")}</Text></Text><Text style={c.text}>{tr(total >= target ? 'Your target is complete.' : `${(target - total).toLocaleString(locale)} ml to your target`)}</Text><Text style={s.small}>{done} {tr(" of ")}{tasks} {tr(" drinking tasks logged")}</Text></View>
+    </View>}
+    <View style={s.copy}><Text style={c.title}>{tr("Your water today")}</Text><Text style={s.amount}>{total.toLocaleString(locale)} <Text style={s.unit}>/ {target.toLocaleString(locale)} {tr(" ml")}</Text></Text><GoalProgress value={total} target={target} label={tr('Water logged toward your target')} /><Text style={c.text}>{tr(total >= target ? 'Your target is complete.' : `${(target - total).toLocaleString(locale)} ml to your target`)}</Text><Text style={s.small}>{done} {tr(" of ")}{tasks} {tr(" drinking tasks logged")}</Text></View>
   </View>;
 }
 export function WaterHistory({ logs, day }: { logs: WaterLog[]; day: string }) {

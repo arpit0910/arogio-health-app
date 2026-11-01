@@ -18,7 +18,7 @@ import { usePalette } from "../../theme/AppearanceProvider";
 import { apiClient } from "../../services/api/client";
 import { bankListSchema, dialNumber, type Bank } from "./api";
 type Coordinates = { latitude: number; longitude: number; time: number };
-export function EmergencyButton() {
+export function EmergencyButton({ inline = false }: { inline?: boolean }) {
   const { t: tr } = useTranslation();
   const colors = usePalette();
   return (
@@ -27,9 +27,10 @@ export function EmergencyButton() {
       accessibilityLabel={tr("Emergency: find nearby blood banks")}
       onPress={() => router.push("/blood-banks?nearby=1")}
       style={({ pressed }) => ({
-        position: "absolute",
-        right: 16,
-        bottom: 16,
+        position: inline ? "relative" : "absolute",
+        right: inline ? undefined : 16,
+        bottom: inline ? undefined : 16,
+        alignSelf: "flex-end",
         minHeight: 52,
         paddingHorizontal: 18,
         borderRadius: 14,

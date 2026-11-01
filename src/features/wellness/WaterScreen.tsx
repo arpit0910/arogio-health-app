@@ -56,7 +56,7 @@ export function WaterScreen() {
     pending.current ??= { key, id: randomUUID(), loggedAt: new Date().toISOString() };
     if (await save(`water/logs/${pending.current.id}`, { amountMl: amount, taskId, loggedAt: pending.current.loggedAt })) { pending.current = null; setFeedback(`${amount} ml logged.`, 'success'); }
   }
-  return <AppScreen back title={tr("Water")}><TrackingIntro name="water" title={tr("Water log")} description={tr("Record a drink, check your target and manage your reminder times.")} /><TrackingStatus />
+  return <AppScreen back><TrackingIntro name="water" title={tr("Water log")} description={tr("Record a drink, check your target and manage your reminder times.")} /><TrackingStatus />
     <TrackingFeedback value={feedback} />
     {(!plan || editing) && !loading && <Group title={tr(plan ? 'Your water plan' : 'Make your water plan')}>
       <CalendarField label={tr("I wake up at")} mode="time" value={wake} onChange={setWake} /><CalendarField label={tr("I go to sleep at")} mode="time" value={sleep} onChange={setSleep} />

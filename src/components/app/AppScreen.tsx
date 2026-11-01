@@ -110,8 +110,8 @@ return StyleSheet.create({
     width: "100%",
     maxWidth: 440,
     alignSelf: "center",
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
 });
 };
