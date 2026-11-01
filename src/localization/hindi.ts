@@ -1,5 +1,17 @@
 // Hindi interface copy. Account data, identifiers and API payloads stay unchanged.
 export const hindi: Record<string, string> = {
+  "steps": "कदम",
+  "hours": "घंटे",
+  "Drink {0} ml": "{0} ml पानी पिएँ",
+  "Water plan": "पानी की योजना",
+  "Clear sky": "आसमान साफ़",
+  "Cloudy": "बादल",
+  "Rain": "बारिश",
+  "Snow": "बर्फ़बारी",
+  "Mist": "धुंध",
+  "Fog": "कोहरा",
+  "Thunderstorm": "गरज के साथ बारिश",
+  "Light flow": "हल्का रक्तस्राव",
   "Home": "होम",
   "Health": "स्वास्थ्य",
   "Jeeva AI": "जीवा AI",

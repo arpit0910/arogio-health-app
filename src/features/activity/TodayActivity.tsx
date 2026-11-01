@@ -43,15 +43,15 @@ export function TodayActivity() {
         const source = mode === 'connected' ? health.source?.name ?? 'Connected app' : metric.key === 'Steps' && phone.enabled ? 'Phone counter' : 'Your logged activity';
         const missing = health.busy || !health.ready || !wellness.ready ? 'Checking readings...' : mode === 'connected' ?
           !health.selectedMetrics.includes(metric.key) ? 'Not selected for sync' : !health.snapshot?.granted.includes(metric.key) ? 'Check read access' : health.snapshot.failed.includes(metric.key) ? 'Could not refresh' : 'No reading today' : 'No reading today';
-        return <TouchTarget key={metric.key} accessibilityRole="button" accessibilityLabel={tr(`${metric.title}: ${available ? formatHealthValue(metric.key, value) : missing}. ${source}. View activity`)} onPress={open}
+        return <TouchTarget key={metric.key} accessibilityRole="button" accessibilityLabel={tr(`${metric.title}: ${available ? formatHealthValue(metric.key, value) : tr(missing)}. ${source}. View activity`)} onPress={open}
           style={({ pressed }) => ({ flexGrow: 1, flexBasis: fontScale > 1.25 || width < 390 ? '45%' : '29%', minWidth: 100, padding: 14, borderRadius: 16, backgroundColor: pressed ? colors.subtle : colors.surface, gap: 8 })}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}><View style={{ flexShrink: 0 }}><AppIcon name={metric.icon} size={20} /></View><Text style={[c.text, { fontSize: 12, flexShrink: 1 }]}>{tr(metric.title)}</Text></View>
           <Text style={{ fontFamily: fonts.semibold, color: colors.ink, fontSize: 24, lineHeight: 32, fontVariant: ['tabular-nums'] }}>{available ? formatHealthValue(metric.key, value) : '--'}</Text>
-          <Text style={[c.text, { fontSize: 12, lineHeight: 18 }]}>{available ? metric.unit : missing}</Text>
+          <Text style={[c.text, { fontSize: 12, lineHeight: 18 }]}>{tr(available ? metric.unit : missing)}</Text>
           {goal != null && <Text style={[c.text, { fontSize: 12, lineHeight: 18 }]}>{tr("Target ")}{goal.toLocaleString(locale)}{tr(metric.key === 'SleepSession' ? 'h' : metric.key === 'ExerciseSession' ? ' min' : '')}</Text>}
           {available && goal != null && <View style={{ height: 5, borderRadius: 3, backgroundColor: colors.border }}><View style={{ height: 5, width: `${Math.min(1, value / goal) * 100}%`, backgroundColor: colors.primary, borderRadius: 3 }} /></View>}
           {week.some(hasHealthValue) && <View accessible accessibilityLabel={tr("Last seven days; gaps mean no recorded value")} style={{ height: 22, flexDirection: 'row', alignItems: 'flex-end', gap: 4 }}>{week.map((entry, index) => <View key={index} style={{ flex: 1, height: hasHealthValue(entry) ? Math.max(3, entry / max * 22) : 0, borderRadius: 3, backgroundColor: colors.primary }} />)}</View>}
-          <Text style={[c.text, { fontSize: 11, lineHeight: 17 }]}>{source}</Text>
+          <Text style={[c.text, { fontSize: 11, lineHeight: 17 }]}>{tr(source)}</Text>
           {checked && Number.isFinite(Date.parse(checked)) && <Text style={[c.text, { fontSize: 11, lineHeight: 17 }]}>{tr("Checked ")}{formatDateTime(checked)}</Text>}
         </TouchTarget>;
       })}

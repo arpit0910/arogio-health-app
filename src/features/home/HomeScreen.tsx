@@ -181,7 +181,7 @@ export function HomeScreen() {
                 ]}
               >
                 <View style={{flexDirection:'row',width:'100%',alignItems:'center',justifyContent:'space-between'}}><AppIcon name={item.icon} size={24} color={['#14648A','#9D254B','#A05215','#4C4C9B'][index]}/><AppIcon name="right" size={14} color="#234A3C"/></View>
-                <Text style={s.shortcutLabel}>{tr(item.title)}</Text><Text style={s.shortcutDetail}>{['Track hydration','Set reminder','Track cycle','Stay active'][index]}</Text>
+                <Text style={s.shortcutLabel}>{tr(item.title)}</Text><Text style={s.shortcutDetail}>{tr(['Track hydration','Set reminder','Track cycle','Stay active'][index])}</Text>
               </TouchTarget>
             ))}
           </View>
