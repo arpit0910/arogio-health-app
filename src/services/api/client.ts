@@ -1,4 +1,4 @@
-import { env } from '../../config/env';
+import { env } from '../../configuration/environment';
 import { tokenStore } from '../auth/tokenStore';
 import { HttpClient } from './httpClient';
 

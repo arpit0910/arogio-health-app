@@ -1,6 +1,6 @@
 import { it } from 'node:test';
 import assert from 'node:assert/strict';
-import { sleepIntervals } from '../src/features/health-sync/sleep.ts';
+import { sleepIntervals } from '../src/features/health-connections/sleep.ts';
 it('keeps overnight sleep whole on wake-up day and merges duplicates and naps', () => {
   const night = { startTime: '2026-11-01T17:00:00.000Z', endTime: '2026-11-02T02:00:00.000Z' };
   const nap = { startTime: '2026-11-02T08:00:00.000Z', endTime: '2026-11-02T09:00:00.000Z' };

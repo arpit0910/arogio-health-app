@@ -1,1 +1,1 @@
-export { CycleScreen as default } from '../../features/wellness/CycleScreen';
+export { CycleScreen as default } from '../../features/personal-wellness/CycleScreen';

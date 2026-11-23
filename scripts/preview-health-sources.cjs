@@ -20,7 +20,7 @@ const React = require('react');
 const ReactDOM = require('react-dom/server');
 
 const { AppRegistry, Dimensions, View, Text } = require('react-native-web');
-const { healthMetrics } = require('../src/features/health-sync/model.ts');
+const { healthMetrics } = require('../src/features/health-connections/model.ts');
 const { SafeAreaProvider } = require('react-native-safe-area-context');
 const width = Number(process.argv[2] || 390);
 const mode = process.argv[3] || 'first';
@@ -37,11 +37,11 @@ Module._load = function(request, parent, ...rest) {
   if (request === 'expo-secure-store') return { getItemAsync: async () => null, setItemAsync: async () => {} };
   if (request === './HealthSyncProvider' && parent?.filename.includes('health-sync')) return { useHealthSync: () => mock };
   if (request === './WellnessContext') return { useWellness: () => ({}) };
-  if (request === 'expo-router') return { router: { push() {}, canGoBack: () => true } };
+  if (request === 'expo-router') return { useRouter: () => ({ push() {}, navigate() {}, replace() {}, setParams() {}, back() {}, canGoBack: () => true }), router: { push() {}, canGoBack: () => true } };
   return load.call(this, request, parent, ...rest);
 };
-const { HealthSourcePicker } = require('../src/features/health-sync/HealthSourcePicker.tsx');
-const HealthSourceSettingsScreen = mode === 'connected' ? require('../src/features/health-sync/HealthSourceSettingsScreen.tsx').HealthSourceSettingsScreen : null;
+const { HealthSourcePicker } = require('../src/features/health-connections/HealthSourcePicker.tsx');
+const HealthSourceSettingsScreen = mode === 'connected' ? require('../src/features/health-connections/HealthSourceSettingsScreen.tsx').HealthSourceSettingsScreen : null;
 function PickerPreview() {
   return mode === 'connected' ? React.createElement(SafeAreaProvider, { initialMetrics: { frame: { x: 0, y: 0, width, height }, insets: { top: 0, left: 0, right: 0, bottom: 0 } } }, React.createElement(View, { style: { width, height } }, React.createElement(HealthSourceSettingsScreen))) : React.createElement(View, { style: { width, padding: 24, gap: 20, backgroundColor: '#00291E' } },
     React.createElement(Text, { style: { color: '#B8D0C4', fontFamily: 'Inter_400Regular', fontSize: 13 } }, 'Preview - synthetic installed app list'), React.createElement(HealthSourcePicker));

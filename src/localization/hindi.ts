@@ -1,5 +1,34 @@
+import { medicineSetupHindi } from './medicineSetupHindi.ts';
+import { healthRecordsHindi } from './healthRecordsHindi.ts';
+import { medicineAlarmHindi } from './medicineAlarmHindi.ts';
+import { figmaCompletionHindi } from './figmaCompletionHindi.ts';
 // Hindi interface copy. Account data, identifiers and API payloads stay unchanged.
+import { articlesHindi } from './articlesHindi.ts';
+import { meditationHindi } from './meditationHindi.ts';
+import { refreshHindi } from './refreshHindi.ts';
+import { careHindi } from './careHindi.ts';
+import { calmHindi } from './calmHindi.ts';
+import { stitchHindi } from './stitchHindi.ts';
+import { homeReplicaHindi } from './homeReplicaHindi.ts';
+import { profilePageHindi } from './profilePageHindi.ts';
+import { splashHindi } from './splashHindi.ts';
 export const hindi: Record<string, string> = {
+  ...articlesHindi,
+  ...meditationHindi,
+  ...refreshHindi,
+  ...calmHindi,
+  ...careHindi,
+  ...stitchHindi,
+  ...homeReplicaHindi,
+  ...profilePageHindi,
+  ...splashHindi,
+  ...figmaCompletionHindi,
+  ...medicineSetupHindi,
+  ...healthRecordsHindi,
+  ...medicineAlarmHindi,
+  'Hindi': 'हिन्दी',
+  'App language': 'ऐप की भाषा',
+  'Meditation': 'ध्यान',
   'Find your next healthy habit.': 'सेहत के लिए एक नई अच्छी आदत खोजें।',
   'Explore everyday health, one topic at a time.': 'रोज़ की सेहत से जुड़े विषयों को आसानी से समझें।',
   'Browse by topic': 'विषय के अनुसार पढ़ें',
@@ -325,6 +354,26 @@ export const hindi: Record<string, string> = {
   "Edit {0} check-in": "{0} का चेक-इन बदलें",
   "Edit {0} target": "{0} का लक्ष्य बदलें",
   "Email address": "ईमेल पता",
+  "Find blood banks": "ब्लड बैंक खोजें",
+  "Find nearby blood banks": "पास के ब्लड बैंक खोजें",
+  "Emergency contacts and blood banks": "आपातकालीन संपर्क और ब्लड बैंक",
+  "Emergency contacts": "आपातकालीन संपर्क",
+  "Emergency help": "आपातकालीन सहायता",
+  "Emergency contacts for India. Choose a service to open your phone dialer.": "भारत के आपातकालीन संपर्क। फ़ोन डायलर खोलने के लिए सेवा चुनें।",
+  "Call emergency services - 112": "आपातकालीन सेवाएँ — 112 पर कॉल करें",
+  "Call ambulance - 108": "एम्बुलेंस — 108 पर कॉल करें",
+  "Ambulance availability varies by state. For medical emergencies, you can also call 112.": "एम्बुलेंस की उपलब्धता राज्य के अनुसार बदलती है। चिकित्सा आपातकाल में 112 पर भी कॉल कर सकते हैं।",
+  "Find a blood bank and call to confirm blood availability.": "ब्लड बैंक खोजें और रक्त की उपलब्धता की पुष्टि के लिए कॉल करें।",
+  "Emergency numbers for India. Tap a number to open your phone dialer.": "भारत के आपातकालीन नंबर। फ़ोन डायलर खोलने के लिए नंबर पर टैप करें।",
+  "Emergency services": "आपातकालीन सेवाएँ",
+  "Police, fire and medical emergencies across India.": "पूरे भारत में पुलिस, अग्निशमन और चिकित्सा आपातकाल।",
+  "Call 112": "112 पर कॉल करें",
+  "Call 108": "108 पर कॉल करें",
+  "Ambulance": "एम्बुलेंस",
+  "Availability varies by state. You can also call 112 for medical emergencies.": "उपलब्धता राज्य के अनुसार बदलती है। चिकित्सा आपातकाल में 112 पर भी कॉल कर सकते हैं।",
+  "The dialer could not open. Dial the number on your phone.": "डायलर नहीं खुल सका। अपने फ़ोन से नंबर डायल करें।",
+  "Find contact details and directions. Call to confirm availability.": "संपर्क विवरण और रास्ता खोजें। उपलब्धता की पुष्टि के लिए कॉल करें।",
+  "Search by city or pincode": "शहर या पिनकोड से खोजें",
   "Emergency": "आपातकाल",
   "Emergency contact:": "आपातकालीन संपर्क:",
   "Emergency: find nearby blood banks": "आपातकाल: पास के ब्लड बैंक खोजें",

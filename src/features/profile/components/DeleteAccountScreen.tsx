@@ -1,8 +1,9 @@
+import { AccessibleText as Text } from '../../../components/ui/AccessibleText';
 import { useTranslation } from "../../../localization/LanguageProvider";
 import { useRef, useState } from 'react';
-import { Text, View } from 'react-native';
-import { router } from 'expo-router';
-import { useAuth } from '../../auth/context/AuthContext';
+import { View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../../authentication/context/AuthContext';
 import { AppScreen } from '../../../components/app/AppScreen';
 import { AppIcon } from '../../../components/app/AppIcon';
 import { useCareStyles } from '../../../components/app/CareUI';
@@ -10,6 +11,7 @@ import { TouchTarget } from '../../../components/ui/TouchTarget';
 import { Button } from '../../../components/ui/Button';
 import { usePalette } from '../../../theme/AppearanceProvider';
 export function DeleteAccountScreen() {
+  const router = useRouter();
   const { t: tr } = useTranslation();
   const { deleteAccount, isSubmitting } = useAuth(), c = useCareStyles(), colors = usePalette();
   const [confirmed, setConfirmed] = useState(false), [error, setError] = useState(''), lock = useRef(false);

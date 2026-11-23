@@ -72,10 +72,12 @@ export class HttpClient {
   async request<T>({ path, method = 'GET', body, headers, signal }: RequestOptions): Promise<T> {
     const controller = new AbortController();
     const abortRequest = () => controller.abort();
+    if (signal?.aborted) controller.abort();
     signal?.addEventListener('abort', abortRequest, { once: true });
     const timeout = setTimeout(abortRequest, this.timeoutMs);
     try {
       const token = await this.getAccessToken();
+      if (signal?.aborted) throw new ApiError('The request was cancelled.', 499, 'REQUEST_CANCELLED');
       const response = await fetch(this.getUrl(path), {
         method,
         signal: controller.signal,

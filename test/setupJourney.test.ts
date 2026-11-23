@@ -2,7 +2,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { resumeSetup, setupPayload, validateSetupStep } from '../src/features/profile/setupJourney.ts';
 import { profileDraft } from '../src/features/profile/profileViewModel.ts';
-import type { SafeUser } from '../src/features/auth/types.ts';
+import type { SafeUser } from '../src/features/authentication/types.ts';
 
 const empty = profileDraft({ profileSetup: {} } as SafeUser);
 const ready = { ...empty, healthGoals: ['improve_sleep'], dateOfBirth: '2001-03-17', weightValue: '70', heightValue: '170', activityLevel: 'lightly_active' };

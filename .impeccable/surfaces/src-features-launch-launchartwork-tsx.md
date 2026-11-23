@@ -7,6 +7,8 @@ related_targets: ["src/features/launch/LaunchSequence.tsx", "app.json", "scripts
 
 # Arogio: a calm, premium start
 
+**Superseded by the user's three-screen animated splash request.** The uploaded SVG/PNG files in `.impeccable/references/splash-upload/` now govern this surface. The user explicitly requested an animated sequence at app opening, including moving spirals and surrounding elements. Current behavior and timing are documented in `docs/animated-splash-screens.md`; the former single-screen composition and no-extra-hold constraint below are historical.
+
 Mode: Operate. The visitor is opening the app; success is a calm, welcoming handoff without an extra wait. This is an expressive refinement of the existing launch surface inside Arogio's established emerald system.
 
 Preserve the original logo, Arogio name, Your Health Companion line, Inter/Plus Jakarta Sans typography, app appearance preferences, reduced-motion support, and once-per-root startup lifecycle. Add everyday-care symbols and motivational copy without fabricating metrics, delivery status or health outcomes.

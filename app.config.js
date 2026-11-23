@@ -1,7 +1,7 @@
 /** @type {import('expo/config').ExpoConfig | ((context: import('expo/config').ConfigContext) => import('expo/config').ExpoConfig)} */
 module.exports = ({ config }) => {
   const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID?.trim();
-  const plugins = [...(config.plugins ?? [])];
+  const plugins = [...(config.plugins ?? []), 'expo-sharing', './plugins/with-production-security', './plugins/with-responsive-font-scale', ['expo-audio', { microphonePermission: false, recordAudioAndroid: false, enableBackgroundPlayback: false }]];
   if (process.env.AROGIO_LOCAL_QA === 'true' && process.env.EAS_BUILD !== 'true') {
     plugins.push('./plugins/with-local-qa-network');
   }
@@ -18,5 +18,5 @@ module.exports = ({ config }) => {
       iosUrlScheme: `com.googleusercontent.apps.${iosClientId.replace(/\.apps\.googleusercontent\.com$/, '')}`,
     }]);
   }
-  return { ...config, plugins };
+  return { ...config, android: { ...config.android, blockedPermissions: (config.android?.blockedPermissions ?? []).filter(permission => permission !== 'android.permission.CAMERA') }, plugins };
 };

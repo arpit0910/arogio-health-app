@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { addDays, cycleForecast, defaultCycleSettings, emptyWellness, localDay, validDay, waterDay, waterSchedule, waterWindow, zonedInstant, type WaterPlan } from '../src/features/wellness/domain.ts';
-import { reminderPlan } from '../src/features/wellness/reminderPlan.ts';
+import { addDays, cycleForecast, defaultCycleSettings, emptyWellness, localDay, validDay, waterDay, waterSchedule, waterWindow, zonedInstant, type WaterPlan } from '../src/features/personal-wellness/domain.ts';
+import { reminderPlan } from '../src/features/personal-wellness/reminderPlan.ts';
 const plan:WaterPlan={version:'test',wakeTime:'07:00',sleepTime:'23:00',targetMl:2000,servingMl:250,timezone:'Asia/Kolkata',remindersEnabled:true,pausedUntil:null};
 describe('Water schedule',()=>{
   it('spreads exact integer amounts within waking hours and caps tasks',()=>{for(const targetMl of [100,1751,2000,6000]){const p={...plan,targetMl,servingMl:50},tasks=waterSchedule(p,'2026-10-28'),window=waterWindow(p,'2026-10-28');assert.ok(tasks.length<=16);assert.equal(tasks.reduce((s,t)=>s+t.amountMl,0),targetMl);for(const t of tasks)assert.ok(Date.parse(t.at)>+window.start&&Date.parse(t.at)<+window.end);}});

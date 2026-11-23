@@ -50,3 +50,16 @@ yarn-error.*
 # Disposable isolated preview browser profiles
 /.impeccable/review/chrome-*/
 /.impeccable/review/**/chrome-*/
+
+# Disposable local Android build caches
+/.local/gradle-home/
+/.tmp/native-temp/
+
+# Disposable builds and local verification outputs
+*.apk
+*.aab
+*.log
+/.tmp/
+/.local/
+/.impeccable/review/
+/modules/*/android/build/

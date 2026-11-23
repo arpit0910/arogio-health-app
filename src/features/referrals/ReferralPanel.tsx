@@ -1,7 +1,8 @@
+import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
 import { useRef, useState } from "react";
-import { Platform, Share, Text, View } from "react-native";
-import { useAuth } from "../auth/context/AuthContext";
+import { Platform, Share, View } from "react-native";
+import { useAuth } from "../authentication/context/AuthContext";
 import { AppIcon } from "../../components/app/AppIcon";
 import { useCareStyles } from "../../components/app/CareUI";
 import { Button } from "../../components/ui/Button";

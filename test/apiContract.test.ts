@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { authResponseSchema, safeUserSchema, tokenPairSchema, updateProfileSchema } from '../src/features/auth/types.ts';
+import { authResponseSchema, safeUserSchema, tokenPairSchema, updateProfileSchema } from '../src/features/authentication/types.ts';
 import { ApiError, HttpClient } from '../src/services/api/httpClient.ts';
 
 const collection = JSON.parse(readFileSync(new URL('../arogio_health_api.postman_collection.json', import.meta.url), 'utf8'));

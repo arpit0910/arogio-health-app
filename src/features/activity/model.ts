@@ -1,4 +1,4 @@
-import type { HealthSnapshot } from '../health-sync/model.ts';
+import type { HealthSnapshot } from '../health-connections/model.ts';
 export const activityMetrics = [
   { key: 'Steps', title: 'Steps', unit: 'steps', max: 200000, whole: true },
   { key: 'ActiveCaloriesBurned', title: 'Active calories', unit: 'kcal', max: 20000, whole: false },

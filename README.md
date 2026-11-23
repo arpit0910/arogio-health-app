@@ -4,7 +4,7 @@ React Native (Expo SDK 58) client for `arogio_health_backend`, built with TypeSc
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the project structure, development builds, EAS setup, environment configuration, and validation commands.
 
-For a standalone Android test build and the live API verification status, see [testing-apk.md](docs/testing-apk.md).
+For Android development and release build instructions, see [CONTRIBUTING.md](CONTRIBUTING.md) and [release packaging](docs/release-packaging.md). Generated APKs and historical build reports are not retained in this repository.
 
 ## Start Locally
 
@@ -83,3 +83,7 @@ The `/login` and `/signup` screens use the supplied Figma design, local SVG expo
 - Google sign-in requires a new development build after installing the native module. Expo Go does not include it. See [Google sign-in setup](docs/google-sign-in.md) for Google Cloud registrations and the live verification status.
 
 Run `npm run check` for lint, TypeScript, and the existing contract tests. Verify the screens on compact phones and tablets, with the keyboard open, large accessibility text, a screen reader, and native Back gestures. Browser previews do not establish native correctness or backend capacity.
+
+## Finding source code
+
+See the [project structure](docs/project-structure.md) and [feature module map](src/features/README.md).

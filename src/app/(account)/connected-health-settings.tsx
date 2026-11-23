@@ -1,1 +1,1 @@
-export { HealthSourceSettingsScreen as default } from '../../features/health-sync/HealthSourceSettingsScreen';
+export { HealthSourceSettingsScreen as default } from '../../features/health-connections/HealthSourceSettingsScreen';

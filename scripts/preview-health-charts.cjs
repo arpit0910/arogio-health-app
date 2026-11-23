@@ -18,8 +18,8 @@ for (const extension of ['.ts', '.tsx']) Module._extensions[extension] = (module
 const React = require('react');
 const ReactDOM = require('react-dom/server');
 const { AppRegistry, Text, View } = require('react-native-web');
-const { HealthChart, WeeklyShare } = require('../src/features/health-sync/HealthCharts.tsx');
-const { healthMetrics } = require('../src/features/health-sync/model.ts');
+const { HealthChart, WeeklyShare } = require('../src/features/health-connections/HealthCharts.tsx');
+const { healthMetrics } = require('../src/features/health-connections/model.ts');
 const steps = [5100, 7200, null, 0, 9400, 6800, 3100];
 const snapshot = { syncedAt: '2026-10-29T08:00:00Z', granted: healthMetrics.map((m) => m.key), latestWeight: null, failed: [],
   days: steps.map((value, i) => ({ day: `2026-10-${23+i}`, readings: { Steps: { value, sources: ['example.source'] }, HeartRate: { value: value == null ? null : 65+i*2, sources: ['example.source'] }, SleepSession: { value: value == null ? null : 6+i/4, sources: ['example.source'] } } })) };

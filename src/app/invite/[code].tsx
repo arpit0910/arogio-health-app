@@ -1,19 +1,21 @@
+import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
 import { useState } from "react";
-import { Platform, Text, View } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
+import { Platform, View } from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import * as Linking from "expo-linking";
 import { AppScreen } from "../../components/app/AppScreen";
 import { CareBrand, useCareStyles } from "../../components/app/CareUI";
 import { AppIcon } from "../../components/app/AppIcon";
 import { Button } from "../../components/ui/Button";
 import { usePalette } from "../../theme/AppearanceProvider";
-import { useAuth } from "../../features/auth/context/AuthContext";
+import { useAuth } from "../../features/authentication/context/AuthContext";
 import {
   normalizeInviteCode,
   validInviteCode,
 } from "../../features/referrals/model";
 export default function InviteRoute() {
+  const router = useRouter();
   const { t: tr } = useTranslation();
   const { code: raw } = useLocalSearchParams<{ code?: string | string[] }>();
   const code = normalizeInviteCode(raw),

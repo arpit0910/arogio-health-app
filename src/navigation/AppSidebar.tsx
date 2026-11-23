@@ -1,3 +1,4 @@
+import { AccessibleText as Text } from '../components/ui/AccessibleText';
 import { useTranslation } from "../localization/LanguageProvider";
 import { usePalette } from '../theme/AppearanceProvider';
 import {
@@ -18,14 +19,13 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
   useWindowDimensions,
 } from 'react-native';
 import { BlurTargetView, BlurView } from 'expo-blur';
-import { router, usePathname } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '../features/auth/context/AuthContext';
+import { useAuth } from '../features/authentication/context/AuthContext';
 import {
   profileName,
   profilePhoto,
@@ -41,9 +41,12 @@ const sections = [
     title: 'Arogio',
     links: [
       { title: 'Home', icon: 'home', route: '/home' },
-      { title: 'Health', icon: 'heart', route: '/health' },
+      { title: 'Find Care', icon: 'search', route: '/find-care' },
+      { title: 'Emergency', icon: 'ambulance', route: '/emergency' },
+      { title: 'My Health', icon: 'heart', route: '/health' },
       { title: 'Jeeva AI', icon: 'goal', route: '/jeeva' },
-      { title: 'Explore', icon: 'explore', route: '/explore' },
+      { title: 'Discover', icon: 'explore', route: '/explore' },
+      { title: 'Meditation', icon: 'leaf', route: '/meditation' },
     ],
   },
   {
@@ -55,7 +58,6 @@ const sections = [
       { title: 'Cycle tracking', icon: 'calendar', route: '/cycle' },
       { title: 'Articles', icon: 'book', route: '/articles' },
       { title: 'Blood banks', icon: 'drop', route: '/blood-banks' },
-      { title: 'Connected health', icon: 'sync', route: '/connected-health' },
     ],
   },
   {
@@ -83,6 +85,7 @@ export function SidebarProvider({ children }: PropsWithChildren) {
   );
 }
 function SidebarSession({ children }: PropsWithChildren) {
+  const router = useRouter();
   const { t: tr } = useTranslation();
   const colors = usePalette();
   const s = useStyles();
@@ -172,7 +175,7 @@ function SidebarSession({ children }: PropsWithChildren) {
       <View style={{ flex: 1 }}>
       <BlurTargetView ref={blurTarget} style={{ flex: 1 }} pointerEvents={open ? 'none' : 'auto'} accessibilityElementsHidden={open} importantForAccessibility={open ? 'no-hide-descendants' : 'auto'}>{children}</BlurTargetView>
       {open && Boolean(user) && <View style={s.overlay} accessibilityViewIsModal>
-          <BlurView blurTarget={blurTarget} intensity={45} blurMethod="dimezisBlurView" tint="dark" style={StyleSheet.absoluteFill} pointerEvents="none" />
+          <BlurView blurTarget={blurTarget} intensity={45} blurMethod="dimezisBlurView" tint="light" style={StyleSheet.absoluteFill} pointerEvents="none" />
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={tr("Close navigation menu")}

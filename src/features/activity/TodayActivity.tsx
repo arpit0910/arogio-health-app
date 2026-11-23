@@ -1,19 +1,20 @@
+import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
-import { Text, View, useWindowDimensions } from 'react-native';
-import { router } from 'expo-router';
+import { View, useWindowDimensions } from 'react-native';
+import { useRouter } from 'expo-router';
 import { AppIcon } from '../../components/app/AppIcon';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { useCareStyles } from '../../components/app/CareUI';
 import { useAppearance } from '../../theme/AppearanceProvider';
 import { fonts } from '../../theme/tokens';
-import { formatDateTime } from '../../lib/time';
-import { useWellness } from '../wellness/WellnessContext';
-import { useHealthSync } from '../health-sync/HealthSyncProvider';
+import { formatDateTime } from '../../shared/date-time';
+import { useWellness } from '../personal-wellness/WellnessContext';
+import { useHealthSync } from '../health-connections/HealthSyncProvider';
 import { usePhoneSteps } from './PhoneStepsProvider';
 import { activityReading, emptyActivity } from './model';
-import { addDays, localDay } from '../wellness/domain';
-import { useTrackingClock } from '../wellness/useTrackingClock';
-import { formatHealthValue, hasHealthValue } from '../health-sync/model';
+import { addDays, localDay } from '../personal-wellness/domain';
+import { useTrackingClock } from '../personal-wellness/useTrackingClock';
+import { formatHealthValue, hasHealthValue } from '../health-connections/model';
 import { GoalProgress } from '../../components/app/GoalProgress';
 
 const metrics = [
@@ -22,12 +23,18 @@ const metrics = [
   { key: 'SleepSession', title: 'Sleep', icon: 'moon', unit: 'hours' },
 ] as const;
 export function TodayActivity() {
+  const router = useRouter();
   const { t: tr, locale } = useTranslation();
   const c = useCareStyles(), { colors } = useAppearance(), { fontScale, width } = useWindowDimensions();
   const wellness = useWellness(), health = useHealthSync(), phone = usePhoneSteps();
   const tracking = wellness.data.activityTracking ?? emptyActivity(), day = localDay(useTrackingClock());
-  const mode = health.connected || (health.busy && health.source) ? 'connected' : 'manual';
+  const mode = health.enabled || health.connected || (health.busy && health.source) ? 'connected' : 'manual';
   const open = () => router.push({ pathname: '/activity', params: { source: mode } });
+  const hasReadings = metrics.some(metric => hasHealthValue(activityReading(metric.key, day, mode, tracking, health.snapshot, phone).value));
+  if (health.ready === false || wellness.ready === false) return <View accessibilityState={{ busy: true }} style={{ marginTop: 20, gap: 12 }}>
+    <Text style={c.title}>{tr('Health & activity')}</Text>
+    <View style={{ height: 96, borderRadius: 16, backgroundColor: colors.surface, padding: 18 }}><Text style={c.text}>{tr('Loading activity...')}</Text></View>
+  </View>;
   return <View style={{ marginTop: 20, gap: 12 }}>
     <TouchTarget accessibilityRole="button" accessibilityLabel={tr("View health and activity")} onPress={open} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
       <Text accessibilityRole="header" style={[c.title, { flex: 1 }]}>{tr("Health & activity")}</Text>
@@ -49,6 +56,7 @@ export function TodayActivity() {
           style={({ pressed }) => ({ flexGrow: 1, flexBasis: fontScale > 1.25 || width < 390 ? '100%' : '29%', minWidth: 100, padding: 16, borderRadius: 16, backgroundColor: pressed ? colors.subtle : colors.surface, gap: 10 })}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}><View style={{ flexShrink: 0 }}><AppIcon name={metric.icon} size={20} /></View><Text style={[c.text, { fontSize: 12, flexShrink: 1 }]}>{tr(metric.title)}</Text></View>
           <Text style={{ fontFamily: fonts.semibold, color: colors.ink, fontSize: 24, lineHeight: 32, fontVariant: ['tabular-nums'] }}>{available ? formatHealthValue(metric.key, value) : '--'}</Text>
+          <Text style={[c.text, { fontSize: 12, lineHeight: 18 }]}>{tr(source)}</Text>
           <Text style={[c.text, { fontSize: 12, lineHeight: 18 }]}>{tr(available ? metric.unit : missing)}</Text>
           {goal != null && <Text style={[c.text, { fontSize: 12, lineHeight: 18 }]}>{tr("Target ")}{goal.toLocaleString(locale)}{tr(metric.key === 'SleepSession' ? 'h' : metric.key === 'ExerciseSession' ? ' min' : '')}</Text>}
           {available && goal != null && <GoalProgress value={value} target={goal} label={tr(`${metric.title} toward your daily target`)} />}
@@ -57,12 +65,13 @@ export function TodayActivity() {
         </TouchTarget>;
       })}
     </View>
+    {!hasReadings && <TouchTarget accessibilityRole="button" accessibilityLabel={tr('Open activity journal')} onPress={open} style={{ padding: 18, borderRadius: 16, backgroundColor: colors.surface, gap: 6 }}>
+      <Text style={[c.text, { color: colors.ink, fontFamily: fonts.medium }]}>{tr('Your next small step')}</Text>
+      <Text style={c.text}>{tr(mode === 'connected' ? 'No shared readings today. View your activity journal for recorded days.' : 'Log a walk, movement or sleep to start your activity journal.')}</Text>
+      <Text style={[c.text, { color: colors.primary }]}>{tr('Open activity journal')}</Text>
+    </TouchTarget>}
     <Text style={[c.text, { fontSize: 12, lineHeight: 19 }]}>{tr(mode === 'connected' ? `From ${health.source?.name ?? 'your health app'}` : phone.enabled ? 'Phone steps and your logged activity' : 'Your logged activity')}{tr(' · Last seven days; gaps mean no reading')}</Text>
     {health.snapshot && Number.isFinite(Date.parse(health.snapshot.syncedAt)) && <Text style={[c.text, { fontSize: 12 }]}>{tr(health.busy ? 'Refreshing - ' : 'Last checked ')}{formatDateTime(health.snapshot.syncedAt)}</Text>}
     {Boolean(health.error) && <Text accessibilityLiveRegion="polite" style={[c.text, { fontSize: 13, color: colors.error }]}>{tr(health.error)}</Text>}
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
-      <TouchTarget accessibilityRole="button" onPress={() => router.push('/connected-health')} style={{ minHeight: 48, justifyContent: 'center' }}><Text style={[c.text, { color: colors.primary }]}>{tr("Manage health apps")}</Text></TouchTarget>
-      {health.connected && <TouchTarget accessibilityRole="button" accessibilityState={{ disabled: health.busy }} disabled={health.busy} onPress={() => void health.run()} style={{ minHeight: 48, justifyContent: 'center' }}><Text style={[c.text, { color: colors.primary }]}>{tr(health.busy ? 'Refreshing...' : 'Refresh readings')}</Text></TouchTarget>}
-    </View>
   </View>;
 }

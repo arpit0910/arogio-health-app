@@ -1,3 +1,4 @@
+import * as medicineNotificationAction from '../src/features/personal-wellness/medicineNotificationAction.ts';
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -5,6 +6,13 @@ import vm from 'node:vm';
 import ts from 'typescript';
 
 function harness(platform = 'android') {
+  const categories: { id: string; actions: { identifier: string; buttonTitle: string; options: { opensAppToForeground: boolean } }[] }[] = [];
+  const actionQueue: object[] = [];
+  let lastResponse: any = null;
+  let receivedListener: ((notification: any) => void) | undefined;
+  const appState = { currentState: 'active' };
+  let responseListener: ((response: any) => void) | undefined;
+  let cleared = 0;
   const channels: { id: string; sound?: string | null; importance?: number }[] = [];
   const scheduled: { content: { sound: string; data: { route: string } }; trigger: { channelId: string } }[] = [];
   const cancelled: string[] = [];
@@ -14,6 +22,12 @@ function harness(platform = 'android') {
   let handler: { handleNotification: () => Promise<{ shouldPlaySound: boolean }> };
   const notifications = {
     AndroidImportance: { DEFAULT: 3, HIGH: 4 }, AndroidNotificationVisibility: { PRIVATE: 0 }, SchedulableTriggerInputTypes: { DATE: 'date', TIME_INTERVAL: 'timeInterval' },
+    DEFAULT_ACTION_IDENTIFIER: 'default',
+    getLastNotificationResponseAsync: async () => lastResponse,
+    clearLastNotificationResponse: () => { cleared++; lastResponse = null; },
+    addNotificationReceivedListener: (callback: typeof receivedListener) => { receivedListener = callback; return { remove: () => { receivedListener = undefined; } }; },
+    addNotificationResponseReceivedListener: (callback: typeof responseListener) => { responseListener = callback; return { remove: () => { responseListener = undefined; } }; },
+    setNotificationCategoryAsync: async (id: string, actions: typeof categories[number]['actions']) => { categories.push({ id, actions }); },
     setNotificationHandler: (value: typeof handler) => { handler = value; },
     setNotificationChannelAsync: async (id: string, input: { sound?: string; importance?: number }) => { channels.push({ id, sound: input.sound, importance: input.importance }); },
     getNotificationChannelAsync: async (id: string) => channelMuted ? { id, sound: null, importance: 2 } : { id, sound: 'default', importance: 4 },
@@ -25,18 +39,20 @@ function harness(platform = 'android') {
   };
   const dependencies: Record<string, unknown> = {
     'expo-notifications': notifications,
+    './medicineNotificationAction': medicineNotificationAction,
+    './medicineActionStorage': { medicineActionQueue: { enqueue: async (action: object) => { actionQueue.push(action); } } },
     '../notifications/storage': { replacePending: async () => {} },
     'expo-constants': { __esModule: true, default: { expoConfig: { android: { package: 'com.arogio.health' } } } },
-    'react-native': { Platform: { OS: platform }, Linking: { sendIntent: async (action: string, extras: { key: string; value: string }[]) => { intents.push({ action, extras }); }, openSettings: async () => {} } },
+    'react-native': { AppState: appState, Platform: { OS: platform }, Linking: { sendIntent: async (action: string, extras: { key: string; value: string }[]) => { intents.push({ action, extras }); }, openSettings: async () => {} } },
   };
   const module = { exports: {} };
-  const compiled = ts.transpileModule(readFileSync(new URL('../src/features/wellness/notifications.native.ts', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+  const compiled = ts.transpileModule(readFileSync(new URL('../src/features/personal-wellness/notifications.native.ts', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
   vm.runInNewContext(compiled, { module, exports: module.exports, require: (key: string) => {
     if (!(key in dependencies)) throw new Error(`Unexpected dependency ${key}`);
     return dependencies[key];
   } });
-  const api = module.exports as { getNotificationAccess: () => Promise<string>; requestReminderPermission: () => Promise<boolean>; syncNotifications: (owner: string | null, reminders: object[]) => Promise<string | null>; openReminderSettings: (target?: 'water' | 'wellness' | 'all') => Promise<void>; getReminderSoundStatus: () => Promise<string>; testReminderSound: (target?: 'water' | 'wellness') => Promise<void> };
-  return { mute: () => { channelMuted = true; }, api, channels, scheduled, cancelled, intents, handler: () => handler, requests: () => requestCount, deny: (askAgain = true) => { granted = false; canAskAgain = askAgain; }, fail: () => { failPermissions = true; } };
+  const api = module.exports as { listenForReminder: (navigate: (route: string) => void, owner: string, changed: () => void, failed: (message: string) => void, due?: (dose: medicineNotificationAction.MedicineNotificationAction) => void) => () => void; getNotificationAccess: () => Promise<string>; requestReminderPermission: () => Promise<boolean>; syncNotifications: (owner: string | null, reminders: object[]) => Promise<string | null>; openReminderSettings: (target?: 'water' | 'wellness' | 'all') => Promise<void>; getReminderSoundStatus: () => Promise<string>; testReminderSound: (target?: 'water' | 'wellness') => Promise<void> };
+  return { receive: (notification: any) => receivedListener?.(notification), background: () => { appState.currentState = 'background'; }, categories, actionQueue, cleared: () => cleared, respond: (response: any) => { lastResponse = response; responseListener?.(response); }, coldStart: (response: any) => { lastResponse = response; }, mute: () => { channelMuted = true; }, api, channels, scheduled, cancelled, intents, handler: () => handler, requests: () => requestCount, deny: (askAgain = true) => { granted = false; canAskAgain = askAgain; }, fail: () => { failPermissions = true; } };
 }
 const reminders = ['/water', '/medicines', '/cycle'].map((route, i) => ({ id: `test:${i}`, at: '2026-10-30T08:00:00Z', title: 'Fixture', body: 'Synthetic reminder', route }));
 describe('Water reminder sound', () => {
@@ -120,5 +136,57 @@ describe('Water reminder sound', () => {
     let peak = 0;
     for (let i = 44; i < wav.length; i += 2) peak = Math.max(peak, Math.abs(wav.readInt16LE(i)));
     assert.ok(peak > 10000 && peak < 32767);
+  });
+});
+
+
+describe('Medicine notification native integration', () => {
+  it('registers the three actions on both platforms and attaches them only to scheduled doses', async () => {
+    for (const platform of ['ios', 'android']) {
+      const h = harness(platform);
+      await h.api.syncNotifications('account-a', [...reminders, { ...reminders[1], id: 'dose', dose: { medicineId: 'fixture', day: '2026-11-16', time: '14:30' } }]);
+      assert.deepEqual(Array.from(h.categories[0].actions, action => action.buttonTitle), ['Snooze (15 min)', 'Skip', 'Take']);
+      assert.ok(h.categories[0].actions.every(action => action.options.opensAppToForeground));
+      const content = h.scheduled[3].content as any;
+      assert.equal(content.categoryIdentifier, medicineNotificationAction.MEDICINE_CATEGORY);
+      assert.equal(content.data.owner, 'account-a');
+      assert.equal(content.data.time, '14:30');
+      assert.ok(h.scheduled.slice(0, 3).every(item => !(item.content as any).categoryIdentifier));
+    }
+  });
+  it('recovers an action on cold start, saves it before clearing the response, and ignores other accounts', async () => {
+    const h = harness();
+    const medicineId = '00000000-0000-4000-8000-000000000001';
+    const response = { actionIdentifier: 'medicine_take', notification: { date: 1234, request: {
+      identifier: `arogio-wellness:account-a:medicine:${medicineId}:2026-11-16:14:30`,
+      content: { data: { owner: 'account-a', medicineId, day: '2026-11-16', time: '14:30', wellness: true, route: '/medicines' } },
+    } } };
+    h.coldStart(response);
+    const navigated: string[] = []; let changed = 0;
+    const stop = h.api.listenForReminder(route => navigated.push(route), 'account-a', () => changed++, message => assert.fail(message));
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(h.actionQueue.length, 1); assert.equal(changed, 1); assert.equal(h.cleared(), 1);
+    assert.deepEqual(navigated, ['/medicines']);
+    h.respond({ ...response, notification: { ...response.notification, request: { ...response.notification.request, identifier: response.notification.request.identifier.replace('account-a', 'account-b') } } });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(h.actionQueue.length, 1); assert.equal(changed, 1);
+    stop();
+  });
+});
+
+
+describe('Full-screen medicine reminder delivery', () => {
+  it('opens a validated dose on foreground delivery and notification tap without logging it', async () => {
+    const h = harness(), medicineId = '00000000-0000-4000-8000-000000000001';
+    const notification = { date: 5678, request: { identifier: `arogio-wellness:account-a:medicine:${medicineId}:2026-11-16:14:30`, content: { data: { owner: 'account-a', medicineId, day: '2026-11-16', time: '14:30', wellness: true, route: '/medicines' } } } };
+    let shown = 0;
+    const stop = h.api.listenForReminder(() => assert.fail('Dose taps open the reminder'), 'account-a', () => assert.fail('Viewing does not log'), message => assert.fail(message), dose => { assert.equal(dose.time, '14:30'); shown++; });
+    h.receive(notification);
+    assert.equal(shown, 1);
+    h.background(); h.receive(notification); assert.equal(shown, 1);
+    h.respond({ actionIdentifier: 'default', notification });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(shown, 2); assert.equal(h.actionQueue.length, 0);
+    stop(); h.receive(notification); assert.equal(shown, 2);
   });
 });

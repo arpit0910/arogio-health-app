@@ -1,12 +1,14 @@
+import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
-import { Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useInbox } from './InboxProvider';
 import { AppIcon } from '../../components/app/AppIcon';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { usePalette } from '../../theme/AppearanceProvider';
 import { fonts } from '../../theme/tokens';
 export function NotificationBell() {
+  const router = useRouter();
   const { t: tr } = useTranslation();
   const { items } = useInbox(), colors = usePalette();
   const unread = items.filter(item => !item.read).length;

@@ -1,7 +1,8 @@
+import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
 import { AppHeader } from '../../components/app/AppHeader';
 import { usePalette } from '../../theme/AppearanceProvider';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fonts, layout } from '../../theme/tokens';
 

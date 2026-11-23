@@ -1,7 +1,8 @@
+import { AccessibleText as Text } from '../../../components/ui/AccessibleText';
 import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
-import { StyleSheet, Text, View } from 'react-native';
-import { Checkbox } from '../../auth/components/AuthPrimitives';
+import { StyleSheet, View } from 'react-native';
+import { Checkbox } from '../../authentication/components/AuthPrimitives';
 import { fonts } from '../../../theme/tokens';
 import type { SetupDraft } from '../model';
 import { ProfileHeading } from './ProfilePrimitives';

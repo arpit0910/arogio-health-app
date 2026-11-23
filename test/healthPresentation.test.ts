@@ -1,10 +1,10 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { hasHealthValue, recordedHealthMetrics, type HealthSnapshot } from '../src/features/health-sync/model.ts';
-import { connectableHealthApps, appHealthMetrics } from '../src/features/health-sync/connection.ts';
+import { hasHealthValue, recordedHealthMetrics, type HealthSnapshot } from '../src/features/health-connections/model.ts';
+import { connectableHealthApps, appHealthMetrics } from '../src/features/health-connections/connection.ts';
 import { activityMode } from '../src/features/activity/model.ts';
-import { confirmActivityGoals, normalizeWellness } from '../src/features/wellness/snapshot.ts';
-import { emptyWellness } from '../src/features/wellness/domain.ts';
+import { confirmActivityGoals, confirmMedicineDose, normalizeWellness } from '../src/features/personal-wellness/snapshot.ts';
+import { emptyWellness } from '../src/features/personal-wellness/domain.ts';
 
 describe('Available health data and connections', () => {
   it('hides permission-only and invalid readings while keeping an actual zero', () => {
@@ -42,5 +42,19 @@ describe('Confirmed account targets', () => {
   it('rejects malformed API successes instead of clearing the saved journal', () => {
     assert.throws(() => normalizeWellness({ message: 'Welcome' }), /did not return/);
     assert.deepEqual(normalizeWellness(emptyWellness()), emptyWellness());
+  });
+  it('rejects malformed dose records while accepting an older server without logging support', () => {
+    assert.equal(normalizeWellness(emptyWellness()).medicineDoses, undefined);
+    assert.throws(() => normalizeWellness({ ...emptyWellness(), medicineDoses: {} }), /valid medicine dose/);
+    const dose = { medicineId: 'fixture', day: '2026-11-14', time: '08:00', status: 'taken' as const, recordedAt: '2026-11-14T03:00:00Z', snoozedUntil: null };
+    assert.equal(normalizeWellness({ ...emptyWellness(), medicineDoses: [dose] }).medicineDoses?.length, 1);
+    assert.throws(() => normalizeWellness({ ...emptyWellness(), medicineDoses: [{ ...dose, time: '28:00' }] }), /valid medicine dose/);
+  });
+  it('requires the server to confirm the exact medicine dose mutation before displaying success', () => {
+    const path = 'medicines/fixture/doses/2026-11-14/08:00';
+    const dose = { medicineId: 'fixture', day: '2026-11-14', time: '08:00', status: 'taken' as const, recordedAt: '2026-11-14T03:00:00Z', snoozedUntil: null };
+    confirmMedicineDose({ ...emptyWellness(), medicineDoses: [dose] }, path, { status: 'taken' });
+    assert.throws(() => confirmMedicineDose(emptyWellness(), path, { status: 'taken' }), /did not confirm/);
+    assert.throws(() => confirmMedicineDose({ ...emptyWellness(), medicineDoses: [dose] }, path, { status: 'pending', snooze: true }), /did not confirm/);
   });
 });

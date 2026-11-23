@@ -1,4 +1,4 @@
-import { useAppTheme } from '../../theme/AppearanceProvider';
+import { useAppTheme, usePalette } from '../../theme/AppearanceProvider';
 import { FocusScrollView } from '../ui/FocusScrollView';
 import type { ReactNode } from "react";
 import {
@@ -12,6 +12,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppHeader } from "./AppHeader";
+import { ui } from '../../theme/tokens';
+import { StandaloneAppNavigation } from '../../navigation/AppNavigation';
 
 export function AppScreen({
   children,
@@ -20,6 +22,11 @@ export function AppScreen({
   action,
   onRefresh,
   refreshing = false,
+  scrollable = true,
+  navigation,
+  footer,
+  onBack,
+  scrollKey,
 }: {
   children: ReactNode;
   title?: string;
@@ -27,14 +34,20 @@ export function AppScreen({
   action?: ReactNode;
   onRefresh?: () => void;
   refreshing?: boolean;
+  scrollable?: boolean;
+  navigation?: string;
+  footer?: ReactNode;
+  onBack?: () => void;
+  scrollKey?: string | number;
 }) {
   const s = useStyles();
+  const colors = usePalette();
   const { width } = useWindowDimensions();
 
   return (
     <SafeAreaView
       edges={
-        back ? ["top", "left", "right", "bottom"] : ["top", "left", "right"]
+        back && !navigation ? ["top", "left", "right", "bottom"] : ["top", "left", "right"]
       }
       style={s.safe}
     >
@@ -42,16 +55,18 @@ export function AppScreen({
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={s.safe}
       >
-        <AppHeader back={back} title={title} action={action} />
-        <FocusScrollView
+        <AppHeader back={back} title={title} action={action} onBack={onBack} />
+        {scrollable ? <FocusScrollView key={scrollKey}
           keyboardShouldPersistTaps="handled"
           bounces={Boolean(onRefresh)}
-          refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={s.safe.backgroundColor === '#00291E' ? '#79E6BB' : '#126349'} /> : undefined}
+          refreshControl={onRefresh ? <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} /> : undefined}
           overScrollMode="never"
           contentContainerStyle={s.scroll}
         >
           <View style={[s.content, width >= 1024 && { maxWidth: 880 }]} >{children}</View>
-        </FocusScrollView>
+        </FocusScrollView> : <View style={[s.content, { flex: 1, paddingHorizontal: 0, paddingTop: 0 }, width >= 1024 && { maxWidth: 880 }]}>{children}</View>}
+        {footer}
+        {navigation && <StandaloneAppNavigation selected={navigation} />}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -89,9 +104,9 @@ return StyleSheet.create({
     fontSize: 14,
     textDecorationLine: "underline",
   },
-  card: { borderRadius: 14, backgroundColor: t.white },
+  card: { borderRadius: ui.radius.card, backgroundColor: t.white },
   button: {
-    borderRadius: 12,
+    borderRadius: ui.radius.field,
     backgroundColor: t.teal,
     padding: 15,
     alignItems: "center",
@@ -108,10 +123,10 @@ return StyleSheet.create({
   scroll: { flexGrow: 1, paddingBottom: 32 },
   content: {
     width: "100%",
-    maxWidth: 440,
+    maxWidth: ui.content,
     alignSelf: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingHorizontal: ui.space.inset,
+    paddingTop: 16,
   },
 });
 };

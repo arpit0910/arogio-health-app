@@ -1,1 +1,1 @@
-export { ArticleScreen as default } from '../../../features/directory/ArticlesScreen';
+export { ArticleScreen as default } from '../../../features/articles/ArticlesScreen';

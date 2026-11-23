@@ -1,6 +1,7 @@
 import { useTranslation } from "../../localization/LanguageProvider";
 import { Image, StyleSheet, View } from "react-native";
 import { AppIcon } from "./AppIcon";
+import { usePalette } from '../../theme/AppearanceProvider';
 export function Avatar({
   photo,
   size = 80,
@@ -11,18 +12,17 @@ export function Avatar({
   camera?: boolean;
 }) {
   const { t: tr } = useTranslation();
+  const c = usePalette();
   return (
     <View style={{ width: size, height: size }}>
-      <Image
+      {photo ? <Image
         accessibilityLabel={tr("Profile photo")}
-        source={
-          photo ? { uri: photo } : require("../../../assets/home/avatar.png")
-        }
+        source={{ uri: photo }}
         style={{ width: size, height: size, borderRadius: size / 2 }}
-      />
+      /> : <View accessibilityLabel={tr('Profile photo')} style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: c.mintSurface, alignItems: 'center', justifyContent: 'center' }}><AppIcon name="user" size={size * 0.45} color={c.primary} /></View>}
       {camera && (
-        <View style={s.camera}>
-          <AppIcon name="camera" color="#FFFFFF" size={18} />
+        <View style={[s.camera, { backgroundColor: c.primary, borderColor: c.surface }]}>
+          <AppIcon name="camera" color={c.onPrimary} size={18} />
         </View>
       )}
     </View>

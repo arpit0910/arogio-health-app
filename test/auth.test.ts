@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { loginSchema, registerSchema, safeUserSchema, tokenPairSchema } from '../src/features/auth/types.ts';
+import { loginSchema, registerSchema, safeUserSchema, tokenPairSchema } from '../src/features/authentication/types.ts';
 
 describe('Auth Schemas & Input Validation', () => {
   it('validates a correct login input', () => {

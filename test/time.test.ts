@@ -1,9 +1,9 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { clockFrom12Hour, formatClock, formatDateTime, formatTime } from '../src/lib/time.ts';
-import { localDay, waterDay, waterWindow, type WaterPlan } from '../src/features/wellness/domain.ts';
-import { reminderPlan } from '../src/features/wellness/reminderPlan.ts';
-import { emptyWellness, defaultCycleSettings } from '../src/features/wellness/domain.ts';
+import { clockFrom12Hour, formatClock, formatDateTime, formatTime } from '../src/shared/date-time.ts';
+import { localDay, waterDay, waterWindow, type WaterPlan } from '../src/features/personal-wellness/domain.ts';
+import { reminderPlan } from '../src/features/personal-wellness/reminderPlan.ts';
+import { emptyWellness, defaultCycleSettings } from '../src/features/personal-wellness/domain.ts';
 
 describe('IST clocks', () => {
   it('shows midnight and noon with explicit AM/PM and IST', () => {

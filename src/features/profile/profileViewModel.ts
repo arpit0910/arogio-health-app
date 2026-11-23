@@ -1,4 +1,4 @@
-import type { SafeUser } from "../auth/types";
+import type { SafeUser } from "../authentication/types";
 import { genders, type SetupDraft, validBirthDate } from "./model.ts";
 
 export function profileDraft(user: SafeUser): SetupDraft {

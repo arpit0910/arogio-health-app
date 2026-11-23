@@ -33,11 +33,11 @@ const snapshot = { source: 'com.pebble.ring.app', syncedAt: '2026-10-31T09:00:00
   days: [{ day: '2026-10-31', readings: mode === 'cached' ? { Steps: { value: 3210, sources: ['com.pebble.ring.app'], checkedAt: '2026-10-31T08:00:00Z' } } : {} }] };
 Module._load = function(request, parent, ...rest) {
   if (request.endsWith('/WellnessContext')) return { useWellness: () => ({ready:true,data:{activityTracking:{goals:{Steps:8000,ExerciseSession:30,SleepSession:8},days:[]}}}) };
-  if (request === './PhoneStepsProvider') return { usePhoneSteps: () => ({enabled:false,totals:{}}) };
-  if (request.endsWith('/HealthSyncProvider')) return { useHealthSync: () => ({ready:true,connected:true,busy:mode==='loading',source:{id:'com.pebble.ring.app',name:'Pebble Halo'},snapshot,selectedMetrics:snapshot.granted,error:mode==='cached'?'Some readings could not refresh. Previous values keep their earlier check time.':'',run:async()=>{}}) };
+  if (request === './PhoneStepsProvider') return { usePhoneSteps: () => ({enabled:mode==='source-error',totals:{'2026-10-31':36}}) };
+  if (request.endsWith('/HealthSyncProvider')) return { useHealthSync: () => ({ready:true,enabled:true,connected:mode!=='source-error',busy:mode==='loading',source:{id:'com.pebble.ring.app',name:'Pebble Halo'},snapshot,selectedMetrics:snapshot.granted,error:mode==='cached'?'Some readings could not refresh. Previous values keep their earlier check time.':'',run:async()=>{}}) };
   if (request.endsWith('/useTrackingClock')) return { useTrackingClock: () => new Date('2026-10-31T09:00:00Z') };
   if (request === 'expo-secure-store') return { getItemAsync: async () => null, setItemAsync: async () => {} };
-  if (request === 'expo-router') return { router:{push(){}} };
+  if (request === 'expo-router') return { useRouter: () => ({ push() {}, navigate() {}, replace() {}, setParams() {}, back() {}, canGoBack: () => true }), router:{push(){}} };
   return load.call(this,request,parent,...rest);
 };
 const { TodayActivity } = require('../src/features/activity/TodayActivity.tsx');

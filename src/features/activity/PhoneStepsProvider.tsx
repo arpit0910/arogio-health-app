@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import { AppState, Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { useAuth } from '../auth/context/AuthContext';
-import { addDays, localDay, validDay } from '../wellness/domain';
+import { useAuth } from '../authentication/context/AuthContext';
+import { addDays, localDay, validDay } from '../personal-wellness/domain';
 import { phoneSensorState, watchPhoneSteps } from './stepSensor';
 import { stepDelta } from './model';
 import { startPersistentSteps, stopPersistentSteps, persistentStepTotals } from './backgroundSteps';
@@ -67,7 +67,9 @@ function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | n
         const sensor = await phoneSensorState();
         if (!valid) return;
         if (!sensor.available || !sensor.granted) { setStatus(sensor.available ? 'Motion permission is off. Enable phone counting to allow access.' : 'No step sensor is available. You can enter daily totals instead.'); return; }
-        if (await startPersistentSteps(owner, value.current.totals)) {
+        // Foreground counting remains usable when the optional native service
+        // is missing from an older build or Android refuses background startup.
+        if (await startPersistentSteps(owner, value.current.totals).catch(() => false)) {
           if (!valid) return;
           setStatus('Counting phone steps in the background. Android shows a step-counting notification.');
           const read = async () => {
@@ -105,7 +107,7 @@ function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | n
       const sensor = await phoneSensorState(true);
       if (!alive.current) return;
       if (!sensor.available || !sensor.granted) { setStatus(sensor.available ? 'Motion access was declined. You can allow it in device settings or enter totals.' : 'No step sensor is available on this device.'); return; }
-      await startPersistentSteps(owner, value.current.totals);
+      await startPersistentSteps(owner, value.current.totals).catch(() => false);
       if (!alive.current) { await stopPersistentSteps(owner); return; }
       apply({ ...value.current, enabled: true }); await persist();
     } catch { await stopPersistentSteps(owner).catch(() => {}); apply({ ...value.current, enabled: false }); if (alive.current) setStatus('Phone step counting could not start or save. Install the latest build and check motion access in device settings, then try again.'); }

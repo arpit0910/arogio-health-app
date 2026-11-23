@@ -1,1 +1,1 @@
-export { HealthSyncScreen as default } from '../../features/health-sync/HealthSyncScreen';
+export { HealthConnectScreen as default } from '../../features/health-connections/HealthConnectScreen';

@@ -1,6 +1,6 @@
 # Mobile Home dashboard
 
-Home is a daily working screen inside Arogio's existing Growing Well theme. The source is `src/features/home/HomeScreen.tsx`; `homeModel.ts` derives its water view from the authenticated wellness snapshot. This change does not redesign the other screens or replace the global design system.
+Home is a daily working screen inside Arogio's existing Growing Well theme. The source is `src/features/home-dashboard/HomeScreen.tsx`; `homeModel.ts` derives its water view from the authenticated wellness snapshot. This change does not redesign the other screens or replace the global design system.
 
 ## Screen structure
 

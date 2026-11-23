@@ -1,3 +1,4 @@
+import { AccessibleText as Text } from '../../../components/ui/AccessibleText';
 import { useTranslation } from "../../../localization/LanguageProvider";
 import { useAppTheme, usePalette } from '../../../theme/AppearanceProvider';
 import { useState } from "react";
@@ -5,15 +6,14 @@ import {
   ActivityIndicator,
   Keyboard,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
-import { useAuth } from "../../auth/context/AuthContext";
-import { updateProfileSchema } from "../../auth/types";
-import { FormError } from "../../auth/components/AuthPrimitives";
+import { useAuth } from "../../authentication/context/AuthContext";
+import { updateProfileSchema } from "../../authentication/types";
+import { FormError } from "../../authentication/components/AuthPrimitives";
 import { AppScreen, useAppStyles } from "../../../components/app/AppScreen";
 import { AppIcon } from "../../../components/app/AppIcon";
 import { Avatar } from "../../../components/app/Avatar";
@@ -30,6 +30,7 @@ import { UnitSelector } from "./ProfilePrimitives";
 import { ProfileInput } from "./ProfileInput";
 
 export function EditProfileScreen() {
+  const router = useRouter();
   const { t: tr } = useTranslation();
   const a = useAppStyles();
   const t = useAppTheme();

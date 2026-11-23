@@ -1,1 +1,1 @@
-export { MedicineScreen as default } from '../../features/wellness/MedicineScreen';
+export { MedicineScreen as default } from '../../features/personal-wellness/MedicineScreen';

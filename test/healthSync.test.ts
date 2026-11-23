@@ -2,6 +2,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   formatHealthValue,
+  healthRead,
   healthDayRanges,
   metricAverage,
   readHealthSnapshot,
@@ -9,7 +10,7 @@ import {
   permittedSnapshot,
   type HealthSnapshot,
   type HealthReader,
-} from '../src/features/health-sync/model.ts';
+} from '../src/features/health-connections/model.ts';
 
 describe('Device-only health analytics', () => {
   it('retains failed cells with their original check time but clears successful empty reads, revoked metrics and other sources', () => {
@@ -122,5 +123,11 @@ describe('Device-only health analytics', () => {
     assert.equal(result.latestWeight?.kg, 71);
     assert.equal(window, '2026-09-29T18:30:00.000Z');
     assert.deepEqual(result.granted, ['Weight']);
+  });
+});
+describe('Native read deadlines', () => {
+  it('releases a stalled read so a later refresh can succeed', async () => {
+    await assert.rejects(healthRead(new Promise<never>(() => {}), 5), /did not respond/);
+    assert.equal(await healthRead(Promise.resolve(70001), 50), 70001);
   });
 });

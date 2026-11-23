@@ -1,17 +1,19 @@
+import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
 import { useCallback, useEffect, useState } from 'react';
-import { AppState, Platform, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { AppState, Platform, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { AppScreen } from '../../components/app/AppScreen';
 import { CareRow, useCareStyles } from '../../components/app/CareUI';
 import { AppIcon } from '../../components/app/AppIcon';
 import { Button } from '../../components/ui/Button';
 import { usePalette } from '../../theme/AppearanceProvider';
-import { useWellness } from '../wellness/WellnessContext';
-import { getNotificationAccess, openReminderSettings, getReminderSoundStatus, testReminderSound } from '../wellness/notifications';
-import type { NotificationAccess } from '../wellness/notificationAccess';
+import { useWellness } from '../personal-wellness/WellnessContext';
+import { getNotificationAccess, openReminderSettings, getReminderSoundStatus, testReminderSound } from '../personal-wellness/notifications';
+import type { NotificationAccess } from '../personal-wellness/notificationAccess';
 
 export function NotificationSettingsScreen() {
+  const router = useRouter();
   const { t: tr } = useTranslation();
   const c = useCareStyles(), colors = usePalette();
   const { data, loading, error: reminderError, refresh } = useWellness();

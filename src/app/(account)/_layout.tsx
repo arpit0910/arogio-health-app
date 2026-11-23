@@ -1,3 +1,3 @@
 import { Stack } from 'expo-router';
-import { AccountGuard } from '../../navigation/AuthenticatedLayout';
-export default function AccountLayout() { return <AccountGuard><Stack screenOptions={{ headerShown: false }} /></AccountGuard>; }
+import { PublicOrAccountGuard } from '../../navigation/AuthenticatedLayout';
+export default function AccountLayout() { return <PublicOrAccountGuard><Stack screenOptions={{ headerShown: false }} /></PublicOrAccountGuard>; }

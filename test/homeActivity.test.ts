@@ -9,12 +9,18 @@ function render(width: number, mode: string) {
   return readFileSync(resolve(`.impeccable/review/home-sync/${mode}-${width}.html`), 'utf8').replace(/<!--[\s\S]*?-->/g, '');
 }
 describe('Home health and activity rendering', () => {
-  it('hides empty metric cards while keeping recovery controls visible', () => {
+  it('does not substitute 36 phone steps when the selected Halo source loses access', () => {
+    const html = render(390, 'source-error');
+    assert.doesNotMatch(html, /Steps: 36/);
+    assert.match(html, /Pebble Halo/);
+    assert.match(html, /No shared readings today/);
+  });
+  it('hides empty metric cards and keeps connection management out of Home', () => {
     const html = render(390, 'empty');
     for (const metric of ['Steps', 'Movement', 'Sleep']) assert.doesNotMatch(html, new RegExp(`${metric}: No reading today`));
     assert.match(html, /Health &amp; activity/);
-    assert.match(html, /Manage health apps/);
-    assert.match(html, /Refresh readings/);
+    assert.doesNotMatch(html, /Manage health apps/);
+    assert.doesNotMatch(html, /Refresh readings/);
     assert.match(html, /31 Oct 2026/);
     assert.match(html, /2:30 PM IST/);
   });

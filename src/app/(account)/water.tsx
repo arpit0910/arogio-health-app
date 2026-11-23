@@ -1,1 +1,1 @@
-export { WaterScreen as default } from '../../features/wellness/WaterScreen';
+export { WaterScreen as default } from '../../features/personal-wellness/WaterScreen';

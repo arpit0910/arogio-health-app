@@ -8,7 +8,7 @@ import {
 import {
   updateProfileSchema,
   type SafeUser,
-} from "../src/features/auth/types.ts";
+} from "../src/features/authentication/types.ts";
 const user = {
   id: "test",
   status: "active",

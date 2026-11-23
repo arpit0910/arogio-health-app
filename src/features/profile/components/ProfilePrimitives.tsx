@@ -1,7 +1,8 @@
+import { AccessibleText as Text, AccessibleTextInput as TextInput } from '../../../components/ui/AccessibleText';
 import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import type { ReactNode } from 'react';
-import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { profileAssets } from '../assets/profileAssets';
 import { fonts } from '../../../theme/tokens';
@@ -91,17 +92,17 @@ const useStyles = () => {
   const colors = usePalette();
 return StyleSheet.create({
   progress: { marginHorizontal: 28, flexDirection: 'row', justifyContent: 'space-between', marginTop: 2, marginBottom: 26 },
-  track: { position: 'absolute', height: 2, backgroundColor: '#D5DDE6', left: 7, right: 7, top: 6 }, trackDone: { height: 2, backgroundColor: colors.primary },
-  stage: { alignItems: 'center', width: 42, marginHorizontal: -14 }, dot: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#CBD5E1' }, dotDone: { backgroundColor: colors.primary },
+  track: { position: 'absolute', height: 2, backgroundColor: colors.border, left: 7, right: 7, top: 6 }, trackDone: { height: 2, backgroundColor: colors.primary },
+  stage: { alignItems: 'center', width: 42, marginHorizontal: -14 }, dot: { width: 14, height: 14, borderRadius: 7, backgroundColor: colors.border }, dotDone: { backgroundColor: colors.primary },
   stageLabel: { fontFamily: fonts.regular, fontSize: 9, color: colors.placeholder, marginTop: 8, width: 78, textAlign: 'center' }, stageActive: { color: colors.ink, fontFamily: fonts.semibold },
   heading: { marginBottom: 6 }, title: { fontFamily: fonts.bold, fontSize: 21, lineHeight: 28, letterSpacing: -0.6, color: colors.ink }, subtitle: { fontFamily: fonts.regular, fontSize: 12, lineHeight: 17, color: colors.muted, marginTop: 5 },
-  fieldGroup: { gap: 8, marginTop: 6 }, label: { fontFamily: fonts.semibold, color: colors.ink, fontSize: 14 },
-  field: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: 12, paddingHorizontal: 13, minHeight: 44, backgroundColor: colors.background },
-  fieldIcon: { width: 27, borderRightWidth: 1, borderColor: colors.border, marginRight: 12 }, input: { flex: 1, fontFamily: fonts.regular, fontSize: 16, color: colors.ink, paddingVertical: 14, minWidth: 0 }, suffix: { fontFamily: fonts.regular, fontSize: 12, color: colors.muted, marginLeft: 6 },
+  fieldGroup: { gap: 8, marginTop: 6 }, label: { fontFamily: fonts.semibold, color: colors.ink, fontSize: 14, lineHeight: 22, includeFontPadding: false },
+  field: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: 16, paddingHorizontal: 13, minHeight: 52, backgroundColor: colors.surface },
+  fieldIcon: { width: 24, flexShrink: 0, alignItems: 'center', justifyContent: 'center', marginRight: 12 }, input: { flex: 1, fontFamily: fonts.regular, fontSize: 16, lineHeight: 24, includeFontPadding: false, textAlignVertical: 'center', color: colors.ink, paddingVertical: 14, paddingHorizontal: 0, minWidth: 0 }, suffix: { fontFamily: fonts.regular, fontSize: 12, color: colors.muted, marginLeft: 6 },
   units: { flexDirection: 'row', gap: 6 }, unit: { flex: 1, borderRadius: 8, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }, unitSelected: { backgroundColor: colors.primary, borderColor: colors.primary }, unitText: { fontFamily: fonts.semibold, fontSize: 13, color: colors.muted }, unitTextSelected: { color: colors.onPrimary },
   card: { flexDirection: 'row', alignItems: 'center', padding: 16, borderWidth: 1, borderColor: colors.border, borderRadius: 12, gap: 16, backgroundColor: colors.surface }, selected: { borderColor: colors.primary, backgroundColor: colors.subtle },
-  badge: { width: 44, height: 44, backgroundColor: colors.subtle, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }, cardCopy: { flex: 1, minWidth: 0 }, cardTitle: { fontFamily: fonts.semibold, fontSize: 15, color: colors.ink, lineHeight: 22 }, cardSubtitle: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 20, color: colors.muted, marginTop: 4 },
-  mark: { width: 18, height: 18, borderRadius: 4, borderWidth: 1, borderColor: '#CBD5E1', alignItems: 'center', justifyContent: 'center' }, markSelected: { backgroundColor: colors.primary, borderColor: colors.primary }, radioDot: { width: 5, height: 5, backgroundColor: colors.onPrimary, borderRadius: 3 },
-  overlay: { flex: 1, backgroundColor: 'rgba(13,31,51,0.35)', justifyContent: 'center', padding: 24 }, dialog: { flexGrow: 0, flexShrink: 1, alignSelf: 'center', width: '100%', maxWidth: 400, maxHeight: '100%', borderRadius: 16, backgroundColor: colors.background }, dialogContent: { padding: 24, gap: 12 }, option: { padding: 12, borderRadius: 8, borderWidth: 1, borderColor: colors.border }, cancel: { alignItems: 'center', justifyContent: 'center' }, link: { fontFamily: fonts.semibold, color: colors.primary, textDecorationLine: 'underline' },
+  badge: { width: 44, height: 44, backgroundColor: colors.mintSurface, borderRadius: 16, alignItems: 'center', justifyContent: 'center' }, cardCopy: { flex: 1, minWidth: 0 }, cardTitle: { fontFamily: fonts.semibold, fontSize: 15, color: colors.ink, lineHeight: 22 }, cardSubtitle: { fontFamily: fonts.regular, fontSize: 13, lineHeight: 20, color: colors.muted, marginTop: 4 },
+  mark: { width: 18, height: 18, borderRadius: 4, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' }, markSelected: { backgroundColor: colors.primary, borderColor: colors.primary }, radioDot: { width: 5, height: 5, backgroundColor: colors.onPrimary, borderRadius: 3 },
+  overlay: { flex: 1, backgroundColor: 'rgba(13,31,51,0.35)', justifyContent: 'center', padding: 24 }, dialog: { flexGrow: 0, flexShrink: 1, alignSelf: 'center', width: '100%', maxWidth: 400, maxHeight: '100%', borderRadius: 24, backgroundColor: colors.background }, dialogContent: { padding: 24, gap: 12 }, option: { padding: 12, borderRadius: 8, borderWidth: 1, borderColor: colors.border }, cancel: { alignItems: 'center', justifyContent: 'center' }, link: { fontFamily: fonts.semibold, color: colors.primary, textDecorationLine: 'underline' },
 });
 };

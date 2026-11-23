@@ -70,3 +70,4 @@ eslint.config.*
 
 # Local native compilation staging
 /.c/
+/modules/*/android/build/

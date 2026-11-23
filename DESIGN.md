@@ -1,80 +1,80 @@
 ---
 name: Arogio
-description: Reference-led emerald health and everyday care.
+description: Stitch emerald and soft-mint care discovery, daily health and Jeeva.
 colors:
-  background: "#F3F8F0"
+  background: "#F7FAF7"
   surface: "#FFFFFF"
-  ink: "#203E32"
-  muted: "#586357"
-  placeholder: "#687064"
-  primary: "#126349"
-  primary-pressed: "#173D2D"
+  ink: "#0A1F1B"
+  muted: "#5C716A"
+  placeholder: "#64776F"
+  primary: "#087D65"
+  primary-pressed: "#054F40"
   on-primary: "#FFFFFF"
-  border: "#D0DFD3"
-  subtle: "#E3F0E4"
+  border: "#DCE7E2"
+  subtle: "#EEF5F2"
   accent: "#7B3D45"
   accent-surface: "#EEE1E1"
-  error: "#A42A36"
-  error-surface: "#F8E9E8"
-  dark-background: "#00291E"
-  dark-surface: "#0C3B30"
-  dark-ink: "#F4FAF5"
-  dark-muted: "#B8D0C4"
-  dark-placeholder: "#A4C0B1"
-  dark-primary: "#79E6BB"
-  dark-primary-pressed: "#5BCBA0"
-  dark-on-primary: "#003728"
-  dark-border: "#2A5546"
-  dark-subtle: "#164C3B"
-  dark-accent: "#BDB3F7"
-  dark-accent-surface: "#303D59"
-  dark-error: "#FFAFBB"
-  dark-error-surface: "#502C35"
-  shortcut-water: "#BEE2F7"
-  shortcut-medicines: "#F4C4D1"
-  shortcut-cycle: "#FAE2B8"
-  shortcut-activity: "#C8C8FB"
+  error: "#C93C3C"
+  error-surface: "#FCE4E2"
+  on-error: "#FFFFFF"
+  secondary: "#006973"
+  secondary-surface: "#D0F7FB"
+  mint-surface: "#DCF3EC"
+  rose-surface: "#FFDAD6"
+  brand-surface: "#087D65"
+  on-brand: "#FFFFFF"
+  brand-soft: "#BDF3E2"
 typography:
   headline:
-    fontFamily: "Inter_600SemiBold"
-    fontSize: "30px"
-    fontWeight: 600
-    lineHeight: "38px"
-    letterSpacing: "-0.7px"
+    fontFamily: "PlusJakartaSans_700Bold"
+    fontSize: "22px"
+    fontWeight: 700
+    lineHeight: "30px"
+    letterSpacing: "-0.4px"
   title:
-    fontFamily: "Inter_600SemiBold"
-    fontSize: "20px"
+    fontFamily: "PlusJakartaSans_600SemiBold"
+    fontSize: "18px"
     fontWeight: 600
-    lineHeight: "28px"
+    lineHeight: "26px"
   body:
-    fontFamily: "Inter_400Regular"
-    fontSize: "15px"
+    fontFamily: "DMSans_400Regular"
+    fontSize: "14px"
     fontWeight: 400
-    lineHeight: "23px"
+    lineHeight: "21px"
   row-title:
-    fontFamily: "Inter_500Medium"
+    fontFamily: "DMSans_500Medium"
     fontSize: "16px"
     fontWeight: 500
-    lineHeight: "23px"
+    lineHeight: "24px"
   detail:
-    fontFamily: "Inter_400Regular"
-    fontSize: "13px"
+    fontFamily: "DMSans_400Regular"
+    fontSize: "12px"
     fontWeight: 400
-    lineHeight: "20px"
+    lineHeight: "18px"
   label:
-    fontFamily: "Inter_600SemiBold"
+    fontFamily: "PlusJakartaSans_600SemiBold"
+    fontSize: "12px"
+    fontWeight: 600
+    lineHeight: "18px"
+  button:
+    fontFamily: "PlusJakartaSans_600SemiBold"
     fontSize: "16px"
     fontWeight: 600
-    lineHeight: "23px"
+    lineHeight: "24px"
+  input:
+    fontFamily: "DMSans_400Regular"
+    fontSize: "16px"
+    fontWeight: 400
+    lineHeight: "24px"
   navigation:
-    fontFamily: "Inter_500Medium"
+    fontFamily: "DMSans_500Medium"
     fontSize: "12px"
     fontWeight: 500
     lineHeight: "18px"
 rounded:
-  field: "12px"
-  row: "14px"
-  panel: "16px"
+  field: "16px"
+  row: "20px"
+  panel: "20px"
   banner: "18px"
   navigation: "10px"
 spacing:
@@ -89,13 +89,13 @@ components:
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
-    typography: "{typography.label}"
+    typography: "{typography.button}"
     rounded: "{rounded.field}"
     padding: "14px 20px"
   button-primary-dark:
     backgroundColor: "{colors.dark-primary}"
     textColor: "{colors.dark-on-primary}"
-    typography: "{typography.label}"
+    typography: "{typography.button}"
     rounded: "{rounded.field}"
     padding: "14px 20px"
   button-primary-pressed:
@@ -119,75 +119,54 @@ components:
 
 ## Overview
 
-**Creative North Star: "Growing Well - the supplied emerald Home reference"**
-
-The user's 29 October 2026 Home screenshot is the visual authority for the app refresh. Deep emerald grounds, mint actions, rounded tonal cards, pastel care shortcuts and illustrated wellness artwork replace the earlier warm, flat-only interpretation. The Arogio name and original logo remain unchanged. Health records and daily care have equal product priority.
-
-**Key Characteristics:**
-
-- Emerald dark canvas with mint actions; mint-white light counterpart.
-- Rounded, readable task cards with clear spacing and crisp Inter typography.
-- Pastel water, medicine, cycle and activity shortcuts.
-- Real raster banner and water artwork, with live text and real recorded values.
-
-This user-pinned direction supersedes earlier no-raster and no-tile guardrails. Source authority is `src/theme/tokens.ts`, `AppearanceProvider.tsx`, `CareUI`, `Button`, `AppScreen`, Home and TodayActivity. The reference is `WhatsApp Image 2026-10-29 at 9.53.18 PM.jpeg`; operational details and evidence are in `docs/reference-home-admin.md`.
+The user-supplied Homepage.png and Homepage.svg (14 November 2026) are the governing visual reference for the entire app. They supersede the old UI/UX, earlier Stitch compositions and historical surface briefs. Soft-mint light surfaces support readable, welcoming care navigation. Dark mode is removed by the latest user instruction. Preserve the exact original Arogio logo, proportions and name. This is a scan of implemented tokens, not a declaration that all requested modules are complete.
 
 ## Colors
 
-The frontmatter records the light palette and the actual dark variants from AppearanceProvider. Emerald is the ground and action family; mint is the dark-mode action color. Text, borders and secondary copy always use the active palette. New installations default to dark; a stored light, dark or system preference is preserved.
-
-Home shortcuts use the four recorded pastel fills, dark labels and category icons in both schemes. Errors retain the dedicated error pair. Imported activity source colors are supporting data cues, not replacements for readable labels.
-
-**The Data Rule.** Values, progress rings and weekly bars come from saved goals and readings. Missing data remains visibly missing; sample temperatures and health totals do not ship as fallback data.
+Frontmatter records `src/theme/tokens.ts` and `src/theme/AppearanceProvider.tsx`. The app is light-only: off-white canvas, white surfaces and emerald actions. Saved dark/system preferences are ignored. The appearance chooser and runtime dark palette are removed. Use active semantic palette values, including on-primary text and dedicated error pairs. Cyan secondary pairs support sleep and hydration, mint supports activity/care, and rose supports heart-rate and emergency contexts. The brand surface/on-brand/brand-soft trio keeps the emerald Jeeva banner consistent across themes. Never use a colored badge as evidence of medical verification.
 
 ## Typography
 
-CareUI uses Inter regular, medium and semibold with the recorded roles. The banner uses Inter bold for live copy. The brand uses Inter semibold at 24 with -0.7 tracking; Home greeting is 26/34. Plus Jakarta Sans and DM Sans remain existing authentication bindings. Native measurements are logical units; portable tokens use px notation. Preserve system font scaling.
+Plus Jakarta Sans semibold/bold supplies headings; DM Sans regular/medium supplies body and rows. Native tokens: heading 22/30 bold with -0.4 tracking, title 18/26 semibold, row 16/24 medium, body 14/21 regular, detail 12/18 regular, label 12/18 semibold, button/input 16/24. Buttons use the separate 16/24 role. Preserve system text scaling and Hindi readability. Native units are logical units; portable tokens use px notation.
 
 ## Layout
 
-Shared app content is centered at a 440-unit maximum width with 16-unit horizontal padding. Setup/access screens retain 24-unit padding. Sections generally separate by 32 units; tight controls use 8-14 units. CareRow has a 14-unit radius, 14 horizontal/18 vertical padding and an 8-unit top gap.
-
-Home orders greeting/date and city weather, banner, care shortcuts, Today's activity, daily water care, upcoming care and recent records. Shortcuts are four across at normal widths and two columns below 360 units or with enlarged text. Activity cards adapt their type/flow at narrow widths. At 768 units, Home can expand into columns and bottom navigation becomes a 96-unit rail.
-
-Three profile steps cover goals, basics and activity. A separate once-per-account access setup follows profile completion. One explicit action runs the OS requests sequentially; optional access can be skipped. Settings contains the central access destination. Native touch targets remain at least 48dp through shared controls.
+Shared content uses 16-unit page gutters and a 440-unit form/content constraint where applied; setup uses 24. Navigation moves to a left rail at 768. Small screens and enlarged text require wrapping rather than clipped labels. Minimum native touch areas are 48dp. First-run welcome has three panels and English/Hindi selection; permissions follow explicit actions rather than an automated welcome prompt.
 
 ## Elevation & Depth
 
-Tonal layering, rounded surfaces and artwork provide depth; `appTheme.shadow` remains empty. Blur is reserved for the temporary sidebar overlay. Do not add a decorative shadow stack to every card.
+Tonal layers and thin borders establish hierarchy. `appTheme.shadow` is empty. Sidebar blur belongs to the temporary overlay, not every card. Android emulator review images establish local composition evidence only; physical-device acceptance and iOS verification remain unestablished.
 
 ## Shapes
 
-Shared fields/buttons use 12-unit corners, care rows 14, Home cards 16 and the banner 18. Cards clip artwork to their own silhouette. Borders are thin and palette-backed. Progress geometry represents actual goals; missing weekly readings remain gaps.
+Shared fields/buttons use 16-unit corners; care rows and panels use 20, service tiles use 18 and banners use 18. Shared geometry lives in `ui` in `src/theme/tokens.ts`. Keep clipping within the surface and preserve legible borders in both themes.
 
 ## Components
 
-- **Button:** full width, 52-unit base minimum, 14/20 padding, active-palette primary and secondary variants. Busy/disabled actions block activation. Use onPrimary for content on a filled action.
-- **Field and CareRow:** labeled theme-backed fields; flexible row copy and trailing chevron. Whole row activates one task. Disclosure retains its expanded state and divider.
-- **Header/navigation:** one fixed signed-in top row has menu left, centered original Arogio brand and notification bell right. Back/title sit in a second row. Five labeled tabs retain the raised original Jeeva artwork; bottom navigation remains transparent.
-- **Sidebar:** same-window BlurTargetView overlay at intensity 45, dark dim layer and opaque themed panel. Background touch/accessibility traversal are suppressed. Back, close and backdrop dismiss; reduced motion removes animation.
-- **Home banner:** generated landscape background with live bold text is the built-in fallback. Published server banners can replace it; only allowlisted app routes are actionable. Multiple banners have accessible selection controls. Failed/unavailable content keeps the built-in artwork.
-- **Weather:** city and current Celsius temperature come from the backend weather provider. Missing city/data shows an unavailable value, never a sample temperature. Date uses the app's IST calendar. City is editable in Profile.
-- **Today's activity:** three tonal cards show steps, movement and sleep, real targets and last-seven-day readings. Connected app data is authoritative when connected; otherwise entered totals and supported foreground phone steps are used. Sources are not summed. Metrics without recorded data are hidden; real zero readings remain visible. Missing source data is explained once in the connection status.
-- **Daily water care:** saved amount/target, actual plan status and one working log action sit on a tonal card with transparent glass artwork. Progress is not an intake recommendation.
-- **Profile:** centered 88-unit avatar, live identity/city, one Edit profile action and wrapping measurements. Grouped controls lead to preferences, connections and referrals. Account deletion has a separate unchecked acknowledgement; soft-deleted records stay retained and verified sign-in recovery lasts 30 days.
-- **Access setup:** notification, motion, city location and an optional selected Health Connect source are explained together, then requested through the platform dialogs. Declining optional access leaves tracking usable. Tracker saves check existing permission without prompting again. Only city is saved; no ongoing location tracking is implied.
-- **Automatic updates:** active connected health reads run every 30 seconds and on resume; wellness refreshes every 60 seconds. Pull-to-refresh remains available. Optional Android background scheduling has a minimum 15-minute interval and may be delayed. Phone steps count only while Arogio is open.
-- **Backend administration:** the super-admin browser portal is served by the backend at `/admin`, never as mobile screens. It has a distinct restrained desktop layout using the Arogio green family. Its account, content and audit behavior is documented in the backend's `SUPER_ADMIN.md`.
+The shared brand header uses the original logo, an 18/24 wordmark, city pill, notifications and profile photo or fallback icon on a surface background with a hairline divider. Its 68-unit row is capped at 880 units; the city pill is hidden below 360 units or at font scale 1.25 and above. Back routes use a title and back control.
 
-Existing native splash/auth illustration details remain in `docs/launch-screens.md`. Documentation snippets and synthetic Web captures translate native composition; they do not establish device acceptance or production release readiness.
+Bottom navigation uses a surface background, 12/18 DM Sans labels, emerald selected icons and a raised 64-unit circular sparkle control for Jeeva AI. At 768 units it becomes a 96-unit left rail with a 56-unit Jeeva control.
+
+Home uses 56-unit service tiles, 16-unit vital-card corners and 18-unit routine/provider/banner corners. Vital cards retain missing-reading footprints and stack at enlarged font scale; shortcut columns reduce from four to two. Home composition follows the newly supplied Homepage PNG/SVG: greeting, search, suggestions, emergency, eight services, vitals, water, medicines, Jeeva, hospitals, specialists, guides and trust. Supporting routes inherit the same visual system rather than copying every Home section. Authentication uses a clean white form panel on the shared canvas; the former decorative backgrounds and auth illustrations are retired.
+
+Buttons use active-palette fill and on-primary content, a 52-unit base minimum and 14/20 padding. Busy and disabled controls block repeat actions. Fields retain visible labels and readable errors. Care rows support flexible copy and one clear destination. Main navigation labels are Home, Find Care, Jeeva AI, Health and Profile, with Jeeva in the centre. Profile remains private through its route guard; Discover and meditation remain reachable without tabs. Public care cards expose source and review information, call and external directions; their details retain share and correction actions when data supports them. Shared search uses a tinted field and explicit submit on Home. Personal medicine schedules expose confirmed dose logs, undo and due-dose snoozing, with notification access checked without a new prompt. No catalog entry, review badge, availability or health value may be fabricated. Existing trackers inherit shared tokens while retaining their source/permission semantics.
 
 ## Do's and Don'ts
 
-- Do preserve the original Arogio name/logo and the user-pinned emerald reference.
-- Do carry active theme tokens, rounded task surfaces and readable spacing across app pages.
-- Do preserve real source labels, missing-data states and permission-denial paths.
-- Do keep administrative UI exclusively in the backend browser portal.
-- Don't invent weather, health values, completion or live delivery claims.
-- Don't repeat permission and refresh prompts throughout trackers.
-- Don't treat synthetic Web previews as native permission, sync or rendering verification.
+- Do preserve the exact logo and use current semantic tokens across all screens.
+- Do show real readings, explicit source attribution and honest empty/error states.
+- Do keep clinical review, external service availability and native acceptance distinct from visual polish.
+- Don't reintroduce Inter as the shared heading/body alias or the obsolete dark-default rule.
+- Don't request permissions automatically during welcome or infer stock, booking slots or diagnosis.
 
+## Supplied reference assets
 
-## Usability refinement (30 October 2026)
+The later three-screen splash upload supersedes the old LaunchArtwork composition. Opening scenes use the original logo, mint leaves/waves, independent rotating spiral/orbit layers and floating service cards, with skippable progression. Decorative leaf/wave accents include `#42CDA2`, `#B8F5D3`, `#149C92`, `#27BDB1` and `#A0ECB4`; these are illustration colors, not new control text colors. See `docs/animated-splash-screens.md` for motion timing and reduced-motion behavior.
 
-Health connections use one shared screen, installed capable apps only, a direct Connect action and a separate waiting-for-data state. Manage controls stay in a disclosure. Activity shows real readings, with logged totals and connected data clearly separated; target editing has a direct entry and server confirmation. Empty analytics never create cards. Shared headings use 26/34 and task groups use 24-unit spacing. Compact care illustrations and tonal surfaces continue Home's emerald language. The active bottom-navigation icon uses color and fill, without a container background or selection border. Explore opens working care tools.
+The later `Profile Page.png` / `Profile Page.svg` upload governs Profile specifically. Use its compact identity card, three summary slots, grouped rows with circular icons and thin internal dividers, inline language selector, scheme information, paired helpline controls and red logout row. Preserve the shared header/navigation. Unsupported integrations show explicit unavailable states. Existing account tools remain in a collapsed group; see `docs/profile-page-redesign.md`.
+
+`assets/homepage/reference-1.jpg` and `reference-2.jpg` are hospital artwork embedded in the supplied SVG, used only when an existing hospital entry matches SMS or EHCC by name. They do not create listings or establish verification. Reference guide images 5 and 6 are category covers, never clinical evidence. Fictional sample names, health readings, bed counts, star ratings and bookings in the mockup are not runtime defaults.
+
+## Latest Login reference and light-only requirement
+
+The uploaded Login.svg and Login.png now govern Login: extracted original leaf mark, verified-network pill, centred welcome copy, labelled tonal fields, password-recovery link, emerald Sign In, white Google action, paired information badges and legal/account footer. Login has no outer white card or Remember Me row. All uploaded page layouts remain visual targets; user-requested spiral card trajectories and city-neutral interface copy take precedence over static/reference city text. Runtime values continue to come from accounts and providers. Exact visual acceptance requires rendered comparison; source implementation and bundles alone do not establish a 100% pixel match.

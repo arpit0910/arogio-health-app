@@ -1,11 +1,12 @@
+import { AccessibleText as Text } from '../../../components/ui/AccessibleText';
 import { useTranslation } from "../../../localization/LanguageProvider";
 import { usePalette } from '../../../theme/AppearanceProvider';
 import { useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
-import { router } from "expo-router";
-import { useAuth } from "../../auth/context/AuthContext";
-import { updateProfileSchema } from "../../auth/types";
-import { FormError } from "../../auth/components/AuthPrimitives";
+import { ActivityIndicator, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useAuth } from "../../authentication/context/AuthContext";
+import { updateProfileSchema } from "../../authentication/types";
+import { FormError } from "../../authentication/components/AuthPrimitives";
 import { CareRow } from '../../../components/app/CareUI';
 import { AppScreen, useAppStyles } from "../../../components/app/AppScreen";
 import { TouchTarget } from "../../../components/ui/TouchTarget";
@@ -16,6 +17,7 @@ import { ChoiceCard } from "./ProfilePrimitives";
 import { ProfilePreferences } from './ProfilePreferences';
 
 export function EditHealthGoalsScreen() {
+  const router = useRouter();
   const { t: tr } = useTranslation();
   const colors = usePalette();
   const a = useAppStyles();

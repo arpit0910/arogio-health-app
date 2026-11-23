@@ -8,7 +8,7 @@ Implemented 28 October 2026 inside the existing Growing Well palette and typogra
 
 ## Time contract
 
-`src/lib/time.ts` owns the app timezone (`Asia/Kolkata`) and clock formatting. API clock values remain `HH:mm` and absolute timestamps remain ISO UTC for reliable storage and transport. They are converted to 12-hour IST at the display boundary.
+`src/shared/date-time.ts` owns the app timezone (`Asia/Kolkata`) and clock formatting. API clock values remain `HH:mm` and absolute timestamps remain ISO UTC for reliable storage and transport. They are converted to 12-hour IST at the display boundary.
 
 Both repositories now calculate water waking days and schedules in IST. The API normalizes valid timezone inputs from older clients to IST and returns IST settings for legacy plans. Cycle date validation and notification schedules also use IST. Existing wake, bedtime, and reminder clock values are interpreted as IST; saved historical day labels and recorded period dates are preserved. No production database was changed by this work.
 

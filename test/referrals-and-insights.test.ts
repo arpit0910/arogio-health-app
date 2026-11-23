@@ -3,15 +3,15 @@ import assert from "node:assert/strict";
 import {
   healthSummary,
   comparisonCopy,
-} from "../src/features/health-sync/insights.ts";
+} from "../src/features/health-connections/insights.ts";
 import {
   referralLink,
   referralMessage,
   normalizeInviteCode,
   validInviteCode,
 } from "../src/features/referrals/model.ts";
-import { registerSchema, safeUserSchema } from "../src/features/auth/types.ts";
-import type { HealthSnapshot } from "../src/features/health-sync/model.ts";
+import { registerSchema, safeUserSchema } from "../src/features/authentication/types.ts";
+import type { HealthSnapshot } from "../src/features/health-connections/model.ts";
 const snapshot: HealthSnapshot = {
   syncedAt: "2026-10-29T08:00:00Z",
   granted: ["Steps"],

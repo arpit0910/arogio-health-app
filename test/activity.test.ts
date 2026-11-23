@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { activityReading, emptyActivity, parseActivityValue, stepDelta } from '../src/features/activity/model.ts';
-import type { HealthSnapshot } from '../src/features/health-sync/model.ts';
+import type { HealthSnapshot } from '../src/features/health-connections/model.ts';
 
 describe('Daily activity sources and targets', () => {
   const day = '2026-10-29';

@@ -1,9 +1,11 @@
+import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
-import { Platform, Text, View } from "react-native";
+import { Platform, View } from "react-native";
 import { usePhoneSteps } from "./PhoneStepsProvider";
 import { useCareStyles } from "../../components/app/CareUI";
 import { usePalette } from "../../theme/AppearanceProvider";
 import { AppIcon } from "../../components/app/AppIcon";
+import { Button } from "../../components/ui/Button";
 export function PhoneTrackingControl() {
   const { t: tr } = useTranslation();
   const phone = usePhoneSteps(),
@@ -31,7 +33,7 @@ export function PhoneTrackingControl() {
       >
         {tr(phone.status)}
       </Text>
-      {!phone.enabled && <Text style={c.text}>{tr("Manage access once in Settings. You can enter totals here without a step sensor.")}</Text>}
+      <Button title={tr(phone.enabled ? 'Turn off phone steps' : 'Turn on phone steps')} variant="secondary" disabled={!phone.ready} loading={phone.busy} onPress={() => void phone.toggle()} />
     </View>
   );
 }

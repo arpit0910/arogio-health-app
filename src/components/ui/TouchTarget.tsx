@@ -15,6 +15,6 @@ export function TouchTarget({ style, ...props }: PressableProps) {
   return <Pressable {...props} accessibilityLabel={tr(props.accessibilityLabel)} accessibilityHint={tr(props.accessibilityHint)} style={(state) => {
     const resolved = typeof style === 'function' ? style(state) : style;
     const requested = StyleSheet.flatten(resolved)?.minHeight;
-    return [resolved, { minHeight: Math.max(minimum, typeof requested === 'number' ? requested : 0) }];
+    return [resolved, { minHeight: Math.max(minimum, typeof requested === 'number' ? requested : 0), minWidth: Math.max(minimum, Number(StyleSheet.flatten(resolved)?.minWidth) || 0) }];
   }} />;
 }

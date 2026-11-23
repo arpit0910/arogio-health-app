@@ -24,7 +24,7 @@ const { AppRegistry, Dimensions, View, Text } = require('react-native-web');
 const { SafeAreaProvider } = require('react-native-safe-area-context');
 const width = Number(process.argv[2] || 390), mode = process.argv[3] || 'water', height = 1500;
 Dimensions.set({ window: { width, height: 844, scale: 1, fontScale: 1 }, screen: { width, height: 844, scale: 1, fontScale: 1 } });
-const { localDay, addDays, defaultCycleSettings } = require('../src/features/wellness/domain.ts');
+const { localDay, addDays, defaultCycleSettings } = require('../src/features/personal-wellness/domain.ts');
 const day = localDay();
 const empty = mode.endsWith('-empty');
 const data = { activityTracking: { goals: { Steps: 8000, ActiveCaloriesBurned: 400, Nutrition: 2100, Distance: 5, ExerciseSession: 30, SleepSession: 7.5 }, days: [{ day, values: { Steps: 3200, ActiveCaloriesBurned: 150, Nutrition: 650, Distance: 2.2, ExerciseSession: 20, SleepSession: 7 } }] }, waterPlan: empty ? null : { version: 'preview', wakeTime: '07:00', sleepTime: '23:00', targetMl: 2000, servingMl: 250, timezone: 'Asia/Kolkata', remindersEnabled: true, pausedUntil: null },
@@ -41,15 +41,15 @@ Module._load = function(request, parent, ...rest) {
   if (request.endsWith('/PhoneStepsProvider') || request === './PhoneStepsProvider') return { usePhoneSteps: () => ({ enabled: false, totals: {}, status: 'Phone step counting is off.', busy: false, ready: true, toggle: async () => {}, clear: async () => {} }) };
   if (request === 'expo-secure-store') return { getItemAsync: async () => null, setItemAsync: async () => {} };
   if (request === 'expo-crypto') return { randomUUID: () => 'example-only' };
-  if (request === 'expo-router') return { router: { push() {}, navigate() {}, replace() {}, canGoBack: () => true } };
+  if (request === 'expo-router') return { useRouter: () => ({ push() {}, navigate() {}, replace() {}, setParams() {}, back() {}, canGoBack: () => true }), router: { push() {}, navigate() {}, replace() {}, canGoBack: () => true } };
   return load.call(this, request, parent, ...rest);
 };
 const screens = {
   activity: () => require('../src/features/activity/ActivityScreen.tsx').ActivityScreen,
-  water: () => require('../src/features/wellness/WaterScreen.tsx').WaterScreen,
-  medicines: () => require('../src/features/wellness/MedicineScreen.tsx').MedicineScreen,
-  cycle: () => require('../src/features/wellness/CycleScreen.tsx').CycleScreen,
-  health: () => require('../src/features/wellness/HealthScreen.tsx').HealthScreen,
+  water: () => require('../src/features/personal-wellness/WaterScreen.tsx').WaterScreen,
+  medicines: () => require('../src/features/personal-wellness/MedicineScreen.tsx').MedicineScreen,
+  cycle: () => require('../src/features/personal-wellness/CycleScreen.tsx').CycleScreen,
+  health: () => require('../src/features/personal-wellness/HealthScreen.tsx').HealthScreen,
   notifications: () => require('../src/features/settings/NotificationSettingsScreen.tsx').NotificationSettingsScreen,
   settings: () => require('../src/app/(account)/settings.tsx').default,
 };

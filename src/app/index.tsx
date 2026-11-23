@@ -1,12 +1,13 @@
 import { useTranslation } from "../localization/LanguageProvider";
 import { canEnterApp } from '../features/profile/setupStatus';
 import { usePalette } from '../theme/AppearanceProvider';
-import { Redirect } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
-import { useAuth } from "../features/auth/context/AuthContext";
-import { WelcomeScreen } from "../features/auth/components/WelcomeScreen";
+import { useAuth } from "../features/authentication/context/AuthContext";
+import { Button } from '../components/ui/Button';
 
 export default function EntryRoute() {
+  const router = useRouter();
   const { t: tr } = useTranslation();
   const colors = usePalette();
 
@@ -21,9 +22,10 @@ export default function EntryRoute() {
         }}
       >
         <ActivityIndicator accessibilityLabel={tr("Loading Arogio")} />
+        <View style={{ padding: 24 }}><Button title={tr('Emergency contacts')} variant="danger" onPress={() => router.push('/emergency')} /></View>
       </View>
     );
-  if (!user) return <WelcomeScreen />;
+  if (!user) return <Redirect href="/login" />;
   return (
     <Redirect href={canEnterApp(user) ? "/home" : "/setup-profile"} />
   );

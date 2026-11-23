@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { isHealthApp, restoreHealthPreference, showHealthConnectionPrompt } from '../src/features/health-sync/connection.ts';
+import { isHealthApp, restoreHealthPreference, showHealthConnectionPrompt } from '../src/features/health-connections/connection.ts';
 
 describe('Single health source and Home prompt', () => {
   it('only invites a ready, never-connected account and does not flash during startup', () => {

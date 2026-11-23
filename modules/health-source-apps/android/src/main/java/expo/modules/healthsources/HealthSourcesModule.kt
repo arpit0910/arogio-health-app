@@ -74,7 +74,6 @@ class HealthSourcesModule : Module() {
             "ActiveCaloriesBurned" to "ACTIVE_CALORIES_BURNED", "TotalCaloriesBurned" to "TOTAL_CALORIES_BURNED",
             "RestingHeartRate" to "RESTING_HEART_RATE", "Hydration" to "HYDRATION"
           ).filter { (_, permission) -> permissions.contains("android.permission.health.WRITE_" + permission) }.keys.toList()
-          if (supported.isEmpty()) return@mapNotNull null
           run {
             val icon = runCatching {
               val drawable = manager.getApplicationIcon(app)
@@ -86,7 +85,7 @@ class HealthSourcesModule : Module() {
               bitmap.recycle()
               "data:image/png;base64," + Base64.encodeToString(bytes.toByteArray(), Base64.NO_WRAP)
             }.getOrNull()
-            mapOf("id" to packageName, "name" to manager.getApplicationLabel(app).toString(), "icon" to icon, "supportsHealthConnect" to true, "metrics" to supported)
+            mapOf("id" to packageName, "name" to manager.getApplicationLabel(app).toString(), "icon" to icon, "supportsHealthConnect" to supported.isNotEmpty(), "metrics" to supported)
           }
         }.getOrNull()
       }.sortedBy { (it["name"] as? String)?.lowercase() }

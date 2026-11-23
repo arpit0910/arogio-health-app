@@ -1,71 +1,115 @@
-import { useTranslation } from "../../../localization/LanguageProvider";
-import { ReferralPanel } from '../../referrals/ReferralPanel';
-import { usePalette } from '../../../theme/AppearanceProvider';
+import { useHealthRecords } from '../../health-records/useHealthRecords';
+import { useSafetyContact } from '../../emergency/safetyContact';
+import { useAccessibilityPreferences } from '../../accessibility/AccessibilityPreferences';
+import { AccessibleText as Text } from '../../../components/ui/AccessibleText';
 import { useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { router } from 'expo-router';
-import { useAuth } from '../../auth/context/AuthContext';
+import { ActivityIndicator, Linking, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useTranslation } from '../../../localization/LanguageProvider';
+import { usePalette } from '../../../theme/AppearanceProvider';
+import { fonts, typeStyles } from '../../../theme/tokens';
+import { useAuth } from '../../authentication/context/AuthContext';
 import { AppScreen } from '../../../components/app/AppScreen';
 import { Avatar } from '../../../components/app/Avatar';
 import { AppIcon } from '../../../components/app/AppIcon';
-import { CareDisclosure, CareRow, useCareStyles } from '../../../components/app/CareUI';
 import { TouchTarget } from '../../../components/ui/TouchTarget';
-import { Button } from '../../../components/ui/Button';
-import { fonts } from '../../../theme/tokens';
-import { formatBirthday, genderLabel, profileDraft, profileName, profilePhoto } from '../profileViewModel';
-import { accountGoals } from '../profileOptions';
+import { profileDraft, profileName, profilePhoto } from '../profileViewModel';
+import { ProfileBadge, ProfileReadability, ProfileRow, ProfileSection } from './ProfilePageUI';
+
+function LanguageChoice() {
+  const c = usePalette(), { t, language, ready, saving, setLanguage } = useTranslation();
+  return <View accessibilityRole="radiogroup" accessibilityLabel={t('Language')} style={[s.languages, { backgroundColor: c.mintSurface }]}>{(['en', 'hi'] as const).map(value => <TouchTarget key={value} accessibilityRole="radio" accessibilityLabel={value === 'en' ? 'English' : t('Hindi')} accessibilityState={{ checked: language === value, disabled: !ready || saving }} disabled={!ready || saving} onPress={() => void setLanguage(value)} style={[s.language, { backgroundColor: language === value ? c.primary : 'transparent' }]}><Text style={[s.small, { color: language === value ? c.onPrimary : c.primary }]}>{value === 'en' ? 'English' : t('Hindi')}</Text></TouchTarget>)}</View>;
+}
+
 export function AccountProfileScreen() {
-  const { t: tr, locale } = useTranslation();
-  const c = useCareStyles(), colors = usePalette(), s = useStyles();
-  const { user, logout, isSubmitting } = useAuth();
-  const [error, setError] = useState(''), lock = useRef(false);
+  const safetyContact = useSafetyContact(), healthRecords = useHealthRecords();
+  const router = useRouter(), c = usePalette(), { t, error: languageError } = useTranslation();
+  const { user, logout, isSubmitting } = useAuth(), { width, fontScale } = useWindowDimensions();
+  const { large, ready: accessibilityReady, error: accessibilityError, set: setAccessibility } = useAccessibilityPreferences();
+  const [error, setError] = useState('');
+  const lock = useRef(false), dialLock = useRef(false);
+  const stacked = width < 360 || fontScale > 1.2 || large;
   async function signOut() {
     if (lock.current || isSubmitting) return;
     lock.current = true; setError('');
-    try { await logout(); } catch { setError('Unable to log out. Please try again.'); } finally { lock.current = false; }
+    try { await logout(); } catch { setError('Unable to log out. Please try again.'); }
+    finally { lock.current = false; }
+  }
+  async function dial(number: '108' | '104') {
+    if (dialLock.current) return;
+    dialLock.current = true; setError('');
+    try { await Linking.openURL(`tel:${number}`); }
+    catch { setError(`The dialer could not open. Dial ${number} on your phone.`); }
+    finally { dialLock.current = false; }
   }
   if (!user) return null;
   const draft = profileDraft(user);
-  const goals = accountGoals.filter(goal => draft.healthGoals.includes(goal.value));
-  const measurements = [
-    { label: 'Weight', value: user.weightValue ? `${user.weightValue}` : '—', unit: user.weightValue ? user.weightUnit === 'lb' ? 'lb' : 'kg' : '' },
-    { label: 'Height', value: user.heightValue ? `${user.heightValue}` : '—', unit: user.heightValue ? user.heightUnit === 'in' ? 'in' : 'cm' : '' },
-    { label: 'BMI', value: user.bmi?.toFixed(1) ?? '—', unit: '' },
-  ];
-  return <AppScreen>
-    {!user.profileCompletedAt && <CareRow icon="user" title={tr("Finish profile setup")} detail={tr("Add your details whenever you are ready")} onPress={() => router.push('/setup-profile')} />}
-
-    <View style={s.identity}>
-      <Avatar photo={profilePhoto(user)} size={88} />
-      <Text accessibilityRole="header" style={[c.heading, s.center]}>{profileName(user)}</Text>
-      {!!user.email && <Text selectable style={[c.text, s.center]}>{user.email}</Text>}
-      {!!draft.location && <View style={s.city}><AppIcon name="location" size={16} /><Text style={c.text}>{draft.location}</Text></View>}
-      <View style={{ width: '100%', maxWidth: 220, marginTop: 10 }}><Button title={tr("Edit profile")} variant="secondary" leading={<AppIcon name="pencil" size={18} />} onPress={() => router.push('/edit-profile')} /></View>
+  const contact = [String(user.profileSetup?.contactNumber || user.mobileNumber || user.email || ''), draft.location].filter(Boolean).join(' · ');
+  const copy = [typeStyles.detail, large && { fontSize: 15, lineHeight: 22 }, { color: c.muted }];
+  return <AppScreen><ProfileReadability value={large}><View style={s.page}>
+    <View style={[s.identity, { backgroundColor: c.surface }]}>
+      <View style={s.identityRow}><Avatar photo={profilePhoto(user)} size={64} /><View style={s.flex}>
+        <Text accessibilityRole="header" style={[s.name, large && { fontSize: 26, lineHeight: 34 }, { color: c.ink }]}>{profileName(user)}</Text>
+        {!!contact && <Text selectable style={copy}>{contact}</Text>}
+        <View style={s.identityStatus}><AppIcon name="shield" size={13} color={c.muted} /><Text style={[s.small, { color: c.muted }]}>{t('ABHA ID not linked')}</Text></View>
+      </View><TouchTarget accessibilityRole="button" accessibilityLabel={t('Edit profile')} onPress={() => router.push('/edit-profile')} style={s.edit}><AppIcon name="pencil" size={17} color={c.muted} /></TouchTarget></View>
+      <View style={[s.stats, { backgroundColor: c.subtle }, stacked && { flexWrap: 'wrap' }]}>
+        {([{ icon: 'blood', value: String(user.profileSetup?.bloodGroup || '—'), label: 'Blood Type' }, { icon: 'shield', value: safetyContact.isPending ? 'Loading...' : safetyContact.isError ? 'Retry' : safetyContact.data ? 'Saved' : 'Add', label: 'SOS Contact' }, { icon: 'report', value: healthRecords.isPending ? 'Loading...' : healthRecords.isError ? 'Retry' : String(healthRecords.data?.length ?? 0), label: 'EHR Records' }] as const).map(item => <TouchTarget key={item.label} accessibilityRole="button" onPress={() => router.push(item.label === 'SOS Contact' ? '/safety-contact' : item.label === 'EHR Records' ? '/health-records' : '/edit-health-goals')} accessibilityLabel={`${t(item.label)}: ${t(item.value)}`} style={[s.stat, { backgroundColor: c.surface }, stacked && { flexBasis: '100%' }]}><View style={s.statValue}><AppIcon name={item.icon} size={15} color={item.icon === 'blood' ? c.error : c.primary} /><Text style={[s.statText, { color: c.ink }]}>{t(item.value)}</Text></View><Text style={[s.small, { color: c.muted }]}>{t(item.label)}</Text></TouchTarget>)}
+      </View>
+      {!user.profileCompletedAt && <TouchTarget accessibilityRole="button" onPress={() => router.push('/setup-profile')}><Text style={[typeStyles.label, { color: c.primary }]}>{t('Finish profile setup')}</Text></TouchTarget>}
     </View>
-    <View style={s.measurements}>{measurements.map(item => <View key={item.label} accessible accessibilityLabel={`${item.label}, ${item.value}${item.unit ? ` ${item.unit}` : ''}`} style={s.measurement}><Text style={c.text}>{tr(item.label)}</Text><Text style={s.measureValue}>{item.value}<Text style={s.unit}>{item.unit ? ` ${item.unit}` : ''}</Text></Text></View>)}</View>
-    <View style={s.group}><Text accessibilityRole="header" style={c.title}>{tr("Made for you")}</Text><CareRow icon="goal" title={tr("Goals & preferences")} detail={tr(goals.map(goal => tr(goal.title)).join(' \u00b7 ') || 'Set your wellness priorities')} onPress={() => router.push('/edit-health-goals')} /><CareDisclosure title={tr("Personal details")} divider={false}><Detail label={tr("Date of birth")} value={formatBirthday(draft.dateOfBirth, locale)} /><Detail label={tr("Gender")} value={tr(genderLabel(draft.gender))} /><Detail label={tr("City")} value={draft.location || 'Not added'} /></CareDisclosure></View>
-    <View style={s.group}><Text accessibilityRole="header" style={c.title}>{tr("Your account")}</Text><CareRow icon="settings" title={tr("Settings")} detail={tr("Appearance and notifications")} onPress={() => router.push('/settings')} /><CareRow icon="sync" title={tr("Connected health")} detail={tr("Apps, permissions and last sync")} onPress={() => router.push('/connected-health')} /></View>
-    <ReferralPanel />
-    <View style={s.footer}><Button title={tr("Log out")} variant="secondary" loading={isSubmitting} onPress={() => void signOut()} />{!!error && <Text accessibilityRole="alert" style={[c.text, { color: colors.error }]}>{tr(error)}</Text>}<TouchTarget accessibilityRole="button" onPress={() => router.push('/delete-account')} style={s.delete}><Text style={[c.text, { color: colors.error }]}>{tr("Delete account")}</Text></TouchTarget></View>
-  </AppScreen>;
+
+    <ProfileSection title="YOUR HEALTH DOCUMENTS & CONTACTS">
+      <ProfileRow icon="shield" title={safetyContact.data ? 'Edit SOS contact' : 'Add SOS contact'} detail={safetyContact.data ? `${safetyContact.data.name} - ${safetyContact.data.phone}` : 'Choose a trusted person for emergencies'} onPress={() => router.push('/safety-contact')} />
+      <ProfileRow icon="report" title="EHR records" detail="Add and open reports, prescriptions and discharge documents" onPress={() => router.push('/health-records')} last />
+    </ProfileSection>
+    <ProfileSection title="SAVED CARE & ACTIVITY">
+      <ProfileRow icon="hospital" title="Saved Hospitals & Clinics" detail="Hospitals & clinics" onPress={() => router.push({ pathname: '/saved-care', params: { kind: 'hospital' } })} trailing={!stacked && <ProfileBadge text="Saved" />} />
+      <ProfileRow icon="stethoscope" title="Saved Doctors & Specialists" detail="Doctors & specialists" onPress={() => router.push({ pathname: '/saved-care', params: { kind: 'doctor' } })} trailing={!stacked && <ProfileBadge text="Saved" />} />
+      <ProfileRow icon="clock" title="Recent Searches & Departments" detail="Care by name, area or specialty" onPress={() => router.push({ pathname: '/saved-care', params: { history: '1' } })} last />
+    </ProfileSection>
+
+    <ProfileSection title="LOCALIZATION & PREFERENCES">
+      <ProfileRow icon="book" title="App language" detail="Select your preferred display language across Arogio" trailing={!stacked && <LanguageChoice />} />
+      {stacked && <View style={s.languageBelow}><LanguageChoice /></View>}
+      {!!languageError && <Text accessibilityRole="alert" style={[copy, { color: c.error }]}>{t(languageError)}</Text>}
+      <ProfileRow icon="location" title="City & Medical Zone" detail={draft.location || 'Add your city to your profile'} onPress={() => router.push('/edit-profile')} trailing={!stacked && <Text style={[s.small, { color: c.primary }]}>{t('Change')}</Text>} />
+      <ProfileRow icon="shield" title="Call ambulance 108" detail="Emergency ambulance helpline" onPress={() => void dial('108')} />
+      <ProfileRow icon="walk" title="Senior / High Accessibility Mode" detail="Larger text across Arogio" trailing={<Switch accessibilityLabel={t('Larger text across Arogio')} disabled={!accessibilityReady} value={large} onValueChange={large => void setAccessibility({ large })} trackColor={{ false: c.mintSurface, true: c.primary }} thumbColor={c.surface} />} />
+    </ProfileSection>
+
+    {!!accessibilityError && <Text accessibilityRole="alert" style={copy}>{accessibilityError}</Text>}
+    <ProfileSection title="COMPLIANCE & PUBLIC SCHEMES">
+      <View style={s.scheme}><View style={s.schemeHeading}><View style={[s.schemeIcon, { backgroundColor: c.mintSurface }]}><AppIcon name="shield" size={18} color={c.primary} /></View><View style={s.flex}><Text style={[s.schemeTitle, { color: c.ink }]}>{t('Ayushman Bharat PM-JAY & ABDM')}</Text><Text style={copy}>{t('Not connected')}</Text></View></View>
+        <View style={[s.schemeNote, { backgroundColor: c.subtle }]}><Text style={copy}>{t('Confirm scheme eligibility and hospital coverage with your provider.')}</Text></View>
+      </View>
+      <ProfileRow icon="medicalCase" title="Jan Aushadhi Kendra Locator" detail="Find generic medicine centres" onPress={() => router.push({ pathname: '/find-care', params: { kind: 'pharmacy' } })} />
+      <ProfileRow icon="shield" title="Privacy & access" detail="Manage your data & privacy" onPress={() => router.push('/privacy-controls')} last />
+    </ProfileSection>
+
+    <ProfileSection title="HELP & HELPLINES">
+      <View style={[s.helplines, { borderBottomColor: c.border }, stacked && { flexDirection: 'column' }]}>
+        {([{ number: '108', label: 'Ambulance Rajasthan', icon: 'emergency' }, { number: '104', label: 'Rajasthan health helpline', icon: 'phone' }] as const).map(item => <TouchTarget key={item.number} accessibilityRole="button" accessibilityLabel={`${t('Call')} ${item.number}. ${t(item.label)}`} onPress={() => void dial(item.number)} style={({ pressed }) => [s.helpline, { backgroundColor: c.subtle, opacity: pressed ? 0.65 : 1 }]}><View style={[s.phoneIcon, { backgroundColor: item.number === '108' ? c.error : c.primary }]}><AppIcon name={item.icon} color={c.onPrimary} size={16} /></View><View style={s.flex}><Text style={[s.callTitle, { color: c.ink }]}>{t('Call')} {item.number}</Text><Text style={[s.small, { color: c.muted }]}>{t(item.label)}</Text></View></TouchTarget>)}
+      </View>
+      <ProfileRow icon="chat" title="Arogio Support & Feedback" detail="Send feedback to the app team" onPress={() => router.push('/feedback')} />
+      <ProfileRow icon="logout" title={isSubmitting ? 'Logging out…' : 'Log Out'} detail="Safely sign out of your Arogio account" danger onPress={isSubmitting ? undefined : () => void signOut()} last trailing={isSubmitting ? <ActivityIndicator color={c.primary} /> : undefined} />
+      {!!error && <Text accessibilityRole="alert" style={[copy, { color: c.error, paddingBottom: 16 }]}>{t(error)}</Text>}
+    </ProfileSection>
+
+    <View style={s.footer}><View style={s.footerBrand}><AppIcon name="leaf" size={15} color={c.primary} /><Text style={[typeStyles.label, { color: c.primary }]}>{t('Arogio Healthcare')}</Text></View><Text style={[s.small, { color: c.muted }]}>{t('Health. Help. Hope.')}</Text><Text style={[s.footerCopy, { color: c.muted }]}>{t('Your profile, care preferences and everyday health, together.')}</Text></View>
+  </View></ProfileReadability></AppScreen>;
 }
-function Detail({ label, value }: { label: string; value: string }) {
-  const { t: tr } = useTranslation();
-  const c = useCareStyles();
-  return <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12, paddingVertical: 10 }}><Text style={c.text}>{tr(label)}</Text><Text style={c.text}>{value}</Text></View>;
-}
-const useStyles = () => {
-  const colors = usePalette();
-  return StyleSheet.create({
-    identity: { alignItems: 'center', paddingTop: 24, paddingBottom: 24, paddingHorizontal: 16, backgroundColor: colors.surface, borderRadius: 16, gap: 10 },
-    center: { textAlign: 'center', maxWidth: '100%' },
-    city: { flexDirection: 'row', alignItems: 'center', gap: 5, maxWidth: '100%', flexWrap: 'wrap', justifyContent: 'center' },
-    measurements: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, paddingVertical: 22, marginTop: 12, backgroundColor: colors.subtle, borderRadius: 16 },
-    measurement: { flex: 1, minWidth: 72, gap: 6, alignItems: 'center' },
-    measureValue: { fontFamily: fonts.semibold, fontSize: 23, lineHeight: 31, color: colors.ink, fontVariant: ['tabular-nums'] },
-    unit: { fontFamily: fonts.regular, fontSize: 13, color: colors.muted },
-    group: { marginTop: 32 },
-    footer: { marginTop: 32, paddingTop: 24, borderTopWidth: 1, borderColor: colors.border, gap: 12 },
-    delete: { alignItems: 'center', paddingVertical: 14 },
-  });
-};
+
+const s = StyleSheet.create({
+  page: { gap: 16 }, flex: { flex: 1, minWidth: 0 }, identity: { padding: 16, gap: 16, borderRadius: 16 }, identityRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  name: { fontFamily: fonts.bold, fontSize: 22, lineHeight: 30, letterSpacing: -0.5 }, edit: { width: 48, alignSelf: 'flex-start', alignItems: 'center', justifyContent: 'center', marginTop: -8, marginRight: -8 },
+  identityStatus: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 5 }, small: { fontFamily: fonts.medium, fontSize: 11, lineHeight: 16 },
+  stats: { flexDirection: 'row', gap: 8, borderRadius: 12, padding: 8 }, stat: { flex: 1, minWidth: 70, paddingVertical: 9, borderRadius: 8, alignItems: 'center', gap: 3 },
+  statValue: { flexDirection: 'row', alignItems: 'center', gap: 4 }, statText: { fontFamily: fonts.semibold, fontSize: 18, lineHeight: 24 },
+  languages: { flexDirection: 'row', borderRadius: 24, padding: 3 }, language: { paddingHorizontal: 9, borderRadius: 22, alignItems: 'center', justifyContent: 'center' }, languageBelow: { alignItems: 'flex-end', paddingBottom: 12 },
+  scheme: { paddingVertical: 16, gap: 12 }, schemeHeading: { flexDirection: 'row', gap: 8, alignItems: 'center' }, schemeIcon: { width: 28, height: 28, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  schemeTitle: { fontFamily: fonts.semibold, fontSize: 18, lineHeight: 23, letterSpacing: -0.35 }, schemeNote: { padding: 10, borderRadius: 8 },
+  helplines: { flexDirection: 'row', gap: 8, paddingVertical: 16, borderBottomWidth: StyleSheet.hairlineWidth }, helpline: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, padding: 10, borderRadius: 10 },
+  phoneIcon: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' }, callTitle: { fontFamily: fonts.semibold, fontSize: 14, lineHeight: 20 },
+  footer: { alignItems: 'center', gap: 6, paddingTop: 8, paddingBottom: 28 }, footerBrand: { flexDirection: 'row', alignItems: 'center', gap: 5 }, footerCopy: { fontFamily: fonts.medium, fontSize: 11, lineHeight: 16, textAlign: 'center', maxWidth: 290 },
+});

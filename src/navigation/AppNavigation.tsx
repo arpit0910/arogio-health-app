@@ -1,19 +1,27 @@
+import { AccessibleText as Text } from '../components/ui/AccessibleText';
 import { useTranslation } from "../localization/LanguageProvider";
 import { useAppTheme } from '../theme/AppearanceProvider';
 import type { BottomTabBarProps } from "expo-router/js-tabs";
-import { Image, StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import { StyleSheet, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TouchTarget } from "../components/ui/TouchTarget";
 import { AppIcon, type AppIconName } from "../components/app/AppIcon";
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { useRouter } from 'expo-router';
 
 
 export const appTabs: { name: string; title: string; icon: AppIconName }[] = [
   { name: "home", title: "Home", icon: "home" },
-  { name: "health", title: "Health", icon: "heart" },
+  { name: "find-care", title: "Find Care", icon: "stethoscope" },
   { name: "jeeva", title: "Jeeva AI", icon: "goal" },
-  { name: "explore", title: "Explore", icon: "explore" },
+  { name: "health", title: "Health", icon: "report" },
   { name: "profile", title: "Profile", icon: "user" },
 ];
+export function StandaloneAppNavigation({ selected = 'health' }: { selected?: string }) {
+  const router = useRouter(), t = useAppTheme(), s = useStyles(), { t: tr } = useTranslation(), { bottom } = useSafeAreaInsets();
+  const tabs = selected === 'articles' ? appTabs.map(tab => tab.name === 'health' ? { name: 'articles', title: 'Articles', icon: 'book' as const } : tab) : appTabs;
+  return <View style={[s.container, { paddingBottom: Math.max(bottom, 10) }]}><View style={s.bar}>{tabs.map(tab => <TouchTarget key={tab.name} accessibilityRole="tab" accessibilityState={{ selected: tab.name === selected }} onPress={() => router.navigate(`/${tab.name}` as '/home' | '/find-care' | '/jeeva' | '/health' | '/profile' | '/articles')} style={s.tab}>{tab.name === 'jeeva' ? <View style={[s.jeeva, { backgroundColor: t.teal }]}><AppIcon name="sparkles" size={32} color="#FFFFFF" /></View> : <View style={s.icon}><AppIcon name={tab.icon} size={24} color={tab.name === selected ? t.teal : t.muted} filled={tab.name === selected} /></View>}<Text style={[s.label, { color: tab.name === selected || tab.name === 'jeeva' ? t.teal : t.muted }]}>{tr(tab.title)}</Text></TouchTarget>)}</View></View>;
+}
 export function AppNavigation({
   state,
   emitter,
@@ -40,7 +48,7 @@ export function AppNavigation({
             <TouchTarget
               key={tab.name}
               accessibilityRole="tab"
-              accessibilityLabel={tab.title}
+              accessibilityLabel={tr(tab.title)}
               accessibilityState={{ selected }}
               aria-selected={selected}
               onPress={() => {
@@ -54,7 +62,7 @@ export function AppNavigation({
               }}
               style={[s.tab, expanded && s.railTab]}
             >
-              {tab.name === "jeeva" ? <Image source={require("../../assets/home/jeeva.png")} accessible={false} style={[s.jeeva, expanded && s.railJeeva]} /> : <View style={s.icon}>
+              {tab.name === "jeeva" ? <View style={[s.jeeva, expanded && s.railJeeva]}><Svg width="100%" height="100%" style={StyleSheet.absoluteFill}><Defs><LinearGradient id="jeeva-tab" x1="0" y1="1" x2="1" y2="0"><Stop offset="0" stopColor="#007D75" /><Stop offset="1" stopColor="#20B9A6" /></LinearGradient></Defs><Rect width="100%" height="100%" rx="32" fill="url(#jeeva-tab)" /></Svg><AppIcon name="sparkles" color="#FFFFFF" size={32} /></View> : <View style={s.icon}>
                 <AppIcon
                   name={tab.icon}
                   size={24}
@@ -63,7 +71,7 @@ export function AppNavigation({
                 />
               </View>}
               <Text
-                style={[s.label, { color: selected ? t.teal : t.muted }]}
+                style={[s.label, { color: selected || tab.name === "jeeva" ? t.teal : t.muted }]}
               >
                 {tr(tab.title)}
               </Text>
@@ -78,11 +86,9 @@ const useStyles = () => {
   const t = useAppTheme();
 return StyleSheet.create({
   container: {
-    backgroundColor: t.background,
-    borderTopWidth: 1,
+    backgroundColor: t.white,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderColor: t.border,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
   },
   bar: {
     flexDirection: "row",
@@ -93,24 +99,32 @@ return StyleSheet.create({
   },
   tab: {
     flex: 1,
+    minWidth: 0,
+    paddingHorizontal: 4,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 6,
     gap: 5,
     minHeight: 51,
   },
-  label: { fontFamily: t.fonts.medium, fontSize: 12, lineHeight: 18 },
+  label: { fontFamily: t.fonts.medium, fontSize: 12, lineHeight: 18, textAlign: 'center', includeFontPadding: false, maxWidth: '100%' },
   icon: { width: 52, height: 32, alignItems: 'center', justifyContent: 'center', borderRadius: 10 },
   rail: { width: 96, height: '100%', borderTopWidth: 0, borderRightWidth: 1, borderRadius: 0 },
   railBar: { flexDirection: 'column', gap: 20, width: '100%', maxWidth: undefined, paddingTop: 0 },
   railTab: { flex: 0, minHeight: 76, paddingHorizontal: 8, justifyContent: 'center' },
   railJeeva: { width: 56, height: 56, borderRadius: 28, marginTop: 0, marginBottom: 0 },
   jeeva: {
-    width: 61,
-    height: 61,
-    marginTop: -29,
+    width: 64,
+    height: 64,
+    marginTop: -28,
     marginBottom: -2,
-    borderRadius: 31,
+    borderRadius: 32,
+    overflow: 'hidden',
+    backgroundColor: t.teal,
+    borderWidth: 4,
+    borderColor: t.white,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 };

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { requestInitialAccess } from '../src/features/onboarding/initialAccess.ts';
+import { requestInitialAccess } from '../src/features/account-onboarding/initialAccess.ts';
 
 describe('Native access without an interstitial', () => {
   it('remembers the attempt before presenting sequential dialogs and continues after a denial', async () => {

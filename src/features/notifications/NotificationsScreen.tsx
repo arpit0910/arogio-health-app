@@ -1,14 +1,16 @@
+import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
-import { ActivityIndicator, Text, View } from 'react-native';
-import { router } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { AppScreen } from '../../components/app/AppScreen';
 import { AppIcon } from '../../components/app/AppIcon';
 import { CareRow, useCareStyles } from '../../components/app/CareUI';
 import { TouchTarget } from '../../components/ui/TouchTarget';
 import { usePalette } from '../../theme/AppearanceProvider';
-import { formatDateTime } from '../../lib/time';
+import { formatDateTime } from '../../shared/date-time';
 import { useInbox } from './InboxProvider';
 export function NotificationsScreen() {
+  const router = useRouter();
   const { t: tr } = useTranslation();
   const { items, loading, error, markRead } = useInbox(), c = useCareStyles(), colors = usePalette();
   return <AppScreen back>

@@ -1,6 +1,6 @@
 import { useTranslation } from "../../localization/LanguageProvider";
 import { useLocalSearchParams } from 'expo-router';
-import { ComingSoonScreen } from '../../features/home/ComingSoonScreen';
+import { ComingSoonScreen } from '../../features/home-dashboard/ComingSoonScreen';
 export default function FeatureRoute() {
   const { t: tr } = useTranslation();
   const { name } = useLocalSearchParams<{ name?: string }>();

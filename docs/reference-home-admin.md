@@ -35,7 +35,7 @@ The super-admin portal is served by the backend at `/admin`. There are no mobile
 
 ## Verification boundary
 
-Final verification: frontend lint/typecheck and 93 tests passed; backend lint/build/migration checks, 56 unit/database tests and 30 HTTP journey tests passed. The isolated local backend also successfully seeded a synthetic administrator, served the portal and returned protected analytics. APK 27 completed and its signature/version were verified; `docs/apk-build-27-local.md` records the final artifact and checksum. Independent review resolved all reported findings at its source/composition scope.
+Final verification: frontend lint/typecheck and 93 tests passed; backend lint/build/migration checks, 56 unit/database tests and 30 HTTP journey tests passed. The isolated local backend also successfully seeded a synthetic administrator, served the portal and returned protected analytics. APK 27 completed and its signature/version were verified. Historical build artifacts and reports have been removed. Independent review resolved all reported findings at its source/composition scope.
 
 The inspected composition evidence uses real components with synthetic records: `.impeccable/review/home27-dark-390-final.png`, `home27-dark-320-final.png`; backend desktop and corrected narrow portal previews are under `.tmp/admin-preview`. These confirm composition only. Earlier non-final Home captures and the first clipped mobile portal capture are not acceptance evidence.
 

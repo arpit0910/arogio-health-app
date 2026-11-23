@@ -1,7 +1,7 @@
 import { useTranslation } from "../localization/LanguageProvider";
 import { Redirect } from 'expo-router';
 import { ActivityIndicator } from 'react-native';
-import { useAuth } from '../features/auth/context/AuthContext';
+import { useAuth } from '../features/authentication/context/AuthContext';
 import { ProfileSetupScreen } from '../features/profile/components/ProfileSetupScreen';
 export default function SetupProfileRoute() {
   const { t: tr } = useTranslation();

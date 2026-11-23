@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const sharp = require(path.resolve(process.argv[2]));
 const root = path.resolve(__dirname, '..');
-const source = fs.readFileSync(path.join(root, 'src/features/auth/assets/authAssets.ts'), 'utf8');
+const source = fs.readFileSync(path.join(root, 'src/features/authentication/assets/authAssets.ts'), 'utf8');
 const match = source.match(/brand: ("(?:[^"\\]|\\.)*")/);
 if (!match) throw new Error('Existing Arogio brand SVG not found');
 const brand = JSON.parse(match[1]);

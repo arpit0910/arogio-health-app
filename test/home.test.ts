@@ -1,10 +1,10 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { homeUpcoming, homeWater } from '../src/features/home/homeModel.ts';
+import { homeUpcoming, homeWater } from '../src/features/home-dashboard/homeModel.ts';
 import {
   emptyWellness,
   type WaterPlan,
-} from '../src/features/wellness/domain.ts';
+} from '../src/features/personal-wellness/domain.ts';
 const plan: WaterPlan = {
   version: 'home',
   wakeTime: '07:00',

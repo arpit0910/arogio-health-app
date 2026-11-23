@@ -5,8 +5,8 @@ import { createRequire } from 'node:module';
 import vm from 'node:vm';
 import { randomUUID } from 'node:crypto';
 import ts from 'typescript';
-import { sleepIntervals } from '../src/features/health-sync/sleep.ts';
-import { healthMetrics, type HealthSnapshot } from '../src/features/health-sync/model.ts';
+import { sleepIntervals } from '../src/features/health-connections/sleep.ts';
+import { healthMetrics, type HealthSnapshot } from '../src/features/health-connections/model.ts';
 
 const require = createRequire(import.meta.url);
 function load(file: string, dependencies: Record<string, unknown>) {
@@ -20,7 +20,7 @@ function load(file: string, dependencies: Record<string, unknown>) {
   }, console, setTimeout, clearTimeout });
   return module.exports;
 }
-const model = require('../src/features/health-sync/model.ts');
+const model = require('../src/features/health-connections/model.ts');
 
 describe('Expanded native health import', () => {
   it('batches a week per metric, keeps sparse IST dates aligned, and refuses another app’s bucket', async () => {
@@ -34,7 +34,7 @@ describe('Expanded native health import', () => {
         return { COUNT_TOTAL: index === 0 ? 0 : index * 100, dataOrigins: index === 2 ? [] : index === 4 ? ['other.health'] : ['com.pebble.ring.app'] };
       },
     };
-    const api = load('../src/features/health-sync/healthConnect.android.ts', {
+    const api = load('../src/features/health-connections/healthConnect.android.ts', {
       'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
     }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot> };
     const snapshot = await api.syncHealth(['Steps'], 'com.pebble.ring.app');
@@ -59,7 +59,7 @@ describe('Expanded native health import', () => {
         return { records: [{ time: new Date().toISOString(), weight: { inKilograms: 60 }, metadata: { dataOrigin: 'other.source' } }] };
       },
     };
-    const api = load('../src/features/health-sync/healthConnect.android.ts', {
+    const api = load('../src/features/health-connections/healthConnect.android.ts', {
       'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
     }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot> };
     await assert.rejects(api.syncHealth(['Steps'], ''), /Choose one health app/);
@@ -77,7 +77,7 @@ describe('Expanded native health import', () => {
         return { COUNT_TOTAL: dataOriginFilter[0] === 'example.source' ? 100 : 900, dataOrigins: [dataOriginFilter[0]] };
       }, readRecords: async () => ({ records: [] }),
     };
-    const api = load('../src/features/health-sync/healthConnect.android.ts', {
+    const api = load('../src/features/health-connections/healthConnect.android.ts', {
       'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
     }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot> };
     const [first, second] = await Promise.all([api.syncHealth(['Steps'], 'example.source'), api.syncHealth(['Steps'], 'other.source')]);
@@ -108,7 +108,7 @@ describe('Expanded native health import', () => {
         return { records: type === 'SleepSession' ? ranges.map((r: { start: string }) => ({ startTime: new Date(Date.parse(r.start) - 3600000).toISOString(), endTime: new Date(Date.parse(r.start) + 23400000).toISOString(), metadata: { dataOrigin: 'example.source' } })) : [] };
       },
     };
-    const api = load('../src/features/health-sync/healthConnect.android.ts', {
+    const api = load('../src/features/health-connections/healthConnect.android.ts', {
       'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
     }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot>; connectHealth: (selected: string[]) => Promise<string[]> };
     const selected = healthMetrics.map((item) => item.key);
@@ -132,7 +132,7 @@ function backgroundHarness() {
   let handler: () => Promise<number>;
   let registered = false, grants = true, registrations = 0;
   let read: (source: string) => Promise<HealthSnapshot> = async (source) => ({ syncedAt: new Date().toISOString(), granted: ['Steps'], days: [], latestWeight: null, failed: [], source });
-  const api = load('../src/features/health-sync/backgroundHealth.ts', {
+  const api = load('../src/features/health-connections/backgroundHealth.ts', {
     'react-native': { Platform: { OS: 'android' } },
     'expo-crypto': { randomUUID },
     'expo-secure-store': { getItemAsync: async (key: string) => store.get(key) ?? null, setItemAsync: async (key: string, value: string) => { store.set(key, value); }, deleteItemAsync: async (key: string) => { store.delete(key); } },
@@ -234,5 +234,38 @@ describe('Background refresh lifecycle', () => {
     await h.run();
     assert.equal(h.store.size, 0);
     assert.equal(h.registered(), false);
+  });
+});
+
+describe('Live source diagnostics', () => {
+  it('checks fresh source timestamps and refuses a record from another source', async () => {
+    let calls = 0;
+    const native = { initialize: async () => true, getGrantedPermissions: async () => [{ recordType: 'Steps', accessType: 'read' }],
+      readRecords: async (_metric: string, options: { dataOriginFilter: string[]; ascendingOrder: boolean; pageSize: number }) => {
+        assert.deepEqual(Array.from(options.dataOriginFilter), ['com.pebble.ring.app']);
+        assert.equal(options.ascendingOrder, false); assert.equal(options.pageSize, 1);
+        return { records: [{ endTime: '2026-11-04T09:00:00Z', metadata: { dataOrigin: ++calls === 1 ? 'com.pebble.ring.app' : 'another.writer', lastModifiedTime: '2026-11-04T09:02:00Z' } }] };
+      },
+    };
+    const api = load('../src/features/health-connections/healthConnect.android.ts', {
+      'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
+    }) as { checkSourceRecords: (selected: string[], source: string) => Promise<{ recordedAt: string | null; modifiedAt: string | null }[]> };
+    const first = await api.checkSourceRecords(['Steps'], 'com.pebble.ring.app');
+    assert.equal(first[0].recordedAt, '2026-11-04T09:00:00Z');
+    assert.equal(first[0].modifiedAt, '2026-11-04T09:02:00Z');
+    assert.equal((await api.checkSourceRecords(['Steps'], 'com.pebble.ring.app'))[0].recordedAt, null);
+    assert.equal(calls, 2);
+  });
+  it('finishes with a failed sleep status when Health Connect repeats its page token', async () => {
+    let calls = 0;
+    const native = { initialize: async () => true, getGrantedPermissions: async () => [{ recordType: 'SleepSession', accessType: 'read' }],
+      readRecords: async () => { calls++; return { records: [], pageToken: 'same-page' }; },
+    };
+    const api = load('../src/features/health-connections/healthConnect.android.ts', {
+      'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
+    }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot> };
+    const snapshot = await api.syncHealth(['SleepSession'], 'com.pebble.ring.app');
+    assert.equal(calls, 2);
+    assert.deepEqual(Array.from(snapshot.failed), ['SleepSession']);
   });
 });

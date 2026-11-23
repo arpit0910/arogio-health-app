@@ -1,6 +1,7 @@
+import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
 import { usePalette } from '../../theme/AppearanceProvider';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { useCareStyles } from '../../components/app/CareUI';
 export function DailyTargetProgress({ value, goal, unit }: { value: number | null; goal?: number; unit: string }) {

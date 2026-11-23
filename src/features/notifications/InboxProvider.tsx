@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type PropsWithChildren } from 'react';
 import { AppState } from 'react-native';
-import { useAuth } from '../auth/context/AuthContext';
+import { useAuth } from '../authentication/context/AuthContext';
 import { loadInbox, observeInbox, readInbox } from './storage';
 import type { InboxItem } from './model';
 const Context = createContext({ items: [] as InboxItem[], loading: true, error: '', markRead: async (_id?: string) => {} });

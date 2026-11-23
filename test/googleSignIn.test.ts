@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { getNativeGoogleIdToken, type NativeGoogleSdk } from '../src/features/auth/api/nativeGoogleSignIn.ts';
+import { getNativeGoogleIdToken, type NativeGoogleSdk } from '../src/features/authentication/api/nativeGoogleSignIn.ts';
 
 function mockSdk(overrides: Partial<NativeGoogleSdk> = {}) {
   const calls: string[] = [];
@@ -63,7 +63,7 @@ describe('Google native build configuration', () => {
     delete process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
     try {
       const config = configureApp({ config: { name: 'Arogio', slug: 'arogio', plugins: ['expo-router'] } });
-      assert.deepEqual(config.plugins, ['expo-router']);
+      assert.deepEqual(config.plugins, ['expo-router', 'expo-sharing', './plugins/with-production-security', './plugins/with-responsive-font-scale', ['expo-audio', { microphonePermission: false, recordAudioAndroid: false, enableBackgroundPlayback: false }]]);
     } finally {
       if (previous === undefined) delete process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
       else process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID = previous;
@@ -75,7 +75,7 @@ describe('Google native build configuration', () => {
     process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID = '123-ios.apps.googleusercontent.com';
     try {
       const config = configureApp({ config: { name: 'Arogio', slug: 'arogio', plugins: [] } });
-      assert.deepEqual(config.plugins, [['@react-native-google-signin/google-signin', { iosUrlScheme: 'com.googleusercontent.apps.123-ios' }]]);
+      assert.deepEqual(config.plugins, ['expo-sharing', './plugins/with-production-security', './plugins/with-responsive-font-scale', ['expo-audio', { microphonePermission: false, recordAudioAndroid: false, enableBackgroundPlayback: false }], ['@react-native-google-signin/google-signin', { iosUrlScheme: 'com.googleusercontent.apps.123-ios' }]]);
     } finally {
       if (previous === undefined) delete process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
       else process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID = previous;

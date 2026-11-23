@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { conversationForQuestion, type ChatMessage } from '../src/features/chat/model.ts';
+import { conversationForQuestion, type ChatMessage } from '../src/features/jeeva-assistant/model.ts';
 describe('Jeeva conversation context', () => {
   it('trims questions and preserves follow-up turns in order', () => {
     const history: ChatMessage[] = [{ role: 'user', content: 'Hello' }, { role: 'assistant', content: 'Hi' }];

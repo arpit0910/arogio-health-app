@@ -1,11 +1,10 @@
+import { AccessibleText as Text, AccessibleTextInput as TextInput } from '../../../components/ui/AccessibleText';
 import { useTranslation } from "../../../localization/LanguageProvider";
 import { useAppTheme } from '../../../theme/AppearanceProvider';
 import { useFieldFocus } from '../../../components/ui/FocusScrollView';
 import {
   Pressable,
   StyleSheet,
-  Text,
-  TextInput,
   View,
   type TextInputProps,
 } from "react-native";
@@ -45,7 +44,7 @@ export function ProfileInput({
       <AppIcon
         name={icon}
         size={21}
-        color={icon === "user" && label === "Full name" ? "#7C85A4" : t.teal}
+        color={t.teal}
       />
       {onPress ? (
         <Text style={[s.value, !value && s.placeholder]}>
@@ -91,9 +90,9 @@ const useStyles = () => {
   const t = useAppTheme();
 return StyleSheet.create({
   group: { gap: 9 },
-  label: { fontFamily: t.fonts.regular, color: t.ink, fontSize: 13.5 },
+  label: { fontFamily: t.fonts.regular, color: t.ink, fontSize: 14, lineHeight: 22, includeFontPadding: false },
   field: {
-    minHeight: 48,
+    minHeight: 52,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 13,
@@ -108,17 +107,25 @@ return StyleSheet.create({
     minWidth: 0,
     fontFamily: t.fonts.regular,
     color: t.ink,
-    fontSize: 15,
+    fontSize: 16,
+    lineHeight: 24,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+    paddingHorizontal: 0,
     paddingVertical: 12,
   },
   value: {
     flex: 1,
     fontFamily: t.fonts.regular,
     color: t.ink,
-    fontSize: 15,
+    fontSize: 16,
+    lineHeight: 24,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+    paddingHorizontal: 0,
     paddingVertical: 12,
   },
   placeholder: { color: t.muted },
-  suffix: { fontFamily: t.fonts.regular, color: t.muted, fontSize: 12 },
+  suffix: { fontFamily: t.fonts.regular, color: t.muted, fontSize: 13, lineHeight: 20, includeFontPadding: false },
 });
 };

@@ -4,6 +4,25 @@ import Svg, { Circle, Path, Rect } from "react-native-svg";
 
 
 const paths = {
+  plus: 'M12 5v14M5 12h14',
+  minus: 'M5 12h14',
+  bookmark: "M6 3h12v19l-6-4-6 4Z",
+  filter: "M4 6h16M4 12h16M4 18h16M8 3v6M16 9v6M10 15v6",
+  grid: "M3 3h3v3H3ZM10.5 3h3v3h-3ZM18 3h3v3h-3ZM3 10.5h3v3H3ZM10.5 10.5h3v3h-3ZM18 10.5h3v3h-3ZM3 18h3v3H3ZM10.5 18h3v3h-3ZM18 18h3v3h-3Z",
+  emergency: 'm10 2 4 0v6l5.2-3 2 3.5-5.2 3 5.2 3-2 3.5-5.2-3v6h-4v-6l-5.2 3-2-3.5 5.2-3-5.2-3 2-3.5 5.2 3Z',
+  medicalCase: 'M9 2h6v3H9ZM5 6h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2ZM11 10v3H8v2h3v3h2v-3h3v-2h-3v-3Z',
+  blood: 'M12 2C9 6 4 11 4 16a8 8 0 0 0 16 0c0-5-5-10-8-14ZM11 10h2v3h3v2h-3v3h-2v-3H8v-2h3Z',
+  hospital: 'M4 3h16v18H4ZM10 6v3H7v4h3v3h4v-3h3V9h-3V6Z',
+  stethoscope: 'M5 3v5a5 5 0 0 0 10 0V3M3 3h4m6 0h4M10 13v4a4 4 0 0 0 8 0v-2m3-3a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z',
+  robot: 'M5 7h14v13H5ZM12 3v4M10 3h4M2 11v5m20-5v5M8 12h1m6 0h1M9 16h6',
+  sparkles: 'm12 2 2.6 6.4L21 11l-6.4 2.6L12 20l-2.6-6.4L3 11l6.4-2.6ZM20 2l.8 2.2L23 5l-2.2.8L20 8l-.8-2.2L17 5l2.2-.8ZM4 17l.8 2.2L7 20l-2.2.8L4 23l-.8-2.2L1 20l2.2-.8Z',
+  chat: 'M3 3h18v13H9l-6 5ZM7 7h10M7 11h7',
+  arrow: 'M4 12h16m-6-6 6 6-6 6',
+  ambulance: 'M3 17H2V6h12v11H8m6 0h2m5 0h1v-5l-4-4h-4M18 8v5h4M6 8v5m-2-2h4M8 18a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm12 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z',
+  phone: 'M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2Z',
+  directions: 'm12 2 10 10-10 10L2 12ZM8 15v-4h8m-3-3 3 3-3 3',
+  bloodBank: 'M4 21V5h16v16M2 21h20M9 21v-5h6v5M12 7v6m-3-3h6',
+
   female: 'M16 8a5 5 0 1 1-10 0 5 5 0 0 1 10 0ZM11 13v9M7 18h8',
   male: 'M14 14a5 5 0 1 1-7-7 5 5 0 0 1 7 7ZM14 7l7-6m-6 0h6v6',
   search: 'M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z',
@@ -95,7 +114,8 @@ export function AppIcon({
         strokeWidth={1.7}
         strokeLinecap="round"
         strokeLinejoin="round"
-        fill={name === "explore" && filled ? t.white : filled && (name === "home" || name === "user" || name === "heart") ? color : "none"}
+        fillRule="evenodd"
+        fill={name === 'emergency' || name === 'medicalCase' || name === 'blood' ? color : name === "explore" && filled ? t.white : filled && (name === "home" || name === "user" || name === "heart" || name === "bookmark") ? color : "none"}
       />
       {name === "heart" && filled && <Path d="M7 12h3l1-2 2 5 1-3h3" stroke={t.white} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />}
       {name === "report" && (

@@ -20,7 +20,7 @@ Verified password or Google sign-in can restore the account before the 30-day de
 
 ## Evidence and remaining checks
 
-Frontend lint/typecheck and 92 tests passed; backend lint/build, 51 unit/database tests and 29 HTTP journey tests passed. Independent source review resolved its reported findings. Build 26 completed successfully and its APK signature/version were verified; see `docs/apk-build-26-local.md`. These checks do not establish native device acceptance or production deployment.
+Frontend lint/typecheck and 92 tests passed; backend lint/build, 51 unit/database tests and 29 HTTP journey tests passed. Independent source review resolved its reported findings. Build 26 completed successfully and its APK signature/version were verified. The historical build report has been removed. These checks do not establish native device acceptance or production deployment.
 
 The parent inspected synthetic React Native Web captures made from real screen components with fixture account data. Current captures are `.impeccable/review/profile-dark-final.png`, `profile-light-final.png` and `home-dark-final.png`. Earlier profile captures without `-final` had harness style/palette defects and must not be used as acceptance evidence. Fixtures and stubs do not exercise native effects or hardware.
 

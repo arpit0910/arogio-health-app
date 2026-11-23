@@ -1,423 +1,69 @@
-import { useTranslation } from "../../../localization/LanguageProvider";
-import { normalizeInviteCode } from "../../referrals/model";
-import { referralCodeSchema } from "../../auth/types";
-import { usePalette } from "../../../theme/AppearanceProvider";
-import { FocusScrollView } from "../../../components/ui/FocusScrollView";
-import { useEffect, useRef, useState } from "react";
-import {
-  BackHandler,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { router, useLocalSearchParams } from "expo-router";
-import { useAuth } from "../../auth/context/AuthContext";
-import { FormError } from "../../auth/components/AuthPrimitives";
-import { Button } from "../../../components/ui/Button";
-import { CareBrand, useCareStyles } from "../../../components/app/CareUI";
-import { AppIcon } from "../../../components/app/AppIcon";
-import { fonts } from "../../../theme/tokens";
-import { activities, convertMeasurement, type SetupDraft } from "../model";
-import { primaryGoals } from "../profileOptions";
-import { ChoiceCard, UnitSelector } from "./ProfilePrimitives";
-import { ProfileInput } from "./ProfileInput";
-import { ProfileBirthDatePicker } from "./ProfileBirthDatePicker";
-import { formatBirthday, profileDraft } from "../profileViewModel";
-import {
-  resumeSetup,
-  setupPayload,
-  validateSetupStep,
-  type SetupStep,
-} from "../setupJourney";
+import { useRef, useState } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
+import * as Location from 'expo-location';
+import { useAuth } from '../../authentication/context/AuthContext';
+import { DAction, DCard, DField, DHeading, DProgress, DTabs, DText, design, ds } from '../../../components/app/DesignUI';
+import { FigmaAsset } from '../../../components/app/FigmaAsset';
+import { Avatar } from '../../../components/app/Avatar';
+import { AppIcon } from '../../../components/app/AppIcon';
+import { Button } from '../../../components/ui/Button';
+import { TouchTarget } from '../../../components/ui/TouchTarget';
+import { ProfileBirthDatePicker } from './ProfileBirthDatePicker';
+import { profileDraft, profilePhoto, formatBirthday } from '../profileViewModel';
+import { validBirthDate } from '../model';
 
 export function ProfileSetupScreen() {
-  const { t: tr } = useTranslation();
-  const c = useCareStyles();
-  const s = useStyles();
-
-  const { user, saveSetup, applyReferral } = useAuth();
-  const params = useLocalSearchParams<{ ref?: string | string[] }>();
-  const [referralCode, setReferralCode] = useState(() =>
-    normalizeInviteCode(params.ref),
-  );
-  const [draft, setDraft] = useState<SetupDraft>(() => profileDraft(user!));
-  const [step, setStep] = useState<SetupStep>(() =>
-    resumeSetup(profileDraft(user!)),
-  );
-  const [complete, setComplete] = useState(Boolean(user?.profileCompletedAt));
-  const notificationStage = false, notificationBusy = false;
-  const [busy, setBusy] = useState(false);
-  const busyRef = useRef(false);
-  const [error, setError] = useState<string | null>(null);
-  const [pickingBirthday, setPickingBirthday] = useState(false);
-  const set = <K extends keyof SetupDraft>(key: K, value: SetupDraft[K]) => {
-    setDraft((current) => ({ ...current, [key]: value }));
-    setError(null);
-  };
-  useEffect(() => {
-    if (!complete) return;
-    const timer = setTimeout(() => router.replace("/home"), 1000);
-    return () => clearTimeout(timer);
-  }, [complete]);
-  useEffect(() => {
-    const subscription = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => {
-        if (busyRef.current || notificationBusy || complete) return true;
-        if (step === 0) return false;
-        setError(null);
-        setStep((current) => (current - 1) as SetupStep);
-        return true;
-      },
-    );
-    return () => subscription.remove();
-  }, [step, complete, notificationStage, notificationBusy]);
-  const skip = async () => {
-    if (busyRef.current || complete) return;
-    Keyboard.dismiss();
-    busyRef.current = true;
-    setBusy(true);
-    setError(null);
-    try {
-      await saveSetup({ setupDeferred: true });
-      router.replace('/home');
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Unable to skip setup. Please try again.');
-    } finally {
-      busyRef.current = false;
-      setBusy(false);
-    }
-  };
-  const next = async () => {
-    if (busyRef.current || notificationBusy || complete) return;
-    const invalid = validateSetupStep(draft, step);
-    if (invalid) {
-      setError(invalid);
-      return;
-    }
-    if (step === 2 && referralCode.trim() && !user?.hasReferrer) {
-      const referral = referralCodeSchema.safeParse(referralCode);
-      if (!referral.success) {
-        setError(referral.error.issues[0].message);
-        return;
-      }
-    }
-    Keyboard.dismiss();
-    setError(null);
-    busyRef.current = true;
-    setBusy(true);
-    try {
-      if (step === 2 && referralCode.trim() && !user?.hasReferrer) {
-        const parsed = referralCodeSchema.safeParse(referralCode);
-        if (!parsed.success) throw new Error(parsed.error.issues[0].message);
-        await applyReferral(parsed.data);
-      }
-      await saveSetup(setupPayload(draft, step));
-      if (step === 2) setComplete(true);
-      else setStep((step + 1) as SetupStep);
-    } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "Unable to save. Please try again.",
-      );
-    } finally {
-      busyRef.current = false;
-      setBusy(false);
-    }
-  };
-  if (complete)
-    return (
-      <SafeAreaView style={s.safe}>
-        <View style={s.success}>
-          <AppIcon name="check" size={48} />
-          <Text accessibilityRole="header" style={c.heading}>
-            {tr("You’re ready.")}</Text>
-          <Text style={[c.text, { textAlign: "center" }]}>
-            {tr("Your profile is saved. Let’s make room for a little care.")}</Text>
-        </View>
-      </SafeAreaView>
-    );
-  const titles = [
-    "What matters to you?",
-    "A little about you",
-    "Your activity level",
-    "Your reminders",
-  ];
-  const descriptions = [
-    "Choose one or more goals. You can change them anytime.",
-    "These details give your health profile a useful starting point.",
-    "Choose the activity level that feels closest to your routine.",
-    "One optional choice before you start. You can keep tracking with notifications off.",
-  ];
-  const activeStep = notificationStage ? 3 : step;
-  return (
-    <SafeAreaView style={s.safe}>
-      <KeyboardAvoidingView
-        style={s.fill}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <View style={s.container}>
-          <View style={s.header}>
-            <CareBrand />
-            <Text style={s.step}>{tr("Step ")}{activeStep + 1} {tr(" of 3")}</Text>
-          </View>
-          <View
-            style={s.progress}
-            accessibilityLabel={tr(`Setup step ${activeStep + 1} of 3`)}
-          >
-            {[0, 1, 2].map((index) => (
-              <View
-                key={index}
-                style={[s.segment, index <= activeStep && s.segmentActive]}
-              />
-            ))}
-          </View>
-          <FocusScrollView
-            keyboardShouldPersistTaps="handled"
-            bounces={false}
-            contentContainerStyle={s.body}
-          >
-            <Text accessibilityRole="header" style={c.heading}>
-              {titles[activeStep]}
-            </Text>
-            <Text style={c.text}>{descriptions[activeStep]}</Text>
-            <View style={s.fields}>
-              {!notificationStage &&
-                step === 0 &&
-                primaryGoals.map((goal) => (
-                  <ChoiceCard
-                    key={goal.value}
-                    {...goal}
-                    multiple
-                    selected={draft.healthGoals.includes(goal.value)}
-                    onPress={
-                      busy
-                        ? undefined
-                        : () =>
-                            set(
-                              "healthGoals",
-                              draft.healthGoals.includes(goal.value)
-                                ? draft.healthGoals.filter(
-                                    (value) => value !== goal.value,
-                                  )
-                                : [...draft.healthGoals, goal.value],
-                            )
-                    }
-                  />
-                ))}
-              {!notificationStage && step === 1 && (
-                <>
-                  <ProfileInput
-                    label={tr("Date of birth")}
-                    icon="calendar"
-                    value={
-                      draft.dateOfBirth ? formatBirthday(draft.dateOfBirth) : ""
-                    }
-                    placeholder={tr("Choose your birthday")}
-                    editable={!busy}
-                    onPress={() => {
-                      Keyboard.dismiss();
-                      setPickingBirthday(true);
-                    }}
-                  />
-                  <View style={s.measurements}>
-                    <View style={s.measurement}>
-                      <ProfileInput
-                        label={tr("Weight")}
-                        icon="weight"
-                        placeholder={tr("Your weight")}
-                        value={draft.weightValue}
-                        keyboardType="decimal-pad"
-                        editable={!busy}
-                        onChangeText={(value) => set("weightValue", value)}
-                        suffix={draft.weightUnit === "lb" ? "lbs" : "kg"}
-                      />
-                      <UnitSelector
-                        units={["kg", "lbs"]}
-                        value={draft.weightUnit === "lb" ? "lbs" : "kg"}
-                        onChange={(value) => {
-                          if (busy) return;
-                          const unit = value === "lbs" ? "lb" : "kg";
-                          if (unit !== draft.weightUnit) {
-                            set(
-                              "weightValue",
-                              convertMeasurement(
-                                draft.weightValue,
-                                unit === "lb" ? 2.20462262 : 0.45359237,
-                              ),
-                            );
-                            set("weightUnit", unit);
-                          }
-                        }}
-                      />
-                    </View>
-                    <View style={s.measurement}>
-                      <ProfileInput
-                        label={tr("Height")}
-                        icon="height"
-                        placeholder={tr("Your height")}
-                        value={draft.heightValue}
-                        keyboardType="decimal-pad"
-                        editable={!busy}
-                        onChangeText={(value) => set("heightValue", value)}
-                        suffix={draft.heightUnit === "in" ? "in" : "cm"}
-                      />
-                      <UnitSelector
-                        units={["cm", "inch"]}
-                        value={draft.heightUnit === "in" ? "inch" : "cm"}
-                        onChange={(value) => {
-                          if (busy) return;
-                          const unit = value === "inch" ? "in" : "cm";
-                          if (unit !== draft.heightUnit) {
-                            set(
-                              "heightValue",
-                              convertMeasurement(
-                                draft.heightValue,
-                                unit === "in" ? 1 / 2.54 : 2.54,
-                              ),
-                            );
-                            set("heightUnit", unit);
-                          }
-                        }}
-                      />
-                    </View>
-                  </View>
-                  <ProfileInput label={tr("City (optional)")} icon="location" value={draft.location} placeholder={tr("Detected during access setup, or enter city")} onChangeText={value => set('location',value)} editable={!busy} maxLength={100} />
-                  <Text style={c.text}>
-                    {tr("Only the essentials for now. Add other personal details later in your profile.")}</Text>
-                </>
-              )}
-              {!notificationStage && step === 2 && (
-                <View accessibilityRole="radiogroup" style={{ gap: 12 }}>
-                  {activities.map((activity) => (
-                    <ChoiceCard
-                      key={activity.value}
-                      {...activity}
-                      selected={draft.activityLevel === activity.value}
-                      onPress={
-                        busy
-                          ? undefined
-                          : () => set("activityLevel", activity.value)
-                      }
-                    />
-                  ))}
-                </View>
-              )}
-            </View>
-            {!notificationStage && step === 2 && (
-              <View style={{ marginTop: 24, gap: 10 }}>
-                <Text style={c.title}>{tr("Invited by a friend?")}</Text>
-                {user?.hasReferrer ? (
-                  <Text style={c.text}>
-                    {tr("Your friend's referral code has been recorded.")}</Text>
-                ) : (
-                  <>
-                    <ProfileInput
-                      label={tr("Referral code (optional)")}
-                      icon="users"
-                      placeholder={tr("Enter your friend's code")}
-                      value={referralCode}
-                      onChangeText={(value) => {
-                        setReferralCode(value.toUpperCase());
-                        setError(null);
-                      }}
-                      autoCapitalize="characters"
-                      autoCorrect={false}
-                      maxLength={12}
-                      editable={!busy}
-                    />
-                    <Text style={c.text}>
-                      {tr("Leave blank to skip. Your referrer is recorded when you tap Finish setup and cannot be changed.")}</Text>
-                  </>
-                )}
-              </View>
-            )}
-            <FormError message={error} />
-          </FocusScrollView>
-          <View style={s.footer}>
-            <Button
-              title={tr(step === 2 ? "Finish profile" : "Continue")}
-              onPress={() => void next()}
-              loading={busy}
-              disabled={notificationBusy}
-            />
-            <Button title={tr("Skip for now")} variant="secondary" disabled={busy} onPress={() => void skip()} />
-            <Text style={s.note}>
-              {tr("You can finish setup anytime from Profile.")}</Text>
-          </View>
-        </View>
-      </KeyboardAvoidingView>
-      {pickingBirthday && (
-        <ProfileBirthDatePicker
-          value={draft.dateOfBirth}
-          onClose={() => setPickingBirthday(false)}
-          onSelect={(value) => {
-            set("dateOfBirth", value);
-            setPickingBirthday(false);
-          }}
-        />
-      )}
-    </SafeAreaView>
-  );
+  const router = useRouter(), { user, saveSetup } = useAuth();
+  const initial = user ? profileDraft(user) : null;
+  const [name, setName] = useState(user?.fullName ?? ''), [mobile, setMobile] = useState(String(user?.profileSetup?.contactNumber ?? user?.mobileNumber ?? ''));
+  const [dob, setDob] = useState(initial?.dateOfBirth ?? ''), [gender, setGender] = useState(initial?.gender ?? '');
+  const [blood, setBlood] = useState(String(user?.profileSetup?.bloodGroup ?? ''));
+  const [city, setCity] = useState(initial?.location ?? ''), [area, setArea] = useState(''), [photo, setPhoto] = useState(user ? profilePhoto(user) : undefined);
+  const [picking, setPicking] = useState(false), [busy, setBusy] = useState(false), [error, setError] = useState('');
+  const lock = useRef(false);
+  async function act(work: () => Promise<void>) { if (lock.current) return; lock.current = true; setBusy(true); setError(''); try { await work(); } catch (e) { setError(e instanceof Error ? e.message : 'Please try again.'); } finally { lock.current = false; setBusy(false); } }
+  async function choosePhoto() {
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [1, 1], quality: 0.8 });
+    if (result.canceled) return;
+    const image = result.assets[0], side = Math.min(image.width, image.height), context = ImageManipulator.manipulate(image.uri);
+    context.crop({ originX: Math.floor((image.width - side) / 2), originY: Math.floor((image.height - side) / 2), width: side, height: side }).resize({ width: 256, height: 256 });
+    const rendered = await context.renderAsync(), encoded = await rendered.saveAsync({ format: SaveFormat.JPEG, compress: 0.75, base64: true });
+    if (!encoded.base64 || encoded.base64.length > 213000) throw new Error('Please choose a smaller photo.');
+    setPhoto(`data:image/jpeg;base64,${encoded.base64}`);
+  }
+  async function locate() {
+    const permission = await Location.requestForegroundPermissionsAsync();
+    if (!permission.granted) throw new Error('Location access is off. Enter your city below.');
+    const position = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+    const [address] = await Location.reverseGeocodeAsync(position.coords);
+    if (!address) throw new Error('Could not find your city. Enter it below.');
+    setCity([address.city || address.district, address.region].filter(Boolean).join(', ')); setArea(address.subregion || address.street || '');
+  }
+  async function next() {
+    if (name.trim().length < 2 || !validBirthDate(dob) || !gender) { setError('Enter your name, date of birth and gender.'); return; }
+    if (mobile && !/^\+?[0-9]{10,15}$/.test(mobile.replace(/[ -]/g, ''))) { setError('Enter a valid mobile number.'); return; }
+    await act(async () => {
+      await saveSetup({ flowVersion: 2, fullName: name.trim(), dateOfBirth: dob, gender, location: [city, area].filter(Boolean).join(', ').slice(0, 100), ...(blood ? { bloodGroup: blood } : {}), ...(mobile ? { contactNumber: mobile.replace(/[ -]/g, '') } : {}), ...(photo?.startsWith('data:') ? { photo } : {}), step: 1, complete: true });
+      router.replace({ pathname: '/connected-health', params: { setup: '1' } });
+    });
+  }
+  return <SafeAreaView style={{ flex: 1, backgroundColor: design.background }}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 16, paddingBottom: 36, width: '100%', maxWidth: 440, alignSelf: 'center', gap: 20 }}>
+    <View style={ds.row}><TouchTarget accessibilityRole="button" accessibilityLabel="Back" onPress={() => router.canGoBack() ? router.back() : router.replace('/home')}><AppIcon name="back" size={22} color={design.ink} /></TouchTarget><DText kind="title" style={{ flex: 1, textAlign: 'center', fontSize: 18 }}>Profile Setup</DText><DAction label="Skip" disabled={busy} onPress={() => void act(async () => { await saveSetup({ setupDeferred: true }); router.replace({ pathname: '/connected-health', params: { setup: '1' } }); })} /></View>
+    <View style={{ gap: 10 }}><View style={[ds.row, { justifyContent: 'space-between' }]}><DText kind="label">Step 1 of 2</DText><DText kind="small" color={design.green}>50% COMPLETED</DText></View><DProgress value={0.5} /></View>
+    <DHeading title="Personal & Health Details" subtitle="Save your personal details and location for your health journal and care discovery." />
+    <View style={{ alignItems: 'center', gap: 6 }}><TouchTarget accessibilityRole="button" accessibilityLabel="Add Profile Photo" disabled={busy} onPress={() => void act(choosePhoto)}><Avatar photo={photo} size={88} camera /></TouchTarget><DAction label="Add Profile Photo" disabled={busy} onPress={() => void act(choosePhoto)} /></View>
+    <DField leading={<FigmaAsset screen="3:97" name="imgIcon" width={16} />} label="Full Legal Name *" placeholder="Your full name" value={name} onChangeText={setName} autoComplete="name" />
+    <DField label="Mobile Number" placeholder="+91" value={mobile} onChangeText={setMobile} keyboardType="phone-pad" />
+    <View style={{ gap: 7 }}><DText kind="label">Date of Birth *</DText><TouchTarget accessibilityRole="button" onPress={() => setPicking(true)} style={{ backgroundColor: design.pale, paddingHorizontal: 14, minHeight: 50, borderRadius: 12, justifyContent: 'center' }}><DText>{dob ? formatBirthday(dob) : 'Select date of birth'}</DText></TouchTarget></View>
+    <View style={{ gap: 8 }}><DText kind="label">Gender *</DText><DTabs options={['Male', 'Female', 'Other']} value={gender ? gender.charAt(0).toUpperCase() + gender.slice(1) : ''} onChange={value => setGender(value.toLowerCase())} /></View>
+    <View style={{ gap: 10 }}><View style={[ds.row, { justifyContent: 'space-between' }]}><DText kind="label">Blood Group</DText><DText kind="small">Vital for SOS triage</DText></View><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>{['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'].map(value => <TouchTarget key={value} accessibilityRole="radio" accessibilityState={{ checked: blood === value }} onPress={() => setBlood(value)} style={{ width: '22%', minHeight: 44, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: blood === value ? design.green : '#FFFFFF' }}><DText kind="label" color={blood === value ? '#FFFFFF' : design.ink}>{value}</DText></TouchTarget>)}</View></View>
+    <DCard><DHeading title="Location & Vicinity" icon="location" /><DField label="Primary City" value={city} onChangeText={setCity} placeholder="City, State" /><DField label="Area / Locality" value={area} onChangeText={setArea} placeholder="Your area" /><DAction label="Use Current Location" disabled={busy} onPress={() => void act(locate)} /></DCard>
+    <DCard><DHeading title="ABHA Health ID" subtitle="Link Ayushman Bharat for paperless hospital check-in" icon="shield" /><DField label="ABHA Number" placeholder="e.g. 14-digit ABHA number or address" editable={false} /><DAction label="Create or Link Later" onPress={() => Alert.alert('ABHA linking', 'ABHA verification is not connected in this version. You can continue without linking.')} /></DCard>
+    <View style={[ds.row, { padding: 14, borderRadius: 12, backgroundColor: design.mint }]}><AppIcon name="shield" size={20} color={design.green} /><DText style={{ flex: 1 }}>Your health details stay in your Arogio account. Review how your data is handled in our Privacy Policy.</DText></View>
+    {!!error && <DText color="#BD3038">{error}</DText>}<Button title="Save & Continue" loading={busy} onPress={() => void next()} />
+  </ScrollView>{picking && <ProfileBirthDatePicker value={dob} onSelect={value => { setDob(value); setPicking(false); }} onClose={() => setPicking(false)} />}</SafeAreaView>;
 }
-const useStyles = () => {
-  const colors = usePalette();
-  return StyleSheet.create({
-    safe: { flex: 1, backgroundColor: colors.background },
-    fill: { flex: 1 },
-    container: { flex: 1, width: "100%", maxWidth: 440, alignSelf: "center" },
-    header: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingHorizontal: 24,
-      paddingTop: 16,
-      minHeight: 64,
-    },
-    back: { width: 48, justifyContent: "center" },
-    step: { fontFamily: fonts.medium, fontSize: 13, color: colors.muted },
-    progress: {
-      flexDirection: "row",
-      gap: 6,
-      marginHorizontal: 24,
-      marginTop: 20,
-      marginBottom: 28,
-    },
-    segment: {
-      flex: 1,
-      height: 3,
-      backgroundColor: colors.border,
-      borderRadius: 2,
-    },
-    segmentActive: { backgroundColor: colors.primary },
-    body: { paddingHorizontal: 24, paddingBottom: 24, gap: 12 },
-    fields: { gap: 12, marginTop: 14 },
-    measurements: { flexDirection: "row", flexWrap: "wrap", gap: 16 },
-    measurement: { flex: 1, minWidth: 160, gap: 12 },
-    footer: {
-      paddingHorizontal: 24,
-      paddingTop: 16,
-      paddingBottom: 16,
-      borderTopWidth: 1,
-      borderColor: colors.border,
-      gap: 12,
-    },
-    note: {
-      fontFamily: fonts.regular,
-      fontSize: 12,
-      lineHeight: 18,
-      color: colors.muted,
-      textAlign: "center",
-    },
-    success: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 32,
-      gap: 20,
-    },
-  });
-};

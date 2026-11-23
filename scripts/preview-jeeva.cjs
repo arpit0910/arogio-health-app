@@ -40,10 +40,10 @@ Module._load = function(request, parent, ...rest) {
   if (request === './chatApi') return { askJeeva: async () => { throw new Error('Preview only'); } };
   if (request === 'expo-secure-store') return { getItemAsync: async () => null, setItemAsync: async () => {} };
   if (request.endsWith('/AppHeader')) return { AppHeader: ({title,action}) => React.createElement(RNView,{style:{padding:16,flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}, React.createElement(RNText,{style:{fontSize:20,color:'#F4FAF5'}},title),action) };
-  if (request === 'expo-router') return { router: {push() {}} };
+  if (request === 'expo-router') return { useRouter: () => ({ push() {}, navigate() {}, replace() {}, setParams() {}, back() {}, canGoBack: () => true }), router: {push() {}} };
   return load.call(this, request, parent, ...rest);
 };
-const { JeevaScreen } = require('../src/features/chat/JeevaScreen.tsx');
+const { JeevaScreen } = require('../src/features/jeeva-assistant/JeevaScreen.tsx');
 function Preview() { return React.createElement(SafeAreaProvider,{initialMetrics:{frame:{x:0,y:0,width,height},insets:{top:0,left:0,right:0,bottom:0}}},React.createElement(RNView,{style:{width,height}},React.createElement(JeevaScreen))); }
 AppRegistry.registerComponent('JeevaQA',()=>Preview);
 const { element,getStyleElement } = AppRegistry.getApplication('JeevaQA');
