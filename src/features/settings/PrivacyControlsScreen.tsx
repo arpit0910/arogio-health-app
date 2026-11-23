@@ -1,0 +1,8 @@
+import { View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { AppScreen } from '../../components/app/AppScreen';
+import { DAction, DCard, DHeading, DText } from '../../components/app/DesignUI';
+export function PrivacyControlsScreen() {
+  const router = useRouter();
+  return <AppScreen back title="Privacy & access"><View style={{ gap: 16 }}><DHeading title="Control your data" /><DText>Jeeva uses saved wellness tracking only when you enable record access in that chat. Changing access starts a new chat. You review photo text before putting it into a question.</DText><DCard><DAction label="Manage app permissions" onPress={() => router.push('/app-access')} /><DAction label="Manage connected health access" onPress={() => router.push('/connected-health-settings')} /><DText>Disconnecting stops health reads in Arogio. Your source health app keeps its records.</DText></DCard><DCard><DAction label="Manage health records" onPress={() => router.push('/health-records')} /><DAction label="Export saved account data" onPress={() => router.push('/data-export')} /><DAction label="Read Privacy Policy" onPress={() => router.push('/privacy')} /><DAction label="Delete account" onPress={() => router.push('/delete-account')} /></DCard><DText>Saved care, search history, health documents and the SOS contact are stored on this device separately for each account. Clear history and remove saved entries, documents or contacts on their respective screens. Health document files are not included in the account export; share them individually from EHR records.</DText></View></AppScreen>;
+}

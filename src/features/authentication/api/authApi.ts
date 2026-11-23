@@ -1,0 +1,146 @@
+import { apiClient } from "../../../services/api/client";
+import {
+  AuthResponse,
+  authResponseSchema,
+  GoogleLoginInput,
+  LoginInput,
+  RegisterInput,
+  SafeUser,
+  safeUserSchema,
+  TokenPair,
+  tokenPairSchema,
+  UpdateProfileInput,
+  updateProfileSchema,
+} from "../types";
+
+export async function registerWithEmailPassword(
+  input: RegisterInput,
+  signal?: AbortSignal,
+): Promise<AuthResponse> {
+  const payload: Record<string, unknown> = {
+    email: input.email.trim().toLowerCase(),
+    password: input.password,
+  };
+  if (input.referralCode) payload.referralCode = input.referralCode.trim().toUpperCase();
+  if (input.fullName && input.fullName.trim()) {
+    payload.fullName = input.fullName.trim();
+  }
+  if (input.heightValue !== undefined) {
+    payload.heightValue = input.heightValue;
+    payload.heightUnit = input.heightUnit ?? "cm";
+  }
+  if (input.weightValue !== undefined) {
+    payload.weightValue = input.weightValue;
+    payload.weightUnit = input.weightUnit ?? "kg";
+  }
+
+  const response = await apiClient.request<unknown>({
+    path: "/auth/email/register",
+    method: "POST",
+    body: payload,
+    signal,
+  });
+  return authResponseSchema.parse(response);
+}
+
+export async function loginWithEmailPassword(
+  input: LoginInput,
+  signal?: AbortSignal,
+): Promise<AuthResponse> {
+  const response = await apiClient.request<unknown>({
+    path: "/auth/email/login",
+    method: "POST",
+    body: {
+      email: input.email.trim().toLowerCase(),
+      password: input.password,
+    },
+    signal,
+  });
+  return authResponseSchema.parse(response);
+}
+
+export async function loginWithGoogleIdToken(
+  input: GoogleLoginInput,
+  signal?: AbortSignal,
+): Promise<AuthResponse> {
+  const response = await apiClient.request<unknown>({
+    path: "/auth/google/login",
+    method: "POST",
+    body: {
+      idToken: input.idToken,
+      ...(input.referralCode ? { referralCode: input.referralCode.trim().toUpperCase() } : {}),
+    },
+    signal,
+  });
+  return authResponseSchema.parse(response);
+}
+
+export async function refreshAuthSession(
+  refreshToken: string,
+  signal?: AbortSignal,
+): Promise<TokenPair> {
+  const response = await apiClient.request<unknown>({
+    path: "/auth/tokens/refresh",
+    method: "POST",
+    body: { refreshToken },
+    signal,
+  });
+  return tokenPairSchema.parse(response);
+}
+
+export async function logoutAuthSession(
+  refreshToken: string,
+  signal?: AbortSignal,
+): Promise<void> {
+  await apiClient.request<void>({
+    path: "/auth/logout",
+    method: "POST",
+    body: { refreshToken },
+    signal,
+  });
+}
+
+export async function getCurrentUserProfile(
+  signal?: AbortSignal,
+): Promise<SafeUser> {
+  const response = await apiClient.request<unknown>({
+    path: "/profile/view",
+    method: "GET",
+    signal,
+  });
+  return safeUserSchema.parse(response);
+}
+
+export async function updateCurrentUserProfile(
+  input: UpdateProfileInput,
+  signal?: AbortSignal,
+): Promise<SafeUser> {
+  const response = await apiClient.request<unknown>({
+    path: "/profile/update",
+    method: "PATCH",
+    body: updateProfileSchema.parse(input),
+    signal,
+  });
+  return safeUserSchema.parse(response);
+}
+
+export async function saveProfileSetup(
+  input: Record<string, unknown>,
+  create = false,
+): Promise<SafeUser> {
+  return safeUserSchema.parse(
+    await apiClient.request<unknown>({
+      path: create ? "/profile/create" : "/profile/update",
+      method: create ? "POST" : "PATCH",
+      body: input,
+    }),
+  );
+}
+
+export async function applyReferralCode(referralCode: string): Promise<SafeUser> {
+  return safeUserSchema.parse(await apiClient.request<unknown>({ path: '/profile/referral', method: 'POST', body: { referralCode } }));
+}
+
+export async function deleteCurrentAccount(): Promise<void> {
+  await apiClient.request({ path: '/profile', method: 'DELETE', body: { confirm: true } });
+}

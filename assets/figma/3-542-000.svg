@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="192" height="256" viewBox="0 0 192 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="SVG - Top Left Organic Leaves Motif" opacity="0.5">
+<path id="Vector" d="M2.13333 0C44.8 68.2667 78.9333 119.467 19.2 204.8C70.4 153.6 83.2 85.3333 2.13333 0V0" fill="url(#paint0_linear_0_30)"/>
+<path id="Vector_2" opacity="0.65" d="M36.2667 34.1333C83.2 93.8667 113.067 153.6 66.1333 230.4C104.533 170.667 113.067 102.4 36.2667 34.1333V34.1333" fill="url(#paint1_linear_0_30)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_30" x1="10.6667" y1="2.71755e-07" x2="96" y2="204.8" gradientUnits="userSpaceOnUse">
+<stop stop-color="#4FD1A1" stop-opacity="0.8"/>
+<stop offset="1" stop-color="#087D65" stop-opacity="0.1"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_30" x1="36.2667" y1="34.1333" x2="113.067" y2="230.4" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2DD4BF" stop-opacity="0.7"/>
+<stop offset="1" stop-color="#0B8794" stop-opacity="0.05"/>
+</linearGradient>
+</defs>
+</svg>

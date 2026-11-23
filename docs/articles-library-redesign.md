@@ -1,0 +1,11 @@
+# Articles library reference implementation
+
+The uploaded Articles.png and Articles.svg govern `/articles`. The library uses the supplied six embedded photographs, mint background, compact title bar, search/filter row, trending searches, horizontal category chips, featured article, guidance panel, recent articles, Jeeva composer and Articles navigation state. Shared navigation elsewhere keeps Health.
+
+Search debounces and also submits from the keyboard. Categories and four sorts are applied by the existing API before pagination. The segmented control offers Recent and A–Z: the server has no popularity metric. Category labels, counts, article text, authors and thumbnails come from published content, rather than the reference's sample records. The first matching article is featured; no editorial endorsement is inferred. Clinical-verification and ABDM review claims were replaced with educational guidance because the catalog has no review/accreditation metadata.
+
+Bookmarks persist on this device, independently of authentication, with a 40-article limit and visible storage failures. Saved view fetches each saved article by ID, so it is not limited to the first page. Unpublished articles are omitted; connection errors can be retried. Bookmarks are not an offline content cache or account-synced data. A question opens a new Jeeva conversation with a draft; it never sends automatically. Existing authentication requirements still apply.
+
+The backend adds `reading_minutes_en` and `reading_minutes_hi` to article summaries, estimated from complete article text at 200 words/minute. Hindi falls back to English when absent. This is a computed response field with no migration. Deploy the updated backend `dist` for list reading times; older backends continue working without the duration labels.
+
+Verification: `npm run check`; directory HTTP integration tests; `node scripts/preview-articles.cjs 390` and `node scripts/preview-articles.cjs 320 --large-text`. The preview renders real library components with explicitly synthetic reference records, a composition-only header and no network/account access. Browser captures verify composition, not native acceptance. Android/iOS device verification and deployment remain outstanding. No APK was requested or generated.

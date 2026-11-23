@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="390" height="176" viewBox="0 0 390 176" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="SVG - Bottom flowing translucent organic curves">
+<path id="Vector" opacity="0.5" d="M0 88C117 154 253.5 22 390 99V176H0V88" fill="url(#paint0_linear_0_28)"/>
+<path id="Vector_2" opacity="0.75" d="M0 121C136.5 55 273 165 390 82.5V176H0V121" fill="url(#paint1_linear_0_28)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_28" x1="0" y1="74.0487" x2="390" y2="74.0487" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0B8794" stop-opacity="0.25"/>
+<stop offset="1" stop-color="#34D399" stop-opacity="0.3"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_28" x1="0" y1="176" x2="312.994" y2="-32.8858" gradientUnits="userSpaceOnUse">
+<stop stop-color="#087D65" stop-opacity="0.2"/>
+<stop offset="1" stop-color="#0B8794" stop-opacity="0.15"/>
+</linearGradient>
+</defs>
+</svg>

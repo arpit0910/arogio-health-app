@@ -1,0 +1,17 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="388" height="176" viewBox="0 0 388 176" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="SVG - Bottom Ambient Wave Layer" opacity="0.4">
+<path id="Vector" d="M0 78.9767C81.2093 115.07 162.419 24.8372 252.651 60.9302C324.837 88 356.419 69.9535 388 51.907V169.209H0V78.9767V78.9767" fill="url(#paint0_linear_0_22)"/>
+<path id="Vector_2" opacity="0.5" d="M0 106.047C108.279 60.9302 189.488 124.093 279.721 88C333.86 69.9535 360.93 92.5116 388 106.047V169.209H0V106.047V106.047" fill="url(#paint1_linear_0_22)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_22" x1="0" y1="51.907" x2="388" y2="169.209" gradientUnits="userSpaceOnUse">
+<stop stop-color="#99F6E4" stop-opacity="0.6"/>
+<stop offset="0.6" stop-color="#5EEAD4" stop-opacity="0.3"/>
+<stop offset="1" stop-color="#087D65" stop-opacity="0.15"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_22" x1="1.13268e-07" y1="88" x2="388" y2="169.209" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2DD4BF" stop-opacity="0.4"/>
+<stop offset="1" stop-color="#F0FDFA" stop-opacity="0"/>
+</linearGradient>
+</defs>
+</svg>

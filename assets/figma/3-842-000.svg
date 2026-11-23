@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="176" height="288" viewBox="0 0 176 288" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="SVG - Top left gentle botanical leaf cluster" opacity="0.25" clip-path="url(#clip0_0_20)">
+<path id="Vector" d="M-10.7429 0C55.0857 32.9143 104.457 106.971 79.7714 172.8C63.3143 213.943 22.1714 255.086 -18.9714 279.771C-23.0857 222.171 -10.7429 148.114 -6.62857 98.7429L-10.7429 0" fill="url(#paint0_linear_0_20)"/>
+<path id="Vector_2" opacity="0.6" d="M22.1714 49.3714C67.4286 82.2857 71.5429 148.114 30.4 181.029C-2.51428 205.714 -18.9714 181.029 -10.7429 139.886C-2.51429 98.7429 5.71428 65.8286 22.1714 49.3714V49.3714" fill="#087D65"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_20" x1="-19.7995" y1="0" x2="163.72" y2="213.02" gradientUnits="userSpaceOnUse">
+<stop stop-color="#34D399"/>
+<stop offset="1" stop-color="#087D65"/>
+</linearGradient>
+<clipPath id="clip0_0_20">
+<rect width="176" height="288" fill="white"/>
+</clipPath>
+</defs>
+</svg>
