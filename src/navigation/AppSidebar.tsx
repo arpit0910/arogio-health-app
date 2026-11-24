@@ -11,7 +11,7 @@ import {
   type PropsWithChildren,
   type ComponentRef,
 } from 'react';
-import {
+import { Platform,
   AccessibilityInfo,
   ActivityIndicator,
   Animated,
@@ -131,7 +131,7 @@ function SidebarSession({ children }: PropsWithChildren) {
     const animation = Animated.timing(position, {
       toValue: 0,
       duration: reduceMotion ? 0 : 200,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web',
     });
     animation.start();
     return () => animation.stop();
@@ -149,7 +149,7 @@ function SidebarSession({ children }: PropsWithChildren) {
     Animated.timing(position, {
       toValue: -panelWidth,
       duration: reduceMotion ? 0 : 160,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web',
     }).start(({ finished }) => {
       closeLock.current = false;
       if (finished) {
@@ -173,7 +173,7 @@ function SidebarSession({ children }: PropsWithChildren) {
   return (
     <SidebarContext.Provider value={{ openSidebar, isOpen: open }}>
       <View style={{ flex: 1 }}>
-      <BlurTargetView ref={blurTarget} style={{ flex: 1 }} pointerEvents={open ? 'none' : 'auto'} accessibilityElementsHidden={open} importantForAccessibility={open ? 'no-hide-descendants' : 'auto'}>{children}</BlurTargetView>
+      <BlurTargetView ref={blurTarget} style={{ flex: 1 }} pointerEvents={open ? 'none' : 'auto'} {...(Platform.OS === 'web' ? { 'aria-hidden': open } : { accessibilityElementsHidden: open, importantForAccessibility: open ? 'no-hide-descendants' : 'auto' })}>{children}</BlurTargetView>
       {open && Boolean(user) && <View style={s.overlay} accessibilityViewIsModal>
           <BlurView blurTarget={blurTarget} intensity={45} blurMethod="dimezisBlurView" tint="light" style={StyleSheet.absoluteFill} pointerEvents="none" />
           <Pressable

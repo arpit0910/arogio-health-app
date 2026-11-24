@@ -4,7 +4,7 @@ import { exercises, exerciseDuration, exercisePosition, clockTime } from '../src
 
 describe('Meditation session timing', () => {
   it('matches the advertised exercise durations', () => {
-    assert.deepEqual(exercises.map(exerciseDuration), [120, 180, 300, 120, 300]);
+    assert.deepEqual(exercises.map(exerciseDuration), [120, 180, 300, 120, 300, 60, 120, 150, 180]);
   });
   it('changes breathing phases at the boundary and repeats without a hold', () => {
     const exercise = exercises[0];

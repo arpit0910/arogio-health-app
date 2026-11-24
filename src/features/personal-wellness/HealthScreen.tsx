@@ -22,13 +22,22 @@ export function HealthScreen() {
   const openLibrary = () => router.push({ pathname: '/medicine-library', params: { search } });
   const show = (group: string) => tab === 'All Health' || tab === group;
   return <AppScreen refreshing={loading} onRefresh={() => void refresh()}>
+    <View style={{ backgroundColor: design.mint, borderRadius: 24, padding: 20, gap: 12, marginBottom: 18 }}>
+      <DHeading title="My health journal" subtitle="Open a tracker to see today’s progress or review previous entries." />
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+        <DAction filled label="Health history" onPress={() => router.push('/health-history')} />
+        <DAction label="Activity" onPress={() => router.push('/activity')} />
+        <DAction label="Water Intake" onPress={() => router.push('/water')} />
+        <DAction label="Manage medicines" onPress={() => router.push('/medicines')} />
+      </View>
+    </View>
     <AppSearchBar value={search} onChange={setSearch} label="Search medicines, salt composition, guides..." />
     <View style={{ marginTop: 12 }}><DTabs scroll options={['All Health', 'Medicines A-Z', 'Doctor Guides', 'Nani Dadi Ke Nuskhe', 'Nutrition', 'Seasonal Alerts']} value={tab} onChange={setTab} /></View>
     <View style={{ gap: 24, marginTop: 18 }}>
       {show('Medicines A-Z') && <>
         <DCard><DHeading title="My Medicine Schedule" subtitle={`Today \u00b7 ${schedule.filter(row => !row.complete).length} doses remaining`} icon="pill" action="+ Add Reminder" onPress={() => router.push('/medicine-reminder')} />
           {!schedule.length && <DText>No medicines scheduled</DText>}
-          {schedule.slice(0, 3).map(({ medicine, dose, complete, day }) => <View key={`${medicine.id}:${dose.time}`} style={{ padding: 12, borderRadius: 12, backgroundColor: complete ? design.pale : '#F8FAF8', gap: 8 }}><View style={ds.row}><AppIcon name={complete ? 'check' : 'pill'} color={design.green} size={20} /><View style={{ flex: 1 }}><DText kind="label">{medicine.name}</DText><DText kind="small">{`${formatClock(dose.time)} \u00b7 ${dose.amount}`}</DText></View><DPill>{complete ? 'Completed' : 'Scheduled'}</DPill></View>{!complete && <View style={{ alignItems: 'flex-end' }}><DAction filled label="Log Dose" disabled={busy} onPress={() => void save(`medicines/${medicine.id}/doses/${day}/${dose.time}`, { status: 'taken' })} /></View>}</View>)}
+          {schedule.slice(0, 3).map(({ medicine, dose, complete, day }) => <View key={`${medicine.id}:${dose.time}`} style={{ padding: 12, borderRadius: 12, backgroundColor: complete ? design.pale : '#F8FAF8', gap: 8 }}><View style={ds.row}><AppIcon name={complete ? 'check' : 'pill'} color={design.green} size={20} /><View style={{ flex: 1 }}><DText kind="label">{medicine.name}</DText><DText kind="small">{`${formatClock(dose.time)} \u00b7 ${dose.amount}`}</DText></View><DPill>{complete ? 'Completed' : 'Scheduled'}</DPill></View>{!complete && Array.isArray(data.medicineDoses) && <View style={{ alignItems: 'flex-end' }}><DAction filled label="Log Dose" disabled={busy} onPress={() => void save(`medicines/${medicine.id}/doses/${day}/${dose.time}`, { status: 'taken' })} /></View>}</View>)}
           {!!error && <DText color="#BD3038">{error}</DText>}
         </DCard>
         <DCard style={{ backgroundColor: '#E0F4E8', padding: 20 }}><DPill>PMBJP JAN AUSHADHI</DPill><DText kind="title" style={{ fontSize: 24, lineHeight: 31 }}>Save with Verified Generic Salts</DText><DText>Understand your prescription, find Jan Aushadhi alternatives, and learn safe dosage precautions.</DText><DAction filled label="Search Generic Medicines" onPress={openLibrary} /></DCard>

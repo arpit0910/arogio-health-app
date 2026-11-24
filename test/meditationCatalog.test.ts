@@ -31,21 +31,19 @@ describe('Published meditation catalog', () => {
     assert.throws(() => api.meditationItemSchema.parse({ ...item, videoId: 'javascript:alert(1)' }));
     const available = api.availablePractices(fixture.items, false);
     assert.equal(available.filter((practice: { title: string }) => practice.title === item.title_en).length, 1);
-    assert.ok(available.some((practice: { id: string }) => practice.id === 'wind-down'));
+    assert.deepEqual(Array.from(available, (practice: { id: string }) => practice.id), fixture.items.filter((entry: {kind: string}) => entry.kind === 'practice').map((entry: {id: string}) => entry.id));
   });
-  it('keeps offline exercises available with an empty published library without restoring removed videos', () => {
+  it('keeps unpublished practices and videos out of an empty library', () => {
     const html = render('meditation-empty');
     assert.match(html, /New practices and videos will appear here when published/);
     assert.doesNotMatch(html, /s2NISyShKXM|Daily morning affirmations/);
-    assert.match(html, /Gentle breathing/);
-    assert.match(html, /Evening wind-down/);
+    assert.doesNotMatch(html, /Gentle breathing|Evening wind-down/);
     assert.match(html, /Sound &amp; stillness/);
   });
-  it('keeps a clearly labelled built-in fallback when the service is unreachable', () => {
+  it('offers retry without resurrecting bundled content on a service error', () => {
     const html = render('meditation-offline');
     assert.match(html, /The library could not refresh/);
-    assert.match(html, /Gentle breathing/);
-    assert.ok(html.includes('Affirmations video'));
-    assert.ok(html.includes('Play in Arogio'));
+    assert.match(html, /Retry library/);
+    assert.doesNotMatch(html, /Gentle breathing|Affirmations video/);
   });
 });

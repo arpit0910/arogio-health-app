@@ -29,12 +29,13 @@ import {
 } from "./articleLibraryModel";
 
 export function ArticlesLibraryScreen() {
-  const params = useLocalSearchParams<{ search?: string; category?: string }>();
+  const params = useLocalSearchParams<{ search?: string; category?: string; saved?: string }>();
   const initialSearch = typeof params.search === 'string' ? params.search : '';
   const initialCategory = typeof params.category === 'string' ? params.category : '';
-  return <LibrarySession key={JSON.stringify([initialSearch, initialCategory])} initialSearch={initialSearch} initialCategory={initialCategory} />;
+  const initialSaved = params.saved === '1';
+  return <LibrarySession key={JSON.stringify([initialSearch, initialCategory, initialSaved])} initialSearch={initialSearch} initialCategory={initialCategory} initialSaved={initialSaved} />;
 }
-function LibrarySession({ initialSearch, initialCategory }: { initialSearch: string; initialCategory: string }) {
+function LibrarySession({ initialSearch, initialCategory, initialSaved }: { initialSearch: string; initialCategory: string; initialSaved: boolean }) {
   const { language, t } = useTranslation();
   const router = useRouter();
   const [search, setSearch] = useState(initialSearch),
@@ -43,7 +44,7 @@ function LibrarySession({ initialSearch, initialCategory }: { initialSearch: str
 
   const [sort, setSort] = useState<ArticleSort>("newest"),
     [filtersOpen, setFiltersOpen] = useState(false),
-    [savedOnly, setSavedOnly] = useState(false);
+    [savedOnly, setSavedOnly] = useState(initialSaved);
   const [savedIds, setSavedIds] = useState<string[]>([]),
     [saving, setSaving] = useState(false),
     [bookmarksReady, setBookmarksReady] = useState(false),

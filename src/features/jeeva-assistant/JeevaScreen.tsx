@@ -5,7 +5,7 @@ import { useTranslation } from "../../localization/LanguageProvider";
 import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Switch, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { DCard, DText, DPill, design } from '../../components/app/DesignUI';
+import { DCard, DText, DPill } from '../../components/app/DesignUI';
 import { AppHeader } from '../../components/app/AppHeader';
 import { AppIcon } from '../../components/app/AppIcon';
 import { Button } from '../../components/ui/Button';
@@ -26,7 +26,7 @@ export function JeevaScreen() {
 }
 function ChatSession({ initialDraft = '' }: { initialDraft?: string }) {
   const { t: tr } = useTranslation();
-  const colors = usePalette(), s = useStyles(), { user } = useAuth();
+  const colors = usePalette(), s = useStyles();
   const { width } = useWindowDimensions();
   const [messages, setMessages] = useState<ChatMessage[]>([]), [draft, setDraft] = useState(initialDraft);
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
@@ -74,9 +74,39 @@ function ChatSession({ initialDraft = '' }: { initialDraft?: string }) {
         {contextOpen && <View style={s.contextPanel}><View style={s.contextControl}><Text style={[s.body, { flex: 1 }]}>{tr("Use saved wellness tracking")}</Text><Switch accessibilityLabel={tr("Use saved wellness tracking. Changing this starts a new chat.")} value={useSavedHealth} disabled={busy || Boolean(error)} onValueChange={value => { clear(); setUseSavedHealth(value); }} trackColor={{ false: colors.border, true: colors.primary }} /></View><Text style={s.detail}>{tr(useSavedHealth ? 'Messages and saved profile, activity, water, medicine and cycle summaries go to the AI service. Device-only readings are not included.' : 'Only your chat messages go to the AI service.')} {tr('Changing record access starts a new chat.')}</Text></View>}
       </View>
       <ScrollView ref={scroll} keyboardShouldPersistTaps="handled" contentContainerStyle={s.conversation} onContentSizeChange={() => { if (busy || hasPending || documentOpen) scroll.current?.scrollToEnd({ animated: false }); }}>
-        <DCard style={{ gap: 10, padding: 12 }}><View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}><View style={[s.avatar, { width: 36, height: 36, borderRadius: 18 }]}><AppIcon name="sparkles" size={21} color={colors.onBrand} /></View><View style={{ flex: 1 }}><DText kind="label">Jeeva AI</DText><DText kind="small">Health information & care navigation</DText></View><TouchTarget accessibilityRole="button" onPress={clear} style={{ paddingHorizontal: 10, borderRadius: 20, backgroundColor: colors.subtle }}><DText kind="small">Reset</DText></TouchTarget></View></DCard>
-        <View style={{ padding: 12, borderRadius: 10, backgroundColor: colors.mintSurface, gap: 5 }}><DText kind="small">AI health information: Not a diagnosis or emergency service. For severe distress or trauma, seek immediate emergency assistance.</DText><DPill>Emergency: 108</DPill></View>
-        {!messages.length ? <View style={{ gap: 12 }}><View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 9 }}><View style={[s.avatar, { width: 28, height: 28, borderRadius: 14 }]}><AppIcon name="sparkles" size={16} color={colors.onBrand} /></View><View style={{ flex: 1, backgroundColor: '#FFFFFF', padding: 14, borderRadius: 14, gap: 8 }}><DText kind="small" color={design.green}>JEEVA AI</DText><DText color={colors.ink}>{`Hello ${user?.fullName?.split(' ')[0] || 'there'}! I am Jeeva, your health information assistant. What health topic or Arogio feature can I help you understand?`}</DText></View></View><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginLeft: 37 }}>{suggestions.map(item => <TouchTarget key={item.text} accessibilityRole="button" onPress={() => void send(tr(item.text))} style={{ paddingHorizontal: 10, minHeight: 34, borderRadius: 18, backgroundColor: colors.mintSurface, justifyContent: 'center' }}><DText kind="small" color={colors.primary}>{tr(item.text)}</DText></TouchTarget>)}</View></View> : messages.map((message, index) => message.role === 'assistant' ? <View key={index} onLayout={({ nativeEvent: { layout } }) => { if (index === messages.length - 1) scroll.current?.scrollTo({ y: Math.max(0, layout.y - 8), animated: false }); }}><ChatReply message={message} /></View> : <View key={index} style={[s.message, s.userMessage]}><Text selectable style={[s.body, { color: colors.onPrimary }]}>{message.content}</Text></View>)}
+        <DCard style={{ backgroundColor: colors.primaryPressed, padding: 18, gap: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <View style={[s.avatar, { width: 44, height: 44, borderRadius: 14 }]}><AppIcon name="sparkles" size={23} color={colors.onBrand} /></View>
+            <View style={{ flex: 1 }}>
+              <DText kind="title" color={colors.onBrand}>Jeeva AI</DText>
+              <DText kind="small" color={colors.brandSoft}>Health information & care navigation</DText>
+            </View>
+            {messages.length > 0 && <TouchTarget accessibilityRole="button" onPress={clear} style={{ justifyContent: 'center', paddingHorizontal: 12, borderRadius: 14, backgroundColor: colors.surface }}>
+              <DText kind="small">Reset</DText>
+            </TouchTarget>}
+          </View>
+        </DCard>
+        <View style={{ padding: 12, borderRadius: 12, backgroundColor: colors.subtle, gap: 6 }}>
+          <DText kind="small">AI health information: Not a diagnosis or emergency service. For severe distress or trauma, seek immediate emergency assistance.</DText>
+          <DPill>Emergency: 108</DPill>
+        </View>
+        {!messages.length ? (
+          <View style={{ gap: 12 }}>
+            <View style={{ backgroundColor: colors.mintSurface, padding: 20, borderRadius: 22, gap: 8 }}>
+              <DText kind="title">What can Jeeva help you understand?</DText>
+              <DText>Pick a question to edit before sending, or write your own.</DText>
+            </View>
+            {suggestions.map(item => (
+              <TouchTarget key={item.text} accessibilityRole="button" onPress={() => setDraft(tr(item.text))}
+                accessibilityLabel={tr(item.text)}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 14, minHeight: 48, borderRadius: 14, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border }}>
+                <AppIcon name={item.icon} size={20} color={colors.primary} />
+                <DText style={{ flex: 1 }} color={colors.ink}>{tr(item.text)}</DText>
+                <AppIcon name="right" size={16} color={colors.muted} />
+              </TouchTarget>
+            ))}
+          </View>
+        ) : messages.map((message, index) => message.role === 'assistant' ? <View key={index} onLayout={({ nativeEvent: { layout } }) => { if (index === messages.length - 1) scroll.current?.scrollTo({ y: Math.max(0, layout.y - 8), animated: false }); }}><ChatReply message={message} /></View> : <View key={index} style={[s.message, s.userMessage]}><Text selectable style={[s.body, { color: colors.onPrimary }]}>{message.content}</Text></View>)}
         {documentOpen && <DocumentPhotoInput onText={text => { setDraft(text); setDocumentOpen(false); }} disabled={busy || Boolean(error)} useLabel="Use in question draft" />}
         {busy && <View accessibilityLiveRegion="polite" accessibilityLabel={tr("Jeeva is preparing a reply")} style={s.waiting}><ActivityIndicator color={colors.primary} /><Text style={s.detail}>{tr('Preparing a helpful reply...')}</Text></View>}
         {!busy && !error && lastReply?.role === 'assistant' && (!lastReply.kind || lastReply.kind === 'answer') && <View style={s.followups}>{['Explain that more simply', 'What could I ask my clinician?'].map(text => <TouchTarget key={text} accessibilityRole="button" onPress={() => void send(tr(text))} disabled={Boolean(draft.trim())} style={s.followup}><Text style={[s.detail, { color: colors.primary }]}>{tr(text)}</Text></TouchTarget>)}</View>}

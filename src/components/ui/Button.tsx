@@ -1,7 +1,7 @@
 import { AccessibleText as Text } from './AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
 import { usePalette } from '../../theme/AppearanceProvider';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { Platform, ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import type { ReactNode } from 'react';
 import { typeStyles, ui } from '../../theme/tokens';
 import { useTouchTarget } from './TouchTarget';
@@ -35,7 +35,7 @@ export function Button({ title, onPress, loading, disabled, variant = 'primary',
         pressed && (danger ? styles.dangerPressed : secondary ? styles.secondaryPressed : styles.primaryPressed),
         variant === 'social' && styles.social,
         (disabled || loading) && styles.disabled]}>
-      <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[styles.content, loading && styles.hidden]}>
+      <View pointerEvents="none" {...(Platform.OS === 'web' ? { 'aria-hidden': true } : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' })} style={[styles.content, loading && styles.hidden]}>
         {leading && <View style={styles.iconSlot}>{leading}</View>}
         <Text style={[styles.text, secondary && styles.secondaryText, variant === 'social' && { color: colors.ink, fontSize: 18 }, danger && { color: colors.error }, size === 'large' && { fontSize: 18, lineHeight: 26 }]}>{tr(title)}</Text>
         {trailing && <View style={styles.iconSlot}>{trailing}</View>}

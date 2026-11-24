@@ -1,13 +1,17 @@
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppScreen } from '../../components/app/AppScreen';
-import { DAction, DCard, DHeading, DText } from '../../components/app/DesignUI';
+import { DAction, DCard, DHeading, DText, design } from '../../components/app/DesignUI';
 import { MedicineSchedule } from './MedicineSchedule';
 import { useWellness } from './WellnessContext';
 import { localDay } from './domain';
 export function MedicineScreen() {
  const router = useRouter(), w = useWellness(), today = localDay();
  return <AppScreen back title="Manage medicines"><View style={{ gap: 16 }}>
+  <DCard style={{ backgroundColor: design.mint, padding: 20 }}>
+    <DHeading title="My medicine schedule" icon="pill" />
+    <DAction label="Health history" onPress={() => router.push({ pathname: '/health-history', params: { filter: 'Medicines' } })} />
+  </DCard>
   <DAction filled label="Add medicine" disabled={w.busy || (w.data.medicines?.length ?? 0) >= 30} onPress={() => router.push('/medicine-reminder')} />
   <MedicineSchedule limit={12} showManage={false} />
   {(w.data.medicines ?? []).map(m => <DCard key={m.id}>

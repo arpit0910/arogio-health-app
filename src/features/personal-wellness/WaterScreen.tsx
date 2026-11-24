@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useTranslation } from "../../localization/LanguageProvider";
 import { APP_TIMEZONE, formatClock, formatDateTime, formatTime } from '../../shared/date-time';
@@ -17,6 +18,7 @@ import { WaterSummary, WaterHistory } from './WaterSummary';
 import { CalendarField } from './CalendarField';
 import { Check, confirmDelete, Field, Group, TrackingStatus, useTrackingStyles } from './TrackingUI';
 export function WaterScreen() {
+  const router = useRouter();
   const { t: tr } = useTranslation();
   const c = useCareStyles();
   const s = useTrackingStyles();
@@ -58,6 +60,7 @@ export function WaterScreen() {
     if (await save(`water/logs/${pending.current.id}`, { amountMl: amount, taskId, loggedAt: pending.current.loggedAt })) { pending.current = null; setFeedback(`${amount} ml logged.`, 'success'); }
   }
   return <AppScreen back><TrackingIntro name="water" title={tr("Water log")} description={tr("Record a drink, check your target and manage your reminder times.")} /><TrackingStatus />
+    <Button title={tr('Health history')} variant="secondary" onPress={() => router.push({ pathname: '/health-history', params: { filter: 'Water' } })} />
     <TrackingFeedback value={feedback} />
     {(!plan || editing) && !loading && <Group title={tr(plan ? 'Your water plan' : 'Make your water plan')}>
       <CalendarField label={tr("I wake up at")} mode="time" value={wake} onChange={setWake} /><CalendarField label={tr("I go to sleep at")} mode="time" value={sleep} onChange={setSleep} />

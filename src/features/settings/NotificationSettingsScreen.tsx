@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AppState, Platform, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AppScreen } from '../../components/app/AppScreen';
-import { CareRow, useCareStyles } from '../../components/app/CareUI';
+import { CareGroup, CareRow, useCareStyles } from '../../components/app/CareUI';
 import { AppIcon } from '../../components/app/AppIcon';
 import { Button } from '../../components/ui/Button';
 import { usePalette } from '../../theme/AppearanceProvider';
@@ -41,23 +41,21 @@ export function NotificationSettingsScreen() {
   }
   const title = access === 'allowed' ? 'Notifications are allowed' : access === 'blocked' ? 'Notifications are off' : access === 'not-requested' ? 'Allow reminders when you’re ready' : access === 'unavailable' ? 'Reminders need the mobile app' : 'Checking notification access…';
   const enabledMedicines = data.medicines?.filter(m => m.enabled).length ?? 0;
-  return <AppScreen back>
-    <Text style={c.heading}>{tr("Reminder preferences")}</Text>
+  return <AppScreen back title={tr("Reminder preferences")}>
     <Text style={[c.text, { marginTop: 8 }]}>{tr("Manage reminder access here. Choose times and frequency inside each tracker.")}</Text>
-    <View style={{ marginTop: 24, padding: 20, backgroundColor: colors.subtle, borderRadius: 16, gap: 12 }}>
+    <View style={{ marginTop: 16, padding: 20, backgroundColor: colors.mintSurface, borderRadius: 24, gap: 12 }}>
       <AppIcon name="bell" size={28} /><Text accessibilityRole="header" style={c.title}>{tr(title)}</Text>
       <Text style={c.text}>{tr(access === 'allowed' ? 'Only reminders you turn on in your trackers will be scheduled. Your device controls sound and delivery.' : access === 'unavailable' ? 'You can keep tracking here. Device reminders are available in the Android and iOS app.' : 'Tracking works with notifications off. You can allow access whenever you want reminders.')}</Text>
       <CareRow icon="shield" title={tr("Manage app access")} detail={tr("Review all app permissions in one place")} onPress={() => router.push('/app-access')} />
       {Platform.OS !== 'web' && access !== null && <Button title={tr("Open device notification settings")} variant="secondary" onPress={() => void open('all')} />}
       {!!error && <><Text accessibilityRole="alert" style={[c.text, { color: colors.error }]}>{tr(error)}</Text><Button title={tr("Check again")} variant="secondary" onPress={() => void checkAccess()} /></>}
     </View>
-    <View style={{ marginTop: 32 }}>
-      <Text accessibilityRole="header" style={c.title}>{tr("Your reminders")}</Text>
+    <CareGroup title="Your reminders">
       {!!reminderError && <View style={{ gap: 12, marginTop: 12 }}><Text accessibilityRole="alert" style={[c.text, { color: colors.error }]}>{tr("Reminder preferences could not be refreshed. Open a tracker to check your saved plan, or try again.")}</Text><Button title={tr("Retry loading reminders")} variant="secondary" loading={loading} onPress={() => void refresh()} /></View>}
       <CareRow icon="drop" title={tr("Water")} detail={tr(reminderError ? 'Preferences unavailable - open tracker' : loading ? 'Loading preferences…' : data.waterPlan ? data.waterPlan.remindersEnabled ? 'On · Manage drinking hours and frequency' : 'Off · Manage your water plan' : 'Set up your water plan')} onPress={() => router.push('/water')} />
       <CareRow icon="pill" title={tr("Medicines")} detail={tr(reminderError ? 'Preferences unavailable - open tracker' : loading ? 'Loading preferences…' : enabledMedicines ? `${enabledMedicines} medicine${enabledMedicines === 1 ? '' : 's'} with reminders on` : 'Add medicines and choose dose times')} onPress={() => router.push('/medicines')} />
       <CareRow icon="calendar" title={tr("Cycle tracking")} detail={tr(reminderError ? 'Preferences unavailable - open tracker' : loading ? 'Loading preferences…' : data.cycleSettings ? `${data.cycleSettings.remindersEnabled ? 'On' : 'Off'} · Manage timing and discreet wording` : 'Optional · Set up cycle check-ins')} onPress={() => router.push('/cycle')} />
-    </View>
+    </CareGroup>
     {Platform.OS !== 'web' && <View style={{ marginTop: 32, paddingTop: 24, borderTopWidth: 1, borderColor: colors.border }}>
       <Text accessibilityRole="header" style={c.title}>{tr("Sound & delivery")}</Text>
       <Text accessibilityLiveRegion="polite" style={[c.text, { marginTop: 12 }]}>{soundStatus}</Text>

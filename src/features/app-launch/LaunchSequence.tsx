@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type PropsWithChildren } from 'react';
-import { AccessibilityInfo, Animated, AppState, BackHandler, Easing, StyleSheet, View } from 'react-native';
+import { Platform, AccessibilityInfo, Animated, AppState, BackHandler, Easing, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import { useRouter } from 'expo-router';
@@ -42,7 +42,7 @@ export function LaunchSequence({ children }: PropsWithChildren) {
     if (finishing.current) return;
     finishing.current = true;
     launchFinished = true;
-    exit.current = Animated.timing(exitOpacity, { toValue: 0, duration: reduceMotion ? 0 : 220, easing: Easing.out(Easing.cubic), useNativeDriver: true, isInteraction: false });
+    exit.current = Animated.timing(exitOpacity, { toValue: 0, duration: reduceMotion ? 0 : 220, easing: Easing.out(Easing.cubic), useNativeDriver: Platform.OS !== 'web', isInteraction: false });
     exit.current.start(({ finished }) => { if (finished) { setVisible(false); if (signIn) router.replace('/login'); } });
   }, [exitOpacity, reduceMotion, router]);
   const next = useCallback(() => { if (finishing.current) return; if (step < 2) setStep((step + 1) as LaunchStep); else finish(); }, [step, finish]);
@@ -53,7 +53,7 @@ export function LaunchSequence({ children }: PropsWithChildren) {
   }, [visible, active, laidOut, preferencesReady, screenReader, step, next]);
   useEffect(() => {
     entrance.setValue(reduceMotion ? 1 : 0);
-    const animation = Animated.timing(entrance, { toValue: 1, duration: reduceMotion ? 0 : 320, easing: Easing.out(Easing.cubic), useNativeDriver: true, isInteraction: false });
+    const animation = Animated.timing(entrance, { toValue: 1, duration: reduceMotion ? 0 : 320, easing: Easing.out(Easing.cubic), useNativeDriver: Platform.OS !== 'web', isInteraction: false });
     animation.start(); return () => animation.stop();
   }, [step, reduceMotion, entrance]);
   useEffect(() => {
@@ -63,7 +63,7 @@ export function LaunchSequence({ children }: PropsWithChildren) {
   }, [visible, step, finish]);
 
   return <View style={[s.fill, { backgroundColor: c.background }]}>
-    <View style={s.fill} pointerEvents={visible ? 'none' : 'auto'} accessibilityElementsHidden={visible} importantForAccessibility={visible ? 'no-hide-descendants' : 'auto'}>{children}</View>
+    <View style={s.fill} pointerEvents={visible ? 'none' : 'auto'} {...(Platform.OS === 'web' ? { 'aria-hidden': visible } : { accessibilityElementsHidden: visible, importantForAccessibility: visible ? 'no-hide-descendants' : 'auto' })}>{children}</View>
     {visible && <Animated.View onLayout={() => setLaidOut(true)} style={[StyleSheet.absoluteFill, { backgroundColor: c.background, opacity: exitOpacity }]}>
       <SafeAreaView style={s.fill}><Animated.View style={[s.fill, { opacity: entrance.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }), transform: [{ translateX: entrance.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }]}>
         <LaunchArtwork step={step} motion={!reduceMotion && active && laidOut} onNext={next} onSkip={() => finish()} onSignIn={() => finish(true)} onStepChange={value => { if (!finishing.current) setStep(value); }} />

@@ -25,7 +25,7 @@ export default function ExploreRoute() {
     </TouchTarget>
     <CareGroup title="Make room for a pause">
       <CareRow icon="leaf" title={tr('Meditation & affirmations')} detail={tr('Short guided practices and encouraging videos')} onPress={() => router.navigate('/meditation')} />
-      <CareRow icon="cloud" title={tr('Gentle breathing')} detail={tr('Follow a comfortable two-minute rhythm')} onPress={() => router.navigate({ pathname: '/meditation', params: { practice: 'breathing' } })} />
+      <CareRow icon="cloud" title={tr('Browse meditation')} onPress={() => router.push('/guided-meditation')} />
     </CareGroup>
     <CareGroup title="Help close at hand">
       <CareRow icon="bloodBank" title={tr('Blood banks')} detail={tr('Find nearby blood banks and contact details')} onPress={() => router.push('/blood-banks')} />

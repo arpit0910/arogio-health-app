@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, StatusBar, View, useWindowDimensions } from 'react-native';
+import { Platform, ActivityIndicator, Pressable, ScrollView, StyleSheet, StatusBar, View, useWindowDimensions } from 'react-native';
 import Svg, { Defs, LinearGradient, Path, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccessibleText as Text } from '../../components/ui/AccessibleText';
@@ -25,7 +25,7 @@ export function MedicineAlarmView({ medicine, day, time, loading, busy, error, r
   const title = language === 'hi' ? `आपकी ${formatClock(time)} की दवा का समय` : `Time for your ${formatClock(time)} medication`;
   return <View style={s.root} accessibilityViewIsModal>
     <StatusBar barStyle="light-content" />
-    <View pointerEvents="none" style={StyleSheet.absoluteFill} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <View pointerEvents="none" style={StyleSheet.absoluteFill} {...(Platform.OS === 'web' ? { 'aria-hidden': true } : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' })}>
       <Svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 390 884">
         <Defs>
           <LinearGradient id="alarm-ground" x1="0" y1="0" x2="0.7" y2="1"><Stop stopColor="#075747" /><Stop offset="1" stopColor="#052D26" /></LinearGradient>

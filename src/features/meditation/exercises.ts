@@ -8,6 +8,31 @@ export type Exercise = {
   repeat?: number;
 };
 
+export const yogaExercises = [
+  {
+    id: 'yoga-chair', section: 'yoga', title: 'Seated yoga reset',
+    description: 'A chair-based practice with small, unhurried movements.',
+    preparation: 'Sit on a sturdy chair with both feet on the floor. Keep the movements small and comfortable, and skip any step you prefer.',
+    steps: [
+      { title: 'Settle in', instruction: 'Rest your hands on your thighs and notice the support of the chair.', seconds: 30 },
+      { title: 'Soften your shoulders', instruction: 'Gently lift your shoulders, then let them settle. Repeat at your own pace or stay still.', seconds: 45 },
+      { title: 'Reach and return', instruction: 'Reach one hand forward within a comfortable range, then bring it back. Try the other side if you like.', seconds: 45 },
+      { title: 'Rest here', instruction: 'Bring both hands back to your thighs and let your breathing settle naturally.', seconds: 30 },
+    ],
+  },
+  {
+    id: 'yoga-evening', section: 'yoga', title: 'Gentle evening yoga',
+    description: 'Seated stretches followed by a quiet pause.',
+    preparation: 'Sit comfortably with both feet supported. Move only as far as feels easy, and breathe naturally throughout.',
+    steps: [
+      { title: 'Find your seat', instruction: 'Sit upright without stiffening. Rest your hands loosely on your thighs.', seconds: 30 },
+      { title: 'Open and close your hands', instruction: 'Slowly spread your fingers and relax them. Let your shoulders stay easy.', seconds: 45 },
+      { title: 'Lengthen gently', instruction: 'Imagine the crown of your head lifting slightly. Relax and return to your usual posture.', seconds: 45 },
+      { title: 'Finish with stillness', instruction: 'Stay seated and notice your natural breathing for a moment.', seconds: 60 },
+    ],
+  },
+] satisfies Exercise[];
+
 export const exercises: Exercise[] = [
   {
     id: 'breathing', title: 'Gentle breathing',
@@ -64,6 +89,47 @@ export const exercises: Exercise[] = [
       { title: 'Soften your hands', instruction: 'Let your fingers rest. Notice your jaw and shoulders, and allow them to find a comfortable position.', seconds: 60 },
       { title: 'Follow a natural breath', instruction: 'Notice your breathing as it is. Let each breath arrive and leave without a count.', seconds: 90 },
       { title: 'Stay or return', instruction: 'Take a moment to notice how you feel. Rest here or move gently when you are ready.', seconds: 30 },
+    ],
+  },
+  {
+    id: 'one-minute-pause', title: 'One-minute pause',
+    description: 'Notice one breath and come back to the room.',
+    preparation: 'Sit or stand somewhere you can pause safely. Let your breathing stay natural.',
+    steps: [
+      { title: 'Feel your feet', instruction: 'Notice where your feet meet the floor. Let your hands rest.', seconds: 20 },
+      { title: 'Follow one breath', instruction: 'Notice one breath coming in and going out without changing it.', seconds: 20 },
+      { title: 'Look around', instruction: 'Let your attention return to the room and choose what to do next.', seconds: 20 },
+    ],
+  },
+  {
+    id: 'sound-focus', title: 'Focus with sound',
+    description: 'Bring your attention back to the sounds around you.',
+    preparation: 'Sit somewhere comfortable. If sound is distracting or hard to hear, use a visual detail instead.',
+    steps: [
+      { title: 'Settle in', instruction: 'Notice how the chair or floor supports you.', seconds: 30 },
+      { title: 'Notice a sound', instruction: 'Pick one sound nearby. Notice it without needing to name it.', seconds: 45 },
+      { title: 'Return gently', instruction: 'When your attention wanders, return to the sound or visual detail you chose.', seconds: 45 },
+    ],
+  },
+  {
+    id: 'kindness-pause', title: 'Pause with kindness',
+    description: 'Take a few minutes to speak to yourself with care.',
+    preparation: 'Choose a comfortable seat. Use your own words if the suggested phrase does not fit.',
+    steps: [
+      { title: 'Settle in', instruction: 'Let your hands rest and notice one natural breath.', seconds: 30 },
+      { title: 'Offer a kind phrase', instruction: 'Try saying quietly to yourself: I can take this one moment at a time.', seconds: 60 },
+      { title: 'Make room for a pause', instruction: 'Let the phrase go. Notice how you are sitting before you return to your day.', seconds: 60 },
+    ],
+  },
+  {
+    id: 'release-the-day', title: 'Release the day',
+    description: 'Close the evening with a quiet, seated reflection.',
+    preparation: 'Sit somewhere comfortable. Let your eyes stay open or softly closed.',
+    steps: [
+      { title: 'Notice your surroundings', instruction: 'Pick one detail in the room and let your attention settle there.', seconds: 30 },
+      { title: 'Recall one moment', instruction: 'Think of one ordinary moment from today. You can also stay with your breath.', seconds: 60 },
+      { title: 'Let the moment pass', instruction: 'Let the memory go and notice where your body is supported.', seconds: 60 },
+      { title: 'Rest here', instruction: 'Take your time. When you are ready, move gently and continue your evening.', seconds: 30 },
     ],
   },
 ];

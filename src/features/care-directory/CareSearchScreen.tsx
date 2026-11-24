@@ -40,6 +40,9 @@ export function CareSearchScreen({ fixedKind }: { fixedKind?: CareKind } = {}) {
   const items = useMemo(() => Array.from(new Map(query.data?.pages.flatMap(page => page.items).map(item => [item.id, item]) ?? []).values()).filter(item => kind==='doctor'||kind==='hospital'||filter === 'All Care' || `${item.details.providerType} ${item.details.specialties.join(' ')}`.toLowerCase().includes(filter.toLowerCase())), [query.data, filter,kind]);
   return <AppScreen scrollable={false} back={!!fixedKind}><FlatList data={items} keyExtractor={item => item.id} contentContainerStyle={{ padding: 16, paddingBottom: 32, width: '100%', maxWidth: 440, alignSelf: 'center' }} refreshing={query.isRefetching && !query.isFetchingNextPage} onRefresh={() => void query.refetch()} keyboardShouldPersistTaps="handled"
     ListHeaderComponent={<View style={{ gap: 14 }}>
+      {!fixedKind && <View style={{ backgroundColor: design.mint, borderRadius: 24, padding: 20 }}>
+        <DHeading title="Find Care" subtitle="Browse by provider type, or search for a name, area, or specialty." />
+      </View>}
       {!fixedKind && <DTabs options={['Hospitals', 'Doctors', 'Blood']} value={kind === 'doctor' ? 'Doctors' : kind === 'hospital' ? 'Hospitals' : ''} onChange={value => { setFilter('All Care'); if (value === 'Blood') router.push('/blood-banks'); else router.setParams({ kind: value === 'Doctors' ? 'doctor' : 'hospital' }); }} />}
       <AppSearchBar value={search} onChange={setSearch} onSubmit={() => { if (search.trim()) void prefs.remember(search).catch(() => {}); }} label={`Search ${careLabels[kind].toLowerCase()}, area or specialty`} />
       {(kind === 'hospital' || kind === 'doctor') && <DAction label={filtersOpen ? 'Close filters' : 'Filters'} onPress={() => setFiltersOpen(value => !value)} />}

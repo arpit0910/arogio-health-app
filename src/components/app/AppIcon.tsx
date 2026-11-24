@@ -1,5 +1,5 @@
 import { useAppTheme } from '../../theme/AppearanceProvider';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 
 
@@ -94,7 +94,7 @@ export function AppIcon({
   color ??= t.teal;
 
   // Keep the shared navigation control in simple native geometry.
-  if (name === 'menu') return <View accessibilityElementsHidden importantForAccessibility="no" style={{width: size, height: size}}>{[6, 12, 18].map(y => <View key={y} style={{position: 'absolute', left: size / 6, top: (y - 0.85) * size / 24, width: size * 2 / 3, height: size * 1.7 / 24, borderRadius: size / 24, backgroundColor: color}} />)}</View>;
+  if (name === 'menu') return <View {...(Platform.OS === 'web' ? { 'aria-hidden': true } : { accessibilityElementsHidden: true, importantForAccessibility: 'no' })} style={{width: size, height: size}}>{[6, 12, 18].map(y => <View key={y} style={{position: 'absolute', left: size / 6, top: (y - 0.85) * size / 24, width: size * 2 / 3, height: size * 1.7 / 24, borderRadius: size / 24, backgroundColor: color}} />)}</View>;
 
   return (
     <Svg
@@ -102,8 +102,7 @@ export function AppIcon({
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      accessibilityElementsHidden
-      importantForAccessibility="no"
+      {...(Platform.OS === 'web' ? { 'aria-hidden': true } : { accessibilityElementsHidden: true, importantForAccessibility: 'no' })}
     >
       {name === "explore" && (
         <Circle cx={12} cy={12} r={10} stroke={color} strokeWidth={1.7} fill={filled ? color : "none"} />

@@ -1,6 +1,6 @@
 import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useEffect, useState } from 'react';
-import { Animated, Easing, StyleSheet, View } from 'react-native';
+import { Platform, Animated, Easing, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Path, Stop, SvgXml } from 'react-native-svg';
 import { type AppIconName } from '../../components/app/AppIcon';
 import { authAssets } from '../authentication/assets/authAssets';
@@ -29,24 +29,24 @@ export function LaunchOrbit({ step, size, motion }: { step: number; size: number
   const [turn] = useState(() => new Animated.Value(0)), [float] = useState(() => new Animated.Value(0));
   useEffect(() => {
     if (!motion) { turn.setValue(0); float.setValue(0); return; }
-    const rotation = Animated.loop(Animated.timing(turn, { toValue: 1, duration: 16000, easing: Easing.linear, useNativeDriver: true, isInteraction: false }));
+    const rotation = Animated.loop(Animated.timing(turn, { toValue: 1, duration: 16000, easing: Easing.linear, useNativeDriver: Platform.OS !== 'web', isInteraction: false }));
     const drift = Animated.loop(Animated.sequence([
-      Animated.timing(float, { toValue: 1, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: true, isInteraction: false }),
-      Animated.timing(float, { toValue: 0, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: true, isInteraction: false }),
+      Animated.timing(float, { toValue: 1, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: Platform.OS !== 'web', isInteraction: false }),
+      Animated.timing(float, { toValue: 0, duration: 1800, easing: Easing.inOut(Easing.sin), useNativeDriver: Platform.OS !== 'web', isInteraction: false }),
     ]));
     rotation.start(); drift.start();
     return () => { rotation.stop(); drift.stop(); };
   }, [motion, turn, float]);
   const cards: { icon: AppIconName; title: string; detail: string; phase: number }[] = step === 1 ? [
     { icon: 'stethoscope', title: 'Doctors', detail: 'Specialists', phase: -Math.PI / 2 },
-    { icon: 'hospital', title: 'Hospitals', detail: 'ICU & beds', phase: Math.PI / 6 },
+    { icon: 'hospital', title: 'Hospitals', detail: 'Find care', phase: Math.PI / 6 },
     { icon: 'ambulance', title: '108 SOS', detail: 'Emergency', phase: Math.PI * 5 / 6 },
   ] : [
     { icon: 'heart', title: 'Vitals', detail: 'Health sync', phase: -Math.PI / 2 },
     { icon: 'pill', title: 'Meds', detail: 'Daily doses', phase: Math.PI / 6 },
     { icon: 'drop', title: 'Water', detail: 'Hydration', phase: Math.PI * 5 / 6 },
   ];
-  return <View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ width: size, height: geometry.height }}>
+  return <View accessible={false} {...(Platform.OS === 'web' ? { 'aria-hidden': true } : { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' })} style={{ width: size, height: geometry.height }}>
     <Animated.View style={{ position: 'absolute', left: 0, top: (geometry.height - size) / 2, width: size, height: size, transform: [{ rotate: turn.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] }) }] }}>
       <Svg width={size} height={size} viewBox="0 0 300 300"><Defs><LinearGradient id="orbit-line" x1="0" y1="0" x2="1" y2="1"><Stop stopColor={c.primary} stopOpacity={0.08} /><Stop offset="1" stopColor={c.primary} stopOpacity={0.65} /></LinearGradient></Defs><Path d={spiralPath} stroke="url(#orbit-line)" strokeWidth={1} fill="none" /><Circle cx={150} cy={150} r={138} stroke={c.primary} strokeOpacity={0.22} strokeDasharray="2 4" fill="none" /><Circle cx={150} cy={12} r={4} fill={c.primary} /><Circle cx={38} cy={230} r={3} fill={c.secondary} /></Svg>
     </Animated.View>
@@ -55,7 +55,7 @@ export function LaunchOrbit({ step, size, motion }: { step: number; size: number
     </Animated.View>
     <View style={[s.center, { left: (size - geometry.centerWidth) / 2, top: (geometry.height - geometry.centerHeight) / 2, width: geometry.centerWidth, height: geometry.centerHeight }]}>
       <Animated.View style={[s.core, { width: Math.min(58, size * 0.17), height: Math.min(58, size * 0.17), backgroundColor: c.brandSurface, transform: [{ scale: float.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] }) }] }]}><FigmaAsset screen={step === 1 ? "3:542" : "3:842"} name={step === 1 ? "imgSvgCaduceusHealthSearchIcon" : "imgSvgJeevaAiStethoscopeBrainSparkIcon"} width={step === 1 ? 26 : 32} height={step === 1 ? 26 : 32} /></Animated.View>
-      <Text numberOfLines={1} maxFontSizeMultiplier={1} style={[s.centerLabel, { color: c.primary }]}>{step === 1 ? t('LIVE RADAR') : 'JEEVA AI 2.0'}</Text>
+      <Text numberOfLines={1} maxFontSizeMultiplier={1} style={[s.centerLabel, { color: c.primary }]}>{step === 1 ? t('Find Care') : t('Jeeva AI')}</Text>
     </View>
     {cards.map((card, index) => {
       const path = spiralMotion(size, card.phase);

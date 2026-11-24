@@ -47,13 +47,13 @@ export function AccountProfileScreen() {
   const contact = [String(user.profileSetup?.contactNumber || user.mobileNumber || user.email || ''), draft.location].filter(Boolean).join(' · ');
   const copy = [typeStyles.detail, large && { fontSize: 15, lineHeight: 22 }, { color: c.muted }];
   return <AppScreen><ProfileReadability value={large}><View style={s.page}>
-    <View style={[s.identity, { backgroundColor: c.surface }]}>
+    <View style={[s.identity, { backgroundColor: c.mintSurface }]}>
       <View style={s.identityRow}><Avatar photo={profilePhoto(user)} size={64} /><View style={s.flex}>
         <Text accessibilityRole="header" style={[s.name, large && { fontSize: 26, lineHeight: 34 }, { color: c.ink }]}>{profileName(user)}</Text>
         {!!contact && <Text selectable style={copy}>{contact}</Text>}
-        <View style={s.identityStatus}><AppIcon name="shield" size={13} color={c.muted} /><Text style={[s.small, { color: c.muted }]}>{t('ABHA ID not linked')}</Text></View>
+
       </View><TouchTarget accessibilityRole="button" accessibilityLabel={t('Edit profile')} onPress={() => router.push('/edit-profile')} style={s.edit}><AppIcon name="pencil" size={17} color={c.muted} /></TouchTarget></View>
-      <View style={[s.stats, { backgroundColor: c.subtle }, stacked && { flexWrap: 'wrap' }]}>
+      <View style={[s.stats, { backgroundColor: c.mintSurface }, stacked && { flexWrap: 'wrap' }]}>
         {([{ icon: 'blood', value: String(user.profileSetup?.bloodGroup || '—'), label: 'Blood Type' }, { icon: 'shield', value: safetyContact.isPending ? 'Loading...' : safetyContact.isError ? 'Retry' : safetyContact.data ? 'Saved' : 'Add', label: 'SOS Contact' }, { icon: 'report', value: healthRecords.isPending ? 'Loading...' : healthRecords.isError ? 'Retry' : String(healthRecords.data?.length ?? 0), label: 'EHR Records' }] as const).map(item => <TouchTarget key={item.label} accessibilityRole="button" onPress={() => router.push(item.label === 'SOS Contact' ? '/safety-contact' : item.label === 'EHR Records' ? '/health-records' : '/edit-health-goals')} accessibilityLabel={`${t(item.label)}: ${t(item.value)}`} style={[s.stat, { backgroundColor: c.surface }, stacked && { flexBasis: '100%' }]}><View style={s.statValue}><AppIcon name={item.icon} size={15} color={item.icon === 'blood' ? c.error : c.primary} /><Text style={[s.statText, { color: c.ink }]}>{t(item.value)}</Text></View><Text style={[s.small, { color: c.muted }]}>{t(item.label)}</Text></TouchTarget>)}
       </View>
       {!user.profileCompletedAt && <TouchTarget accessibilityRole="button" onPress={() => router.push('/setup-profile')}><Text style={[typeStyles.label, { color: c.primary }]}>{t('Finish profile setup')}</Text></TouchTarget>}
@@ -64,6 +64,7 @@ export function AccountProfileScreen() {
       <ProfileRow icon="report" title="EHR records" detail="Add and open reports, prescriptions and discharge documents" onPress={() => router.push('/health-records')} last />
     </ProfileSection>
     <ProfileSection title="SAVED CARE & ACTIVITY">
+      <ProfileRow icon="book" title="Saved and recent" detail="Providers, articles, and care searches" onPress={() => router.push('/saved-and-recent')} />
       <ProfileRow icon="hospital" title="Saved Hospitals & Clinics" detail="Hospitals & clinics" onPress={() => router.push({ pathname: '/saved-care', params: { kind: 'hospital' } })} trailing={!stacked && <ProfileBadge text="Saved" />} />
       <ProfileRow icon="stethoscope" title="Saved Doctors & Specialists" detail="Doctors & specialists" onPress={() => router.push({ pathname: '/saved-care', params: { kind: 'doctor' } })} trailing={!stacked && <ProfileBadge text="Saved" />} />
       <ProfileRow icon="clock" title="Recent Searches & Departments" detail="Care by name, area or specialty" onPress={() => router.push({ pathname: '/saved-care', params: { history: '1' } })} last />
