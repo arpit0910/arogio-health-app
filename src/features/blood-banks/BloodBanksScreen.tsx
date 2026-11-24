@@ -14,7 +14,7 @@ import { CareDisclosure, useCareStyles } from "../../components/app/CareUI";
 import { Button } from "../../components/ui/Button";
 import { TouchTarget } from "../../components/ui/TouchTarget";
 import { usePalette } from "../../theme/AppearanceProvider";
-import { publicApi as apiClient } from "../care-directory/api";
+import { directoryDirections, publicApi as apiClient } from "../care-directory/api";
 import { bankListSchema, dialNumber, type Bank } from "../../services/api/healthResourcesApi";
 type Coordinates = { latitude: number; longitude: number; time: number };
 export function EmergencyButton({ inline = false }: { inline?: boolean }) {
@@ -200,23 +200,33 @@ export function BloodBanksScreen() {
       controller.abort();
     };
   }, [coords, term, only24h, radius, page, revision, requestKey]);
-  async function open(url: string) {
+  const [actionError, setActionError] = useState<string | null>(null);
+  async function open(url: string, bankId: string) {
+    setActionError(null);
     try {
       await Linking.openURL(url);
     } catch {
-      if (alive.current)
-        setLocationError(
-          "This link could not open. You can copy the bank address or phone number below.",
-        );
+      if (alive.current) setActionError(bankId);
     }
   }
   function bankRow(bank: Bank) {
     const phone = dialNumber(bank.phone, bank.country_code),
       emergency = dialNumber(bank.emergency_phone, bank.emergency_country_code);
-    const destination =
-      bank.latitude != null && bank.longitude != null
-        ? `${bank.latitude},${bank.longitude}`
-        : `${bank.name_en}, ${bank.address_en}, ${bank.city}, ${bank.state} ${bank.pincode || ""}`;
+    const address = (hindi && bank.address_hi) || bank.address_en || bank.address_hi;
+    const locality = [bank.city, bank.state, bank.pincode].filter(Boolean).join(', ');
+    const directions = directoryDirections({
+      name: bank.name_en,
+      address: bank.address_en || bank.address_hi,
+      locality,
+      latitude: bank.latitude,
+      longitude: bank.longitude,
+    });
+    const features = [
+      bank.is_24_7 && "Listed as 24 hours",
+      bank.is_government && "Government",
+      bank.component_facility && "Components",
+      bank.apheresis_facility && "Apheresis",
+    ].flatMap((label) => label ? [tr(label)] : []);
     return (
       <View
         key={bank.id}
@@ -230,70 +240,46 @@ export function BloodBanksScreen() {
         }}
       >
         <Text style={c.title}>{(hindi && bank.name_hi) || bank.name_en}</Text>
-        <Text style={[c.text, { color: colors.primary }]}>
-          {tr(bank.distanceKm == null
-            ? `${bank.city}, ${bank.state}`
-            : `${bank.distanceKm < 0.1 ? "Under 0.1" : bank.distanceKm.toFixed(1)} km away · straight-line`)}
-        </Text>
-        <Text selectable style={c.text}>
-          {(hindi && bank.address_hi) || bank.address_en}
-          {bank.pincode ? ` · ${bank.pincode}` : ""}
-        </Text>
-        <Text style={c.text}>
-          {[
-            bank.is_24_7 && "Listed as 24 hours",
-            bank.is_government && "Government",
-            bank.component_facility && "Components",
-            bank.apheresis_facility && "Apheresis",
-          ]
-            .filter(Boolean)
-            .join(" · ") || "Call for service details"}
-        </Text>
-        <Text style={c.text}>
-          {tr("Listed groups:")}{" "}
-          {bank.available_blood_groups.join(", ") || "Not provided"}
-        </Text>
-        <Text style={c.text}>
-          {tr("Call to confirm blood availability and opening hours.")}</Text>
-        {!bank.is_verified && <Text style={c.text}>{tr('Directory listing. Call to confirm details and blood availability.')}</Text>}
-        {bank.is_verified && !!bank.verified_at && <Text style={c.text}>{tr("Reviewed listing")}: {new Date(bank.verified_at).toLocaleDateString(locale)}</Text>}
-        <Button title={tr('Report incorrect information')} variant="secondary" onPress={() => { setReportBank(bank.id); setReportStatus(''); setReportText(''); }} />
-        {reportBank === bank.id && <View style={{ gap: 12 }}><Text style={c.text}>{tr('Describe a directory correction only. Do not include medical records or personal health information.')}</Text><TextInput accessibilityLabel={tr('Directory correction')} value={reportText} onChangeText={setReportText} multiline maxLength={1000} style={{ color: colors.ink, minHeight: 80, padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 12 }} /><Button title={tr('Send correction')} loading={sendingReport} disabled={reportText.trim().length < 10} onPress={() => void sendBankReport(bank.id)} />{!!reportStatus && <Text accessibilityLiveRegion="polite" style={c.text}>{tr(reportStatus)}</Text>}</View>}
-        {bank.phone && (
-          <Text selectable style={c.text}>
-            {tr("Phone: ")}{bank.country_code} {bank.phone}
-          </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+          <AppIcon name="location" size={19} color={colors.primary} />
+          <View style={{ flex: 1, gap: 4 }}>
+            {!!address && <Text selectable style={c.text}>{address}</Text>}
+            {!!locality && <Text selectable style={c.text}>{locality}</Text>}
+            {bank.distanceKm != null && <Text style={[c.text, { color: colors.primary }]}>
+              {bank.distanceKm < 0.1 ? tr("Under 0.1") : bank.distanceKm.toFixed(1)} {tr("km away · straight-line")}
+            </Text>}
+          </View>
+        </View>
+        {!!bank.phone && <Text selectable style={c.text}>{tr("Phone: ")}{bank.country_code} {bank.phone}</Text>}
+        {!!bank.emergency_phone && emergency !== phone && (
+          <Text selectable style={c.text}>{tr("Emergency contact: ")}{bank.emergency_country_code} {bank.emergency_phone}</Text>
         )}
-        {bank.emergency_phone && (
-          <Text selectable style={c.text}>
-            {tr("Emergency contact: ")}{bank.emergency_country_code}{" "}
-            {bank.emergency_phone}
-          </Text>
+        {!phone && !emergency && <Text style={c.text}>{tr("No telephone number listed.")}</Text>}
+        {(phone || directions) && (
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {phone && <View style={{ flexGrow: 1, flexBasis: 110 }}>
+              <Button title="Call" onPress={() => void open(phone, bank.id)} />
+            </View>}
+            {directions && <View style={{ flexGrow: 1, flexBasis: 110 }}>
+              <Button title="Directions" variant="secondary" onPress={() => void open(directions, bank.id)} />
+            </View>}
+          </View>
         )}
-        {!!phone && (
-          <Button title={tr("Call blood bank")} leading={<AppIcon name="phone" color={colors.onPrimary} size={20} />} onPress={() => void open(phone)} />
-        )}
-        {!!emergency && emergency !== phone && (
-          <Button
-            title={tr("Call emergency contact")}
-            leading={<AppIcon name="phone" size={20} />}
-            variant="secondary"
-            onPress={() => void open(emergency)}
-          />
-        )}
-        {!phone && !emergency && (
-          <Text style={c.text}>{tr("No telephone number listed.")}</Text>
-        )}
-        <Button
-          title={tr("Open directions")}
-          leading={<AppIcon name="directions" size={20} />}
-          variant="secondary"
-          onPress={() =>
-            void open(
-              `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`,
-            )
-          }
-        />
+        {!!emergency && emergency !== phone && <Button title="Call emergency contact" variant="secondary" onPress={() => void open(emergency, bank.id)} />}
+        {actionError === bank.id && <Text accessibilityRole="alert" style={[c.text, { color: colors.error }]}>
+          {tr("Could not open this action. The address and phone number are shown above.")}
+        </Text>}
+        {!!features.length && <Text style={c.text}>{features.join(' · ')}</Text>}
+        {!!bank.available_blood_groups.length && <Text style={c.text}>
+          {tr("Listed groups:")} {bank.available_blood_groups.join(", ")}
+        </Text>}
+        <Text style={c.text}>{tr("Call to confirm blood availability and opening hours.")}</Text>
+        <CareDisclosure title={tr('Report incorrect information')}>
+          <Text style={c.text}>{tr('Describe a directory correction only. Do not include medical records or personal health information.')}</Text>
+          <TextInput accessibilityLabel={tr('Directory correction')} value={reportBank === bank.id ? reportText : ''} editable={!sendingReport} onChangeText={(text) => { setReportBank(bank.id); setReportText(text); setReportStatus(''); }} multiline maxLength={1000} style={{ color: colors.ink, minHeight: 80, padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 12 }} />
+          <Button title={tr('Send correction')} loading={sendingReport && reportBank === bank.id} disabled={sendingReport || reportBank !== bank.id || reportText.trim().length < 10} onPress={() => void sendBankReport(bank.id)} />
+          {reportBank === bank.id && !!reportStatus && <Text accessibilityLiveRegion="polite" style={c.text}>{tr(reportStatus)}</Text>}
+        </CareDisclosure>
       </View>
     );
   }

@@ -106,6 +106,7 @@ function loader(request: (options: Request) => Promise<unknown>) {
     return module.exports;
   }
   return {
+    api: load("src/features/care-directory/api.ts"),
     catalog: load("src/features/care-directory/providerCatalog.ts"),
     home: () => load("src/features/home-dashboard/discoveryApi.ts"),
   };
@@ -134,6 +135,31 @@ it("adapts published doctor and hospital API contracts including photos, fees an
     "https://user:secret@api.example.test/photo.jpg",
   ])
     assert.equal(catalog.providerImageUrl(value), undefined);
+});
+it("keeps contact and facility data and uses only usable map destinations", () => {
+  const { api, catalog } = loader(async () => null);
+  const entry = catalog.adaptProvider("hospital", {
+    ...hospital,
+    address_line1: "Main Road",
+    country_code_2: "+91",
+    phone_2: "8000000000",
+    email: "reception@example.test",
+    website: "https://example.test",
+    is_24_7: true,
+    cashless_schemes: ["Example scheme"],
+  });
+  assert.equal(entry.alternatePhone, "+918000000000");
+  assert.equal(entry.email, "reception@example.test");
+  assert.equal(entry.website, "https://example.test");
+  assert.equal(entry.details.open24Hours, true);
+  assert.equal(entry.details.cashlessSchemes.join(), "Example scheme");
+  assert.match(new URL(api.careDirections(entry)).searchParams.get("destination")!, /Main Road/);
+  assert.equal(new URL(api.careDirections({
+    ...entry, details: { ...entry.details, latitude: 26.9, longitude: 75.8 },
+  })).searchParams.get("destination"), "26.9,75.8");
+  assert.equal(api.careDirections(catalog.adaptProvider("hospital", {
+    ...hospital, address_line1: "", address_line2: "", landmark: "", address_hi: "",
+  })), null);
 });
 it("uses server-side filters and pagination without a fixed city", async () => {
   const paths: string[] = [];

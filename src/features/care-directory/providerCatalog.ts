@@ -36,6 +36,10 @@ const profileSchema = z.object({
   pincode: z.string(),
   country_code_1: z.string(),
   phone_1: z.string().nullable(),
+  country_code_2: z.string().optional(),
+  phone_2: z.string().nullable().optional(),
+  email: z.string().nullable().optional(),
+  website: z.string().nullable().optional(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
   summary_en: z.string(),
@@ -62,6 +66,8 @@ const profileSchema = z.object({
   rgahs_approved: z.boolean().nullable().optional(),
   is_cashless: z.boolean().nullable().optional(),
   nabh_accredited: z.boolean().nullable().optional(),
+  is_24_7: z.boolean().nullable().optional(),
+  cashless_schemes: z.array(z.string()).optional(),
 });
 const pageSchema = z.object({
   items: z.array(profileSchema),
@@ -93,11 +99,16 @@ export function adaptProvider(
   raw: unknown,
 ): CareEntry {
   const row = profileSchema.parse(raw);
-  const phone = row.phone_1
-    ? row.phone_1.startsWith("+")
-      ? row.phone_1
-      : row.country_code_1 + row.phone_1
-    : null;
+  const formatPhone = (value: string | null | undefined, countryCode = "") => {
+    const number = value?.trim();
+    return number ? number.startsWith("+") ? number : `${countryCode}${number}` : null;
+  };
+  const phone = formatPhone(row.phone_1, row.country_code_1);
+  const alternatePhone = formatPhone(row.phone_2, row.country_code_2);
+  const street = [row.address_line1, row.address_line2, row.landmark].filter((part) => part.trim());
+  const locality = [row.city, row.state, row.pincode].filter((part) => part.trim());
+  const address = [...new Set([...street, ...locality])].join(", ");
+  const hindiAddress = row.address_hi.trim();
   const benefitNames = {
     accepts_ayushman: "Ayushman Bharat",
     accepts_janaadhaar: "Jan Aadhaar",
@@ -113,18 +124,13 @@ export function adaptProvider(
     name: row.name_en,
     nameHi: row.name_hi,
     city: row.city,
-    address: [
-      row.address_line1,
-      row.address_line2,
-      row.landmark,
-      row.city,
-      row.state,
-      row.pincode,
-    ]
-      .filter(Boolean)
-      .join(", "),
-    addressHi: row.address_hi,
+    address,
+    addressHi: hindiAddress ? [...new Set([hindiAddress, ...locality])].join(", ") : "",
+    mapAddress: street.length ? address : hindiAddress ? [hindiAddress, ...locality].join(", ") : "",
     phone,
+    alternatePhone,
+    email: row.email,
+    website: row.website,
     reviewedAt: row.reviewedAt,
     updatedAt: row.updated_at,
     verification: row.published !== false && row.reviewedAt && Date.parse(row.reviewedAt) >= Date.now() - 180 * 86400000 ? "source-reviewed" : "directory-listing",
@@ -147,6 +153,8 @@ export function adaptProvider(
       experienceYears: row.experience_years,
       consultationFee: row.consultation_fee,
       medicalCouncil: row.medical_council,
+      open24Hours: row.is_24_7,
+      cashlessSchemes: row.cashless_schemes,
       benefits: Object.entries(benefitNames)
         .filter(([key]) => row[key as keyof typeof benefitNames] === true)
         .map(([, label]) => label),

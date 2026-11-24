@@ -6,25 +6,79 @@ import { FlatList, Linking, Platform, View } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useInfiniteQuery,useQuery } from '@tanstack/react-query';
 import { AppScreen } from '../../components/app/AppScreen';
-import { DAction, DCard, DField, DHeading, DPill, DTabs, DText, design, ds } from '../../components/app/DesignUI';
+import { DAction, DCard, DField, DHeading, DTabs, DText, design, ds } from '../../components/app/DesignUI';
 import { AppIcon } from '../../components/app/AppIcon';
 import { ProviderArtwork } from '../../components/app/ProviderArtwork';
 import { TouchTarget } from '../../components/ui/TouchTarget';
+import { Button } from '../../components/ui/Button';
+import { usePalette } from '../../theme/AppearanceProvider';
+import { useTranslation } from '../../localization/LanguageProvider';
 import { careKinds, careLabels, carePhone, careDirections, careRoute, type CareKind, type CareEntry } from './api';
 import { AppSearchBar, ResourceState } from './CarePrimitives';
 
 function ProviderCard({ entry }: { entry: CareEntry }) {
-  const prefs = useCarePreferences();
-  const router = useRouter(), [error, setError] = useState(''), phone = carePhone(entry.phone);
-  async function open(url: string) { try { await Linking.openURL(url); } catch { setError('Could not open this action. View details for contact information.'); } }
-  return <DCard style={{ marginTop: 12, gap: 12 }}><TouchTarget accessibilityRole="button" onPress={() => router.push(careRoute(entry))} style={[ds.row, { alignItems: 'flex-start' }]}><ProviderArtwork entry={entry} style={{ width: 80, height: 80,borderRadius:entry.kind==='doctor'?40:12 }} /><View style={{ flex: 1, gap: 4 }}><DText kind="title">{entry.name}</DText><DPill>{entry.details.providerType || careLabels[entry.kind]}</DPill><DText kind="small">{entry.address}</DText></View></TouchTarget>
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 5 }}>{entry.details.specialties.slice(0, 3).map(text => <DPill key={text}>{text}</DPill>)}</View>
-    <View style={[ds.row, { backgroundColor: design.pale, padding: 12, borderRadius: 10 }]}><AppIcon name="shield" size={21} color={design.green} /><View style={{ flex: 1 }}><DText kind="label">{entry.verification === 'source-reviewed' ? 'Reviewed listing' : 'Directory listing'}</DText><DText kind="small">Call to confirm services & availability</DText></View></View>
-    {entry.details.consultationFee!=null&&<DText kind="small">{`Consultation fee: INR ${entry.details.consultationFee}`}</DText>}
-    <View style={ds.row}>{phone && <View style={{ flex: 1 }}><DAction filled label={entry.kind === 'hospital' ? 'Call Hospital' : 'Call'} onPress={() => void open(phone)} /></View>}<View style={{ flex: 1, backgroundColor: design.pale, borderRadius: 10 }}><DAction label={entry.kind === 'medicine' ? 'View Details' : 'Directions'} onPress={() => entry.kind === 'medicine' ? router.push(careRoute(entry)) : void open(careDirections(entry))} /></View><TouchTarget accessibilityRole="button" accessibilityLabel="View details" onPress={() => router.push(careRoute(entry))} style={{ paddingHorizontal: 10, backgroundColor: design.pale, borderRadius: 10 }}><AppIcon name="right" size={18} color={design.green} /></TouchTarget></View>
-    <DAction label={prefs.data.saved.some(x => x.id === entry.id && x.kind === entry.kind) ? 'Remove from saved' : 'Save provider'} disabled={prefs.isPending || prefs.isError} onPress={() => void prefs.toggle(entry.id, entry.kind).catch(e => setError(e.message))} />
-    {!!error && <DText color="#BD3038">{error}</DText>}
-  </DCard>;
+  const prefs = useCarePreferences(), router = useRouter(), colors = usePalette();
+  const { language, t } = useTranslation();
+  const [error, setError] = useState('');
+  const name = (language === 'hi' && entry.nameHi) || entry.name;
+  const address = (language === 'hi' && entry.addressHi) || entry.address;
+  const contactable = entry.kind !== 'medicine';
+  const phone = contactable ? carePhone(entry.phone) ?? carePhone(entry.alternatePhone ?? null) : null;
+  const directions = contactable ? careDirections(entry) : null;
+  const specialty = entry.details.specialties.slice(0, 3).join(' · ');
+  const featured = entry.kind === 'hospital'
+    ? [...(entry.details.open24Hours ? [t('Listed as 24 hours')] : []), ...(entry.details.benefits ?? []).map(t)].slice(0, 3)
+    : [];
+  const saved = prefs.data.saved.some((item) => item.id === entry.id && item.kind === entry.kind);
+
+  async function open(url: string) {
+    setError('');
+    try { await Linking.openURL(url); }
+    catch { setError('Could not open this action. View details for contact information.'); }
+  }
+
+  return (
+    <DCard style={{ marginTop: 12, gap: 12, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border }}>
+      <TouchTarget
+        accessibilityRole="button"
+        accessibilityLabel={`${t('View details')}: ${name}`}
+        onPress={() => router.push(careRoute(entry))}
+        style={[ds.row, { gap: 12 }]}
+      >
+        <ProviderArtwork entry={entry} style={{ width: 64, height: 64, borderRadius: entry.kind === 'doctor' ? 32 : 12 }} />
+        <View style={{ flex: 1, minWidth: 0, gap: 4 }}>
+          <DText kind="title" color={colors.ink}>{name}</DText>
+          <DText kind="label" color={colors.primary}>{entry.details.providerType || specialty || careLabels[entry.kind]}</DText>
+        </View>
+        <AppIcon name="right" size={18} color={colors.muted} />
+      </TouchTarget>
+      {contactable && !!(address || entry.city) && (
+        <View style={[ds.row, { alignItems: 'flex-start' }]}>
+          <AppIcon name="location" size={18} color={colors.primary} />
+          <DText style={{ flex: 1 }} color={colors.muted}>{address || entry.city}</DText>
+        </View>
+      )}
+      {phone && <DText color={colors.muted}>{t('Phone: ')}{phone.slice(4)}</DText>}
+      {entry.details.providerType && specialty ? <DText color={colors.muted}>{specialty}</DText> : null}
+      {!!featured.length && <DText color={colors.muted}>{featured.join(' · ')}</DText>}
+      {entry.details.consultationFee != null && (
+        <DText color={colors.muted}>{`${t('Consultation fee')}: INR ${entry.details.consultationFee}`}</DText>
+      )}
+      {(phone || directions) && <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        {phone && <View style={{ flexGrow: 1, flexBasis: 110 }}><Button title="Call" onPress={() => void open(phone)} /></View>}
+        {directions && <View style={{ flexGrow: 1, flexBasis: 110 }}><Button title="Directions" variant="secondary" onPress={() => void open(directions)} /></View>}
+      </View>}
+      <TouchTarget
+        accessibilityRole="button"
+        disabled={prefs.isPending || prefs.isError}
+        onPress={() => void prefs.toggle(entry.id, entry.kind).catch((issue) => setError(issue.message))}
+        style={{ alignItems: 'center', justifyContent: 'center' }}
+      >
+        <DText kind="label" color={prefs.isPending || prefs.isError ? colors.muted : colors.primary}>{saved ? 'Remove from saved' : 'Save provider'}</DText>
+      </TouchTarget>
+      {!!error && <DText color={colors.error}>{error}</DText>}
+    </DCard>
+  );
 }
 export function CareSearchScreen({ fixedKind }: { fixedKind?: CareKind } = {}) {
   const prefs = useCarePreferences();
