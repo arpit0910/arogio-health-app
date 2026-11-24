@@ -59,6 +59,10 @@ export function HomeScreen() {
       </View>
       <View style={{ gap: 6 }}>
         <AppSearchBar value={search} onChange={setSearch} onSubmit={find} label="Search doctors, hospitals, medicines…" />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <Button title={t('Find care nearby')} variant="secondary" onPress={() => router.push({ pathname: '/find-care', params: { nearby: '1' } })} />
+          <Button title={t('Yoga & Meditation')} variant="secondary" onPress={() => router.push('/yoga-meditation')} />
+        </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.suggestions}><View style={s.suggestionCaption}><AppIcon name="trend" size={13} color={colors.muted} /><Text style={[typeStyles.label, { color: colors.muted }]}>{t('Explore:')}</Text></View>{suggestions.map(item => <TouchTarget key={item.title} accessibilityRole="button" onPress={() => 'search' in item ? router.navigate({ pathname: '/find-care', params: { search: item.search } }) : router.push(item.path)} style={s.chipTarget}><View style={[s.chip, { backgroundColor: item.title === 'Blood banks' ? colors.errorSurface : colors.surface }]}><Text style={[typeStyles.label, { color: item.title === 'Blood banks' ? colors.error : colors.ink }]}>{t(item.title)}</Text></View></TouchTarget>)}</ScrollView>
       </View>
       <TouchTarget accessibilityRole="button" accessibilityLabel={t('Emergency help. Open emergency contacts')} onPress={() => router.push('/emergency')} style={({ pressed }) => [s.emergency, { backgroundColor: colors.errorSurface, opacity: pressed ? 0.8 : 1 }]}>
@@ -69,11 +73,11 @@ export function HomeScreen() {
         <HomeRoutines />
         {user && <Button title={t('View today’s routine')} variant="secondary" onPress={() => router.push('/today')} />}
       </View>
-      <TouchTarget accessibilityRole="button" onPress={() => router.push('/yoga-meditation')} style={[s.calm, { backgroundColor: colors.secondarySurface }]}>
+      <TouchTarget accessibilityRole="button" onPress={() => router.push('/guided-meditation')} style={[s.calm, { backgroundColor: colors.secondarySurface }]}>
         <View style={[s.shortcutIcon, { backgroundColor: colors.surface }]}><AppIcon name="leaf" size={27} color={colors.secondary} /></View>
         <View style={s.copy}>
           <Text style={[typeStyles.title, { color: colors.ink }]}>{t('Make time for a short reset')}</Text>
-          <Text style={[typeStyles.body, { color: colors.muted }]}>{t('Yoga & Meditation')}</Text>
+          <Text style={[typeStyles.body, { color: colors.muted }]}>{t('Browse meditation')}</Text>
         </View>
         <AppIcon name="right" size={20} color={colors.secondary} />
       </TouchTarget>
@@ -108,7 +112,7 @@ export function HomeScreen() {
       </View>
       <HomeCareDiscovery data={discovery.data} pending={discovery.isPending} error={discovery.isError} retry={() => void discovery.refetch()} />
       <HomeGuides />
-      <View style={[s.trust, { backgroundColor: colors.subtle }]}><View style={[s.trustIcon, { backgroundColor: colors.surface }]}><AppIcon name="shield" size={27} color={colors.primary} /></View><Text accessibilityRole="header" style={[typeStyles.title, { color: colors.ink, textAlign: 'center' }]}>{t('Arogio Healthcare Discovery')}</Text><Text style={[typeStyles.body, { textAlign: 'center', color: colors.muted }]}>{t('Source-reviewed care information. Check each listing’s source and contact the provider before travelling.')}</Text><View style={s.trustFooter}><AppIcon name="check" size={15} color={colors.primary} /><Text style={[typeStyles.label, { color: colors.muted }]}>{t('Free care discovery')}</Text><AppIcon name="shield" size={15} color={colors.primary} /><Text style={[typeStyles.label, { color: colors.muted }]}>{t('Sources you can check')}</Text></View></View>
+      <View style={[s.trust, { backgroundColor: colors.subtle }]}><View style={[s.trustIcon, { backgroundColor: colors.surface }]}><AppIcon name="shield" size={27} color={colors.primary} /></View><Text accessibilityRole="header" style={[typeStyles.title, { color: colors.ink, textAlign: 'center' }]}>{t('Arogio Healthcare Discovery')}</Text><Text style={[typeStyles.body, { textAlign: 'center', color: colors.muted }]}>{t('Contact the provider to confirm details before travelling.')}</Text><View style={s.trustFooter}><AppIcon name="check" size={15} color={colors.primary} /><Text style={[typeStyles.label, { color: colors.muted }]}>{t('Free care discovery')}</Text><AppIcon name="shield" size={15} color={colors.primary} /><Text style={[typeStyles.label, { color: colors.muted }]}>{t('Provider contact details')}</Text></View></View>
     </View>
   </AppScreen>;
 }

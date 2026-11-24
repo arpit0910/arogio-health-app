@@ -8,7 +8,7 @@ export const careEntrySchema = z.object({
   id: z.string().uuid(), kind: z.enum(careKinds), name: z.string(), nameHi: z.string(), city: z.string(), address: z.string(), addressHi: z.string(), phone: z.string().nullable(),
   imageUrl:z.string().nullable().optional(),imageAlt:z.string().optional(),
   recordedSchedules:z.array(z.object({hospitalId:z.string(),hospitalName:z.string(),days:z.array(z.number()),start:z.string().nullable(),end:z.string().nullable(),mode:z.string(),availability:z.string(),fee:z.number().nullable()})).optional(),
-  sourceUrl: z.string().refine(value => !value || /^https:\/\//.test(value)), reviewedAt: z.string().nullable(), updatedAt: z.string(),
+  reviewedAt: z.string().nullable(), updatedAt: z.string(),
   verification: z.enum(['source-reviewed', 'directory-listing']), details: z.object({ specialties: z.array(z.string()), qualifications: z.string(), registration: z.string(), languages: z.array(z.string()), providerType: z.string(), summary: z.string(),summaryHi:z.string().optional(), precautions: z.string(), latitude: z.number().nullable(), longitude: z.number().nullable(),experienceYears:z.number().nullable().optional(),consultationFee:z.number().nullable().optional(),medicalCouncil:z.string().optional(),benefits:z.array(z.string()).optional() }),
 });
 export type CareEntry = z.infer<typeof careEntrySchema>;

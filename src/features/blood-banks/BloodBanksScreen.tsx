@@ -256,8 +256,7 @@ export function BloodBanksScreen() {
         <Text style={c.text}>
           {tr("Call to confirm blood availability and opening hours.")}</Text>
         {!bank.is_verified && <Text style={c.text}>{tr('Directory listing. Call to confirm details and blood availability.')}</Text>}
-        {bank.is_verified && !!bank.verified_at && <Text style={c.text}>{tr("Source reviewed")}: {new Date(bank.verified_at).toLocaleDateString(locale)}</Text>}
-        {!!bank.source_url && <Button title={tr("Open source")} variant="secondary" onPress={() => void open(bank.source_url!)} />}
+        {bank.is_verified && !!bank.verified_at && <Text style={c.text}>{tr("Reviewed listing")}: {new Date(bank.verified_at).toLocaleDateString(locale)}</Text>}
         <Button title={tr('Report incorrect information')} variant="secondary" onPress={() => { setReportBank(bank.id); setReportStatus(''); setReportText(''); }} />
         {reportBank === bank.id && <View style={{ gap: 12 }}><Text style={c.text}>{tr('Describe a directory correction only. Do not include medical records or personal health information.')}</Text><TextInput accessibilityLabel={tr('Directory correction')} value={reportText} onChangeText={setReportText} multiline maxLength={1000} style={{ color: colors.ink, minHeight: 80, padding: 12, borderWidth: 1, borderColor: colors.border, borderRadius: 12 }} /><Button title={tr('Send correction')} loading={sendingReport} disabled={reportText.trim().length < 10} onPress={() => void sendBankReport(bank.id)} />{!!reportStatus && <Text accessibilityLiveRegion="polite" style={c.text}>{tr(reportStatus)}</Text>}</View>}
         {bank.phone && (

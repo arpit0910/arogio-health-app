@@ -34,26 +34,30 @@ export function ActivityEditorScreen() {
   const [selectedDay, setDay] = useState<string | null>(null), day = selectedDay ?? today;
   const params = useLocalSearchParams<{ source?: string; edit?: string }>();
   const [preferredMode, setMode] = useState<'manual' | 'connected' | null>(params.source === 'manual' ? 'manual' : params.source === 'connected' ? 'connected' : null);
-  const mode = activityMode(preferredMode, health.enabled || health.connected);
+  const mode = activityMode(preferredMode ?? (health.connected ? 'connected' : 'manual'), health.enabled || health.connected);
   const [editor, setEditor] = useState<'goals' | 'entry' | null>(wellness.ready && (params.edit === 'goals' || params.edit === 'entry') ? params.edit : null), [entryMetric, setEntryMetric] = useState<ActivityMetric | null>(null);
   const [entryDay, setEntryDay] = useState(day), [draft, setDraft] = useState<Record<string, string>>(() => Object.fromEntries(activityMetrics.map(item => [item.key, (params.edit === 'entry' ? tracking.days.find(row => row.day === day)?.values[item.key] : tracking.goals[item.key]) == null ? '' : String(params.edit === 'entry' ? tracking.days.find(row => row.day === day)?.values[item.key] : tracking.goals[item.key])]))), [changed, setChanged] = useState<ActivityMetric[]>([]);
   const [chosenTrend, setTrend] = useState<ActivityMetric>('Steps');
   const { feedback, setFeedback } = useTrackingFeedback();
-  const lock = useRef(false), opened = useRef(editor === 'goals');
+  const lock = useRef(false), opened = useRef(editor !== null);
   function edit(kind: 'goals' | 'entry', metric: ActivityMetric | null = null) {
     const values = kind === 'goals' ? tracking.goals : tracking.days.find(entry => entry.day === day)?.values ?? {};
     setDraft(Object.fromEntries(activityMetrics.map(item => [item.key, values[item.key] == null ? '' : String(values[item.key])])));
     setChanged([]); setEntryMetric(metric); setEntryDay(day); setEditor(kind); setFeedback(null);
   }
   useEffect(() => {
-    if (params.edit !== 'goals' || !wellness.ready || opened.current) return;
+    const kind = params.edit;
+    if ((kind !== 'goals' && kind !== 'entry') || !wellness.ready || opened.current) return;
     const timer = setTimeout(() => {
       opened.current = true;
-      setDraft(Object.fromEntries(activityMetrics.map(item => [item.key, tracking.goals[item.key] == null ? '' : String(tracking.goals[item.key])])));
-      setEditor('goals');
+      const values = kind === 'goals' ? tracking.goals : tracking.days.find(row => row.day === day)?.values ?? {};
+      setDraft(Object.fromEntries(activityMetrics.map(item => [item.key, values[item.key] == null ? '' : String(values[item.key])])));
+      setEntryDay(day);
+      if (kind === 'entry') setMode('manual');
+      setEditor(kind);
     }, 0);
     return () => clearTimeout(timer);
-  }, [params.edit, wellness.ready, tracking.goals]);
+  }, [params.edit, wellness.ready, tracking.goals, tracking.days, day]);
   async function commit() {
     if (lock.current || busy) return;
     if (!changed.length) { setEditor(null); return; }
@@ -75,7 +79,7 @@ export function ActivityEditorScreen() {
   const history = { syncedAt: health.snapshot?.syncedAt ?? new Date().toISOString(), granted: trend ? [trend] : [], latestWeight: null, failed: [], days: Array.from({ length: 7 }, (_, i) => { const date = addDays(day, i - 6); return { day: date, readings: trend ? { [trend]: { value: activityReading(trend, date, mode, tracking, health.snapshot, phone).value, sources: [] } } : {} }; }) };
   const fieldItems = activityMetrics.filter(item => !entryMetric || item.key === entryMetric).filter(item => editor !== 'entry' || item.key !== 'Steps' || !phone.enabled);
   const field = (item: typeof activityMetrics[number]) => <Field key={item.key} label={`${item.title} (${item.unit})`} value={draft[item.key] ?? ''} placeholder={tr(editor === 'goals' ? 'Daily target' : 'Total for this day')} onChange={value => { setDraft(current => ({ ...current, [item.key]: value })); setChanged(current => current.includes(item.key) ? current : [...current, item.key]); }} numeric decimal={!item.whole} icon={icons[item.key]} />;
-  if (health.ready === false || wellness.ready === false) return <AppScreen back>
+  if (!wellness.ready && !wellness.error) return <AppScreen back>
     <PageIntro icon="walk" tone="blue" title="Your activity" description="Loading activity..." />
     <ActivityIndicator accessibilityLabel={tr('Loading activity...')} color={colors.primary} />
   </AppScreen>;

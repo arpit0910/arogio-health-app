@@ -36,7 +36,6 @@ const profileSchema = z.object({
   pincode: z.string(),
   country_code_1: z.string(),
   phone_1: z.string().nullable(),
-  source_url: z.string().url().nullable(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
   summary_en: z.string(),
@@ -126,7 +125,6 @@ export function adaptProvider(
       .join(", "),
     addressHi: row.address_hi,
     phone,
-    sourceUrl: row.source_url ?? "",
     reviewedAt: row.reviewedAt,
     updatedAt: row.updated_at,
     verification: row.published !== false && row.reviewedAt && Date.parse(row.reviewedAt) >= Date.now() - 180 * 86400000 ? "source-reviewed" : "directory-listing",
@@ -269,7 +267,6 @@ export async function loadProviderDetail(
 }
 const departmentSchema = z.object({
   id: z.string().uuid(),
-  source_key: z.string(),
   name_en: z.string(),
   name_hi: z.string(),
 });

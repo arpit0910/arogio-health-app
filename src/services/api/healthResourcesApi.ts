@@ -41,7 +41,6 @@ export const bankSchema = z.object({
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
   distanceKm: z.number().optional(),
-  source_url: z.string().nullable().optional(),
   verified_at: z.string().nullable().optional(),
 });
 export const categorySchema = z.object({

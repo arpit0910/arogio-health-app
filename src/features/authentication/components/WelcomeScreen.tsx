@@ -19,7 +19,7 @@ export function WelcomeScreen() {
   const { t: tr, language, setLanguage, ready, saving } = useTranslation();
   const [panel, setPanel] = useState(0);
   const panels = [
-    { title: 'Find care with confidence', copy: 'Search source-reviewed care information. Emergency contacts are open to everyone.', icon: 'search' as const },
+    { title: 'Find care with confidence', copy: 'Search care listings. Emergency contacts are open to everyone.', icon: 'search' as const },
     { title: 'Make room for everyday health', copy: 'Keep your activity, water and medicine reminders together. Connect health data only when you choose.', icon: 'heart' as const },
     { title: 'Support, with your privacy in mind', copy: 'Ask Jeeva for education, not a diagnosis. Your saved health data is shared with Jeeva only if you opt in.', icon: 'shield' as const },
   ];

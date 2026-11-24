@@ -19,7 +19,7 @@ export function HomeVitals() {
   const { user } = useAuth(), wellness = useWellness(), health = useHealthSync(), phone = usePhoneSteps(), now = useTrackingClock();
   const c = usePalette(), { t, locale } = useTranslation(), router = useRouter(), { fontScale } = useWindowDimensions();
   const tracking = wellness.data.activityTracking ?? emptyActivity();
-  const connected = Boolean(health.enabled || health.connected || (health.busy && health.source));
+  const connected = health.connected;
   const data = homeVitals(localDay(now), connected, tracking, health.snapshot, phone);
   const source = !user ? t('Sign in to track your day') : connected ? health.source?.name ?? t('Connected health app') : phone.enabled ? t('Phone steps & your journal') : t('Your daily health journal');
   const open = () => router.push('/activity');

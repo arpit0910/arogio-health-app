@@ -59,9 +59,10 @@ export function ArticleThumbnail({
   const fallback = covers[topic[category] ?? "wellbeing"];
   // Bundled topic images avoid network requests and work offline. Admin-provided
   // HTTPS photos load anonymously and fall back to the same local topic image.
+  const uploadedArticleImage = /^\/api\/v1\/public\/articles\/[0-9a-f-]{36}\/thumbnail\?v=[0-9a-f-]{36}$/i;
   const remote = uri?.startsWith("https://")
     ? uri
-    : uri?.startsWith("/admin-assets/")
+    : uri && (uri.startsWith("/admin-assets/") || uploadedArticleImage.test(uri))
       ? new URL(uri, env.apiUrl).toString()
       : undefined;
   const bundled = uri?.match(
