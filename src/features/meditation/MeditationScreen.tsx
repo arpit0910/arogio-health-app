@@ -1,7 +1,8 @@
 import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, StyleSheet, View } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
+import { randomUUID } from 'expo-crypto';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { AppScreen, useAppStyles } from '../../components/app/AppScreen';
 import { CareGroup, CareRow } from '../../components/app/CareUI';
@@ -15,10 +16,18 @@ import { PracticeAudio } from './PracticeAudio';
 import { AffirmationsSection } from './AffirmationsSection';
 import { availablePractices, catalogExercise, loadMeditationItem } from './catalog';
 import { useMeditationLibrary } from './useMeditationLibrary';
+import { useAuth } from '../authentication/context/AuthContext';
+import { savePracticeCompletion } from './practiceHistoryApi';
 import { SoundBreak } from './SoundBreak';
 
 export function MeditationScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [attempt, setAttempt] = useState<{ id: string; owner: string } | null>(null);
+  const saveLock = useRef(false);
+  const [completion, setCompletion] = useState<{ id: string; status: 'saving' | 'saved' | 'error' }>();
+  const completionStatus = completion?.id === attempt?.id ? completion?.status : undefined;
   const { t: tr, language } = useTranslation();
   const { query: catalog, items } = useMeditationLibrary();
   const offline = catalog.isError && !catalog.data;
@@ -44,6 +53,7 @@ export function MeditationScreen() {
       : practice === 'breathing' ? practices.find(item => item.section === 'breathing') : undefined;
     if (!exercise) return;
     const timer = setTimeout(() => {
+      setAttempt(null);
       clock.current = { elapsed: 0, started: 0 };
       setElapsed(0); setRunning(false); setSelected(exercise);
       setReturnPath(origin === 'yoga' ? '/yoga' : origin === 'meditation' ? '/guided-meditation' : null);
@@ -82,13 +92,36 @@ export function MeditationScreen() {
   }, [running, duration]);
 
   function choose(exercise: Exercise | null) {
+    setAttempt(null);
     clock.current = { elapsed: 0, started: 0 };
     setElapsed(0); setRunning(false); setSelected(exercise); setReturnPath(null);
   }
   function start() {
-    if (complete) { clock.current.elapsed = 0; setElapsed(0); }
+    if (complete || !clock.current.elapsed) {
+      setAttempt(user && selected?.publishedVersion ? { id: randomUUID(), owner: user.id } : null);
+      if (complete) { clock.current.elapsed = 0; setElapsed(0); }
+    }
     clock.current.started = Date.now();
     setRunning(true);
+  }
+
+  const canSave = complete && Boolean(user && attempt?.owner === user.id && selected?.publishedVersion);
+  async function saveCompletion() {
+    const active = attempt;
+    if (!active || active.owner !== user?.id || !selected?.publishedVersion || !complete || saveLock.current) return;
+    saveLock.current = true;
+    setCompletion({ id: active.id, status: 'saving' });
+    try {
+      await savePracticeCompletion({
+        attemptId: active.id, itemId: selected.id, version: selected.publishedVersion, elapsedSeconds: duration,
+      });
+      setCompletion({ id: active.id, status: 'saved' });
+      void queryClient.invalidateQueries({ queryKey: ['practice-history', active.owner] });
+    } catch {
+      setCompletion({ id: active.id, status: 'error' });
+    } finally {
+      saveLock.current = false;
+    }
   }
 
   return <AppScreen onRefresh={() => void catalog.refetch()} refreshing={catalog.isRefetching && !catalog.isFetchingNextPage}>
@@ -98,6 +131,7 @@ export function MeditationScreen() {
         <Text style={a.subtitle}>{tr('Explore guided meditation, music, and short videos in Calm Zone.')}</Text>
       </View>
       <Button title={tr('Yoga & Meditation')} variant="secondary" onPress={() => router.push('/yoga-meditation')} />
+      {user && <Button title={tr('Practice history')} variant="secondary" onPress={() => router.push('/practice-history')} />}
       <Button title={tr('Browse guided collections')} variant="secondary" onPress={() => router.push('/wellness-collections')} />
       <DTabs options={['All', 'Practices', 'Sounds', 'Videos']} value={category} onChange={setCategory} grid columns={3} />
       {practice && direct.isPending && direct.fetchStatus === 'fetching' && <ActivityIndicator accessibilityLabel={tr('Loading meditation library')} />}
@@ -125,7 +159,12 @@ export function MeditationScreen() {
         <Text accessibilityLiveRegion="polite" accessibilityRole="header" style={a.sectionTitle}>{tr(complete ? 'Take a moment' : position?.step.title ?? '')}</Text>
         <Text style={[a.subtitle, s.center]}>{tr(complete ? 'Notice how you feel. Return to your day whenever you are ready.' : position?.step.instruction ?? '')}</Text>
         {(selected.id === 'breathing' || selected.section === 'breathing') && !complete && <Text style={s.status}>{tr('Follow the comfortable count')}: {position?.remaining}</Text>}
-        <Button title={tr(complete ? 'Practice again' : running ? 'Pause' : elapsed > 0 ? 'Resume' : 'Start practice')} onPress={running ? pause : start} />
+        {canSave && completionStatus !== 'saved' &&
+          <Button title={tr(completionStatus === 'error' ? 'Retry saving practice' : 'Save completed practice')}
+            loading={completionStatus === 'saving'} onPress={() => void saveCompletion()} />}
+        {canSave && completionStatus === 'saved' &&
+          <Text accessibilityLiveRegion="polite" style={a.subtitle}>{tr('Practice saved to your history.')}</Text>}
+        <Button title={tr(complete ? 'Practice again' : running ? 'Pause' : elapsed > 0 ? 'Resume' : 'Start practice')} disabled={completionStatus === 'saving'} onPress={running ? pause : start} />
         <Button title={tr(complete ? 'Choose another practice' : 'End practice')} variant="secondary" onPress={() => {
           choose(null);
           if (returnPath) router.navigate(returnPath);

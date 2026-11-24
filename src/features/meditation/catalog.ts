@@ -9,6 +9,7 @@ export const meditationItemSchema = z.object({
   preparation_en: z.string(), preparation_hi: z.string(), author: z.string(),
   videoId: z.string().regex(/^[A-Za-z0-9_-]{11}$/).nullable(), durationSeconds: z.number().nullable(),
   steps: z.array(stepSchema), repeat: z.number().int().positive(),
+  publishedVersion: z.number().int().positive().optional(),
 });
 export type MeditationItem = z.infer<typeof meditationItemSchema>;
 const catalogPage = z.object({ items: z.array(meditationItemSchema), page: z.number().int().positive(), hasNext: z.boolean() });
@@ -22,6 +23,7 @@ export function catalogExercise(item: MeditationItem, hindi: boolean): Exercise 
   const copy = (english: string, translated: string) => hindi && translated ? translated : english;
   return { id: item.id, section: item.section, title: copy(item.title_en, item.title_hi),
     description: copy(item.description_en, item.description_hi), preparation: copy(item.preparation_en, item.preparation_hi), repeat: item.repeat,
+    publishedVersion: item.publishedVersion,
     steps: item.steps.map(step => ({ title: copy(step.title_en, step.title_hi), instruction: copy(step.instruction_en, step.instruction_hi), seconds: step.seconds })) };
 }
 

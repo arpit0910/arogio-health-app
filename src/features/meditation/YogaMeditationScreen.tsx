@@ -10,6 +10,7 @@ import { usePalette } from '../../theme/AppearanceProvider';
 import { typeStyles } from '../../theme/tokens';
 import { clockTime, exerciseDuration } from './exercises';
 
+import { useAuth } from '../authentication/context/AuthContext';
 import { catalogExercise, type MeditationItem } from './catalog';
 import { useMeditationLibrary } from './useMeditationLibrary';
 
@@ -23,6 +24,7 @@ export function YogaMeditationScreen({ section }: { section?: 'yoga' | 'meditati
   const router = useRouter();
   const colors = usePalette();
   const { t, language } = useTranslation();
+  const { user } = useAuth();
   const yoga = section === 'yoga';
   const { query, items } = useMeditationLibrary();
   const groups = new Map<string, MeditationItem[]>();
@@ -63,6 +65,7 @@ export function YogaMeditationScreen({ section }: { section?: 'yoga' | 'meditati
           <Text style={[typeStyles.body, { color: colors.muted }]}>{t(yoga ? 'Start with short, seated yoga sessions you can do with a sturdy chair.' : 'Choose a guided practice for breathing, focus, or a quieter evening.')}</Text>
         </View>
       </View>
+      {user && <Button title={t('Practice history')} variant="secondary" onPress={() => router.push('/practice-history')} />}
       {query.isPending && <Text style={typeStyles.body}>{t('Loading meditation library')}</Text>}
       {query.isError && <Button title={t('Retry library')} variant="secondary" onPress={() => void query.refetch()} />}
       {!query.isPending && !query.isError && !groups.size && !query.hasNextPage &&

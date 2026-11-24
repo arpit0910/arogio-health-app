@@ -1,5 +1,6 @@
 export type Exercise = {
   section?: string;
+  publishedVersion?: number;
   id: string;
   title: string;
   description: string;
