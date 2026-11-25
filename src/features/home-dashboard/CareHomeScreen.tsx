@@ -1,8 +1,8 @@
 import { AccessibleText as Text } from '../../components/ui/AccessibleText';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Image, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '../../components/ui/Button';
 import { AppScreen } from '../../components/app/AppScreen';
@@ -12,6 +12,7 @@ import { useAuth } from '../authentication/context/AuthContext';
 import { useWellness } from '../personal-wellness/WellnessContext';
 import { useHealthSync } from '../health-connections/HealthSyncProvider';
 import { AppSearchBar } from '../care-directory/CarePrimitives';
+import { detectDirectoryCity } from '../care-directory/useDirectoryLocation';
 import { usePalette } from '../../theme/AppearanceProvider';
 import { useTranslation } from '../../localization/LanguageProvider';
 import { fonts, typeStyles } from '../../theme/tokens';
@@ -41,7 +42,13 @@ export function HomeScreen() {
   const router = useRouter(), colors = usePalette(), { t } = useTranslation(), { user } = useAuth();
   const wellness = useWellness(), health = useHealthSync(), { fontScale } = useWindowDimensions();
   const [search, setSearch] = useState('');
-  const discovery = useQuery({ queryKey: ['home-discovery'], queryFn: ({ signal }) => loadDiscovery(signal), staleTime: 60000 });
+  const [city, setCity] = useState<string | null>(null);
+  useFocusEffect(useCallback(() => {
+    let active = true;
+    void detectDirectoryCity().catch(() => '').then(value => { if (active) setCity(value); });
+    return () => { active = false; };
+  }, []));
+  const discovery = useQuery({ queryKey: ['home-discovery', city], enabled: !!city, queryFn: ({ signal }) => loadDiscovery(signal, city ?? ''), staleTime: 60000 });
   const name = user?.fullName?.split(' ')[0] || user?.username;
   const tones = {
     mint: [colors.mintSurface, colors.primary], blue: [colors.secondarySurface, colors.secondary],
@@ -49,7 +56,7 @@ export function HomeScreen() {
     brand: [colors.primary, colors.onPrimary], neutral: [colors.subtle, colors.primary],
   };
   const find = () => router.navigate({ pathname: '/find-care', params: { search } });
-  return <AppScreen refreshing={wellness.loading || health.busy || discovery.isRefetching} onRefresh={() => void Promise.allSettled([wellness.refresh(), health.run(), discovery.refetch()])}>
+  return <AppScreen refreshing={wellness.loading || health.busy || discovery.isRefetching} onRefresh={() => void Promise.allSettled([wellness.refresh(), health.run(), ...(city ? [discovery.refetch()] : [])])}>
     <View style={s.page}>
       <View style={[s.welcome, { backgroundColor: colors.mintSurface }]}>
         <Text accessibilityRole="header" style={[s.welcomeTitle, { color: colors.ink }]}>
@@ -110,7 +117,7 @@ export function HomeScreen() {
           </TouchTarget>
         </View>
       </View>
-      <HomeCareDiscovery data={discovery.data} pending={discovery.isPending} error={discovery.isError} retry={() => void discovery.refetch()} />
+      {city ? <HomeCareDiscovery city={city} data={discovery.data} pending={discovery.isPending} error={discovery.isError} retry={() => void discovery.refetch()} /> : city === '' ? <Button title={t('Choose a city to find care')} variant="secondary" onPress={() => router.push('/find-care')} /> : null}
       <HomeGuides />
       <View style={[s.trust, { backgroundColor: colors.subtle }]}><View style={[s.trustIcon, { backgroundColor: colors.surface }]}><AppIcon name="shield" size={27} color={colors.primary} /></View><Text accessibilityRole="header" style={[typeStyles.title, { color: colors.ink, textAlign: 'center' }]}>{t('Arogio Healthcare Discovery')}</Text><Text style={[typeStyles.body, { textAlign: 'center', color: colors.muted }]}>{t('Contact the provider to confirm details before travelling.')}</Text><View style={s.trustFooter}><AppIcon name="check" size={15} color={colors.primary} /><Text style={[typeStyles.label, { color: colors.muted }]}>{t('Free care discovery')}</Text><AppIcon name="shield" size={15} color={colors.primary} /><Text style={[typeStyles.label, { color: colors.muted }]}>{t('Provider contact details')}</Text></View></View>
     </View>

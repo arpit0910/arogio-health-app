@@ -7,7 +7,6 @@ import {
   View,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import * as Location from "expo-location";
 import { AppScreen } from "../../components/app/AppScreen";
 import { AppIcon } from "../../components/app/AppIcon";
 import { CareDisclosure, useCareStyles } from "../../components/app/CareUI";
@@ -16,7 +15,8 @@ import { TouchTarget } from "../../components/ui/TouchTarget";
 import { usePalette } from "../../theme/AppearanceProvider";
 import { directoryDirections, publicApi as apiClient } from "../care-directory/api";
 import { bankListSchema, dialNumber, type Bank } from "../../services/api/healthResourcesApi";
-type Coordinates = { latitude: number; longitude: number; time: number };
+import { DirectoryLocationControl } from "../care-directory/DirectoryLocationControl";
+import { NEARBY_RADIUS_KM, useDirectoryLocation } from "../care-directory/useDirectoryLocation";
 export function EmergencyButton({ inline = false }: { inline?: boolean }) {
   const router = useRouter();
   const { t: tr } = useTranslation();
@@ -55,7 +55,7 @@ export function EmergencyButton({ inline = false }: { inline?: boolean }) {
   );
 }
 export function BloodBanksScreen() {
-  const { t: tr, language, locale } = useTranslation();
+  const { t: tr, language } = useTranslation();
   const [reportBank, setReportBank] = useState<string | null>(null), [reportText, setReportText] = useState(''), [reportStatus, setReportStatus] = useState(''), [sendingReport, setSendingReport] = useState(false);
   async function sendBankReport(id: string) {
     if (sendingReport) return;
@@ -66,100 +66,36 @@ export function BloodBanksScreen() {
   }
   const c = useCareStyles(),
     colors = usePalette(),
-    { nearby, search: initialSearch } = useLocalSearchParams<{ nearby?: string; search?: string }>();
+    { nearby, city: initialCity, search: initialSearch } = useLocalSearchParams<{ nearby?: string; city?: string; search?: string }>();
   const [search, setSearch] = useState(initialSearch ?? ""),
     [term, setTerm] = useState(initialSearch ?? ""),
-    [coords, setCoords] = useState<Coordinates | null>(null),
     [only24h, setOnly24h] = useState(false),
-    [radius, setRadius] = useState(50),
-    [page, setPage] = useState(1),
+    [radius, setRadius] = useState(NEARBY_RADIUS_KM),
     [revision, setRevision] = useState(0);
+  const area = useDirectoryLocation(nearby === "1", true, initialCity);
+  const { position: coords, city } = area;
+  const paginationKey = JSON.stringify([coords, city, term, only24h, radius]);
+  const [selection, setSelection] = useState({ key: paginationKey, page: 1 });
+  const page = paginationKey === selection.key ? selection.page : 1;
+  const setPage = (page: number) => setSelection({ key: paginationKey, page });
+  const canLoad = !area.locating && !!(coords || city || term);
   const hindi = language === 'hi';
-  const requestKey = JSON.stringify([
-    coords,
-    term,
-    only24h,
-    radius,
-    page,
-    revision,
-  ]);
+  const requestKey = JSON.stringify([paginationKey, page, revision]);
   const [response, setResponse] = useState<{
     key: string;
     data: ReturnType<typeof bankListSchema.parse> | null;
     error: string;
   } | null>(null);
-  const loading = response?.key !== requestKey,
-    result = loading ? null : response?.data,
-    error = loading ? "" : response?.error;
-  const [locating, setLocating] = useState(false),
-    [locationError, setLocationError] = useState("");
-  const alive = useRef(true),
-    locationLock = useRef(false),
-    started = useRef(false);
+  const loading = canLoad && response?.key !== requestKey,
+    result = canLoad && !loading ? response?.data : null,
+    error = canLoad && !loading ? response?.error : "";
+  const alive = useRef(true);
   useEffect(() => {
     alive.current = true;
-    return () => {
-      alive.current = false;
-    };
+    return () => { alive.current = false; };
   }, []);
-  async function locate() {
-    if (locationLock.current) return;
-    locationLock.current = true;
-    setLocating(true);
-    setLocationError("");
-    let timeout: ReturnType<typeof setTimeout> | undefined;
-    try {
-      const permission = await Location.requestForegroundPermissionsAsync();
-      if (!alive.current) return;
-      if (!permission.granted)
-        throw new Error(
-          "Location access is off. Search by city or pincode below, or enable location in your device settings.",
-        );
-      const location = await Promise.race([
-        Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
-        }),
-        new Promise<never>((_, reject) => {
-          timeout = setTimeout(
-            () =>
-              reject(
-                new Error(
-                  "Your location could not be found. Check device location services, retry, or search by city.",
-                ),
-              ),
-            20000,
-          );
-        }),
-      ]);
-      if (!alive.current) return;
-      setCoords({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        time: Date.now(),
-      });
-      setTerm("");
-      setSearch("");
-      setPage(1);
-    } catch (issue) {
-      if (alive.current)
-        setLocationError(
-          issue instanceof Error
-            ? issue.message
-            : "Location is unavailable. Search by city or pincode.",
-        );
-    } finally {
-      if (timeout) clearTimeout(timeout);
-      locationLock.current = false;
-      if (alive.current) setLocating(false);
-    }
-  }
   useEffect(() => {
-    if (nearby === "1" && !started.current) {
-      started.current = true;
-      void locate();
-    }
-  }, [nearby]);
-  useEffect(() => {
+    if (!canLoad) return;
     const controller = new AbortController();
     let current = true;
     const query = new URLSearchParams({
@@ -167,6 +103,7 @@ export function BloodBanksScreen() {
       search: term,
       only24h: String(only24h),
     });
+    if (city) query.set("city", city);
     void apiClient
       .request({
         path: coords ? "/public/blood-banks/nearby" : `/public/blood-banks?${query}`,
@@ -176,6 +113,7 @@ export function BloodBanksScreen() {
               latitude: coords.latitude,
               longitude: coords.longitude,
               radiusKm: radius,
+              search: term,
               page,
               only24h,
             }
@@ -199,7 +137,7 @@ export function BloodBanksScreen() {
       current = false;
       controller.abort();
     };
-  }, [coords, term, only24h, radius, page, revision, requestKey]);
+  }, [canLoad, city, coords, term, only24h, radius, page, requestKey]);
   const [actionError, setActionError] = useState<string | null>(null);
   async function open(url: string, bankId: string) {
     setActionError(null);
@@ -287,44 +225,23 @@ export function BloodBanksScreen() {
     <AppScreen
       title={tr("Blood banks")}
       back
-      onRefresh={() => setRevision((value) => value + 1)}
+      onRefresh={canLoad ? () => setRevision((value) => value + 1) : undefined}
       refreshing={loading && !!response?.data}
     >
       <View style={{ gap: 16 }}>
         <Text style={c.heading}>{tr("Find a blood bank near you")}</Text>
         <Text style={c.text}>
           {tr("Find contact details and directions. This directory does not show live blood stock or provide emergency dispatch.")}</Text>
-        <Button
-          title={tr(coords ? "Update my location" : "Find near me")}
-          loading={locating}
-          leading={
-            <AppIcon name="location" color={colors.onPrimary} size={20} />
-          }
-          onPress={() => void locate()}
-        />
-        <Text style={c.text}>
-          {tr(coords
-            ? `Location checked ${new Date(coords.time).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}. Distances are straight-line, not travel distance.`
-            : "Location is used for this search only and is not saved. You can also search without sharing it.")}
-        </Text>
-        {!!locationError && (
-          <Text
-            accessibilityRole="alert"
-            style={[c.text, { color: colors.error }]}
-          >
-            {locationError}
-          </Text>
-        )}
+        <DirectoryLocationControl area={area} radiusKm={radius} />
         <View style={{ gap: 16 }}>
         <TextInput
-          accessibilityLabel={tr("City, pincode or blood-bank name")}
-          placeholder={tr("City, pincode or bank name")}
+          accessibilityLabel={tr("Pincode or blood-bank name")}
+          placeholder={tr("Pincode or bank name")}
           placeholderTextColor={colors.placeholder}
           value={search}
           onChangeText={setSearch}
           maxLength={150}
           onSubmitEditing={() => {
-            setCoords(null);
             setTerm(search.trim());
             setPage(1);
           }}
@@ -341,7 +258,6 @@ export function BloodBanksScreen() {
           title={tr("Search directory")}
           variant="secondary"
           onPress={() => {
-            setCoords(null);
             setTerm(search.trim());
             setPage(1);
           }}
@@ -397,7 +313,7 @@ export function BloodBanksScreen() {
                   ? "Nearest listings"
                   : term
                     ? `Results for ${term}`
-                    : "Blood-bank directory")}
+                    : city || "Blood-bank directory")}
               </Text>
               {result.items.length ? (
                 result.items.map(bankRow)
@@ -405,7 +321,7 @@ export function BloodBanksScreen() {
                 <Text style={c.text}>
                   {tr(coords
                     ? "No banks found in this radius. Expand the radius or search by city."
-                    : "No matching banks. Clear the search and filters, or pull to refresh after the directory is updated.")}
+                    : "No matching banks. Try another city, search, or filter.")}
                 </Text>
               )}
               {(page > 1 || result.hasNext) && <View style={{ gap: 12 }}>

@@ -6,6 +6,7 @@ import android.util.Base64
 import java.io.ByteArrayOutputStream
 import android.content.Intent
 import android.content.pm.PackageManager
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -14,17 +15,26 @@ class HealthSourcesModule : Module() {
     Name("ArogioHealthSources")
     AsyncFunction("startPhoneSteps") { owner: String, initial: Map<String, Int> ->
       val context = appContext.reactContext ?: throw IllegalStateException("App context unavailable")
+      if (!PhoneStepsService.canCount(context)) throw SecurityException("Physical activity access is required")
       val sensors = context.getSystemService(android.content.Context.SENSOR_SERVICE) as android.hardware.SensorManager
       if (sensors.getDefaultSensor(android.hardware.Sensor.TYPE_STEP_COUNTER) == null) throw IllegalStateException("No cumulative step sensor available")
       val prefs = PhoneStepsService.preferences(context)
       val continuing = prefs.getBoolean("enabled", false) && prefs.getString("owner", null) == owner
+      if (continuing && PhoneStepsService.isRunning(owner)) return@AsyncFunction
       val edit = prefs.edit().putString("owner", owner).putBoolean("enabled", true)
       if (!prefs.contains("totals.$owner")) edit.putString("totals.$owner", org.json.JSONObject(initial).toString())
       if (!continuing) edit.remove("counter").remove("boot").remove("day")
       edit.commit()
       try { context.startForegroundService(Intent(context, PhoneStepsService::class.java)) }
       catch (error: Exception) { prefs.edit().putBoolean("enabled", false).commit(); throw error }
-    }
+      Unit
+    }.runOnQueue(Queues.MAIN)
+    AsyncFunction("isPhoneStepsRunning") { owner: String ->
+      val context = appContext.reactContext ?: throw IllegalStateException("App context unavailable")
+      val prefs = PhoneStepsService.preferences(context)
+      PhoneStepsService.canCount(context) && prefs.getBoolean("enabled", false) &&
+        prefs.getString("owner", null) == owner && PhoneStepsService.isRunning(owner)
+    }.runOnQueue(Queues.MAIN)
     AsyncFunction("stopPhoneSteps") { owner: String, clear: Boolean ->
       val context = appContext.reactContext ?: throw IllegalStateException("App context unavailable")
       val prefs = PhoneStepsService.preferences(context)
@@ -33,7 +43,7 @@ class HealthSourcesModule : Module() {
         context.stopService(Intent(context, PhoneStepsService::class.java))
       }
       if (clear) prefs.edit().remove("totals.$owner").commit()
-    }
+    }.runOnQueue(Queues.MAIN)
     AsyncFunction("phoneStepTotals") { owner: String ->
       val context = appContext.reactContext ?: throw IllegalStateException("App context unavailable")
       PhoneStepsService.totals(context, owner)

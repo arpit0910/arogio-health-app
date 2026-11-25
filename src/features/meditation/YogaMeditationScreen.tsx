@@ -1,91 +1,68 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
-import { AppIcon } from '../../components/app/AppIcon';
+import { ActivityIndicator, View } from 'react-native';
 import { AppScreen } from '../../components/app/AppScreen';
-import { CareGroup, CareRow } from '../../components/app/CareUI';
 import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { Button } from '../../components/ui/Button';
 import { useTranslation } from '../../localization/LanguageProvider';
 import { usePalette } from '../../theme/AppearanceProvider';
 import { typeStyles } from '../../theme/tokens';
-import { clockTime, exerciseDuration } from './exercises';
-
 import { useAuth } from '../authentication/context/AuthContext';
-import { catalogExercise, type MeditationItem } from './catalog';
+import { type MeditationItem } from './catalog';
 import { useMeditationLibrary } from './useMeditationLibrary';
+import { catalogCard, PracticeCardRow, type PracticeCardItem } from './PracticeCards';
 
-const sectionTitles: Record<MeditationItem['section'], string> = {
-  breathing: 'Quick reset', grounding: 'Quick reset', focus: 'Focus & awareness',
-  meditation: 'Focus & awareness', rest: 'Rest & reflection', yoga: 'Seated yoga sessions',
-  affirmations: 'Affirmations',
-};
+const groups = [
+  { title: 'Yoga postures & sessions', sections: ['yoga'] },
+  { title: 'Breathing & grounding', sections: ['breathing', 'grounding'] },
+  { title: 'Focus & awareness', sections: ['meditation', 'focus'] },
+  { title: 'Rest & reflection', sections: ['rest'] },
+  { title: 'Affirmations', sections: ['affirmations'] },
+] as { title: string; sections: MeditationItem['section'][] }[];
 
 export function YogaMeditationScreen({ section }: { section?: 'yoga' | 'meditation' }) {
-  const router = useRouter();
-  const colors = usePalette();
-  const { t, language } = useTranslation();
-  const { user } = useAuth();
-  const yoga = section === 'yoga';
-  const { query, items } = useMeditationLibrary();
-  const groups = new Map<string, MeditationItem[]>();
-  for (const item of items) {
-    if (item.kind !== 'practice' || (item.section === 'yoga') !== yoga) continue;
-    const title = sectionTitles[item.section];
-    const group = groups.get(title) ?? [];
-    group.push(item);
-    groups.set(title, group);
+  const router = useRouter(), colors = usePalette(), { t, language } = useTranslation(), { user } = useAuth();
+  const { query, items } = useMeditationLibrary(section === 'yoga' ? 'yoga' : undefined);
+  const yogaPreview = useMeditationLibrary('yoga', !section);
+  const heading = !section ? 'Yoga & Meditation' : section === 'yoga' ? 'Yoga' : 'Meditation';
+  const yoga = (!section && yogaPreview.query.data ? yogaPreview.items : items).filter(item => item.section === 'yoga');
+  const meditation = items.filter(item => item.section !== 'yoga');
+  const visible = section === 'yoga' ? yoga : section === 'meditation' ? meditation : items;
+  const cards = (entries: MeditationItem[]) => entries.map(item => catalogCard(item, language === 'hi', t('Video')));
+  function open(item: PracticeCardItem) {
+    if (item.videoId) {
+      router.push({ pathname: '/meditation-video', params: { id: item.videoId, contentId: item.id, title: item.title, section: item.section } });
+      return;
+    }
+    router.push({ pathname: '/meditation', params: { practice: item.id, origin: section ?? 'library' } });
   }
-
-  if (!section) return (
-    <AppScreen back title={t('Yoga & Meditation')}>
-      <View style={{ gap: 16 }}>
-        <Text accessibilityRole="header" style={[typeStyles.heading, { color: colors.ink }]}>{t('Choose a practice')}</Text>
-        <View style={{ padding: 20, gap: 12, borderRadius: 24, backgroundColor: colors.mintSurface }}>
-          <AppIcon name="leaf" size={27} color={colors.primaryPressed} />
-          <Text style={[typeStyles.title, { color: colors.ink }]}>{t('Yoga')}</Text>
-          <Text style={[typeStyles.body, { color: colors.muted }]}>{t('Start with short, seated yoga sessions you can do with a sturdy chair.')}</Text>
-          <Button title={t('Browse yoga')} onPress={() => router.push('/yoga')} />
-        </View>
-        <View style={{ padding: 20, gap: 12, borderRadius: 24, backgroundColor: colors.secondarySurface }}>
-          <AppIcon name="moon" size={27} color={colors.secondary} />
-          <Text style={[typeStyles.title, { color: colors.ink }]}>{t('Meditation')}</Text>
-          <Text style={[typeStyles.body, { color: colors.muted }]}>{t('Choose a guided practice for breathing, focus, or a quieter evening.')}</Text>
-          <Button title={t('Browse meditation')} variant="secondary" onPress={() => router.push('/guided-meditation')} />
-        </View>
-      </View>
-    </AppScreen>
-  );
-
-  return (
-    <AppScreen back title={t(yoga ? 'Yoga' : 'Meditation')} refreshing={query.isRefetching && !query.isFetchingNextPage} onRefresh={() => void query.refetch()}>
-      <View style={{ gap: 16 }}>
-        <View style={{ borderRadius: 24, padding: 22, gap: 10, backgroundColor: yoga ? colors.mintSurface : colors.secondarySurface }}>
-          <AppIcon name={yoga ? 'leaf' : 'moon'} size={28} color={colors.primaryPressed} />
-          <Text accessibilityRole="header" style={[typeStyles.heading, { color: colors.ink }]}>{t(yoga ? 'Move at your own pace' : 'Make time for a short reset')}</Text>
-          <Text style={[typeStyles.body, { color: colors.muted }]}>{t(yoga ? 'Start with short, seated yoga sessions you can do with a sturdy chair.' : 'Choose a guided practice for breathing, focus, or a quieter evening.')}</Text>
-        </View>
-      </View>
-      {user && <Button title={t('Practice history')} variant="secondary" onPress={() => router.push('/practice-history')} />}
-      {query.isPending && <Text style={typeStyles.body}>{t('Loading meditation library')}</Text>}
-      {query.isError && <Button title={t('Retry library')} variant="secondary" onPress={() => void query.refetch()} />}
-      {!query.isPending && !query.isError && !groups.size && !query.hasNextPage &&
-        <Text style={typeStyles.body}>{t('New practices and videos will appear here when published.')}</Text>}
-      {Array.from(groups, ([title, group]) => (
-        <CareGroup key={title} title={t(title)}>
-          {group.map(item => {
-            const exercise = catalogExercise(item, language === 'hi');
-            return <CareRow key={item.id} icon={yoga ? 'leaf' : 'clock'} title={exercise.title}
-              detail={[clockTime(exerciseDuration(exercise)), exercise.description].filter(Boolean).join(' \u00b7 ')}
-              onPress={() => router.navigate({ pathname: '/meditation', params: { practice: item.id, origin: section } })} />;
-          })}
-        </CareGroup>
-      ))}
-      {query.hasNextPage && <Button title={t('More practices & videos')} variant="secondary"
-        loading={query.isFetchingNextPage} onPress={() => { if (!query.isFetching) void query.fetchNextPage({ cancelRefetch: false }); }} />}
-      {!yoga && <View style={{ marginTop: 20, gap: 12 }}>
-        <Button title={t('Browse guided collections')} variant="secondary" onPress={() => router.push('/wellness-collections')} />
-        <Button title={t('Open Calm Zone')} variant="secondary" onPress={() => router.navigate('/meditation')} />
+  const intro = !section ? 'Choose a yoga or meditation session.' : section === 'yoga'
+    ? 'Explore seated, standing, and floor postures or choose a guided yoga session.'
+    : 'Choose a guided practice for breathing, focus, or a quieter evening.';
+  return <AppScreen back title={t(heading)}
+    refreshing={(query.isRefetching && !query.isFetchingNextPage) || (!section && yogaPreview.query.isRefetching)}
+    onRefresh={() => { void query.refetch(); if (!section) void yogaPreview.query.refetch(); }}>
+    <View style={{ gap: 24 }}>
+      <Text style={[typeStyles.body, { color: colors.muted }]}>{t(intro)}</Text>
+      {query.isPending && <ActivityIndicator color={colors.primary} accessibilityLabel={t('Loading meditation library')} />}
+      {query.isError && !query.data && <View style={{ gap: 12 }}>
+        <Text accessibilityRole="alert" style={[typeStyles.body, { color: colors.ink }]}>{t('The library could not refresh. Try again when you are online.')}</Text>
+        <Button title={t('Retry library')} onPress={() => void query.refetch()} />
       </View>}
-    </AppScreen>
-  );
+      {!query.isPending && query.data && !(section ? visible.length : yoga.length + meditation.length) && !query.hasNextPage &&
+        <Text style={[typeStyles.body, { color: colors.muted }]}>{t('New practices and videos will appear here when published.')}</Text>}
+      {section ? groups.map(group => (
+        <PracticeCardRow key={group.title} title={t(group.title)} items={cards(visible.filter(item => group.sections.includes(item.section)))} onOpen={open} />
+      )) : <>
+        <PracticeCardRow title={t('Yoga')} items={cards(yoga.slice(0, 5))} onOpen={open} browseLabel={t('Browse yoga')} onBrowse={() => router.push('/yoga')} />
+        <PracticeCardRow title={t('Meditation')} items={cards(meditation.slice(0, 5))} onOpen={open} browseLabel={t('Browse meditation')} onBrowse={() => router.push('/guided-meditation')} />
+      </>}
+      {query.hasNextPage && <Button title={t(query.isFetchNextPageError ? 'Retry library' : 'More practices & videos')} variant="secondary"
+        loading={query.isFetchingNextPage} onPress={() => { if (!query.isFetching) void query.fetchNextPage({ cancelRefetch: false }); }} />}
+      {!section && !yoga.length && <Button title={t('Browse yoga')} variant="secondary" onPress={() => router.push('/yoga')} />}
+      {!section && !meditation.length && <Button title={t('Browse meditation')} variant="secondary" onPress={() => router.push('/guided-meditation')} />}
+      {section !== 'yoga' && <Button title={t('Browse guided collections')} variant="secondary" onPress={() => router.push('/wellness-collections')} />}
+      {section === 'meditation' && <Button title={t('Open Calm Zone')} variant="secondary" onPress={() => router.navigate('/meditation')} />}
+      {user && <Button title={t('Practice history')} variant="secondary" onPress={() => router.push('/practice-history')} />}
+    </View>
+  </AppScreen>;
 }

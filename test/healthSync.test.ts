@@ -7,6 +7,7 @@ import {
   metricAverage,
   readHealthSnapshot,
   mergeHealthSnapshot,
+  mergeCurrentHealthSnapshot,
   permittedSnapshot,
   type HealthSnapshot,
   type HealthReader,
@@ -27,16 +28,30 @@ describe('Device-only health analytics', () => {
     assert.equal(previous.days[0].readings.Steps?.checkedAt, undefined);
   });
   const now = new Date('2026-10-28T18:40:00Z');
-  it('uses seven IST day windows, including a partial current day', () => {
+  it('uses thirty IST day windows, including a partial current day', () => {
     const ranges = healthDayRanges(now);
-    assert.equal(ranges.length, 7);
-    assert.equal(ranges[0].day, '2026-10-23');
-    assert.equal(ranges[0].start, '2026-10-22T18:30:00.000Z');
-    assert.equal(ranges[6].day, '2026-10-29');
-    assert.equal(ranges[6].end, now.toISOString());
+    assert.equal(ranges.length, 30);
+    assert.equal(ranges[0].day, '2026-09-30');
+    assert.equal(ranges[0].start, '2026-09-29T18:30:00.000Z');
+    assert.equal(ranges.at(-1)?.day, '2026-10-29');
+    assert.equal(ranges.at(-1)?.end, now.toISOString());
     ranges
       .slice(1)
       .forEach((range, index) => assert.equal(ranges[index].end, range.start));
+  });
+  it('publishes fresh steps without replacing completed days or pulling values from another source', () => {
+    const previous: HealthSnapshot = { source: 'example.source', syncedAt: '2026-10-28T16:00:00.000Z',
+      granted: ['Steps'], failed: [], latestWeight: null, days: [
+        { day: '2026-10-28', readings: { Steps: { value: 4000, sources: ['example.source'] } } },
+      ] };
+    const next: HealthSnapshot = { ...previous, syncedAt: now.toISOString(), days: [
+      { day: '2026-10-29', readings: { Steps: { value: 34, sources: ['example.source'] } } },
+    ] };
+    const merged = mergeCurrentHealthSnapshot(previous, next);
+    assert.equal(merged.days.length, 30);
+    assert.equal(merged.days.at(-2)?.readings.Steps?.value, 4000);
+    assert.equal(merged.days.at(-1)?.readings.Steps?.value, 34);
+    assert.equal(mergeCurrentHealthSnapshot(previous, { ...next, source: 'other.source' }).days.at(-2)?.readings.Steps, undefined);
   });
   it('checks granted access on every sync and never reads denied types', async () => {
     let permission = true;
@@ -53,7 +68,7 @@ describe('Device-only health analytics', () => {
     };
     const first = await readHealthSnapshot(reader, ['Steps', 'Weight'], now);
     assert.deepEqual(first.granted, ['Steps']);
-    assert.equal(calls.length, 7);
+    assert.equal(calls.length, 30);
     assert.ok(calls.every((metric) => metric === 'Steps'));
     permission = false;
     const revoked = await readHealthSnapshot(reader, ['Steps', 'Weight'], now);
@@ -61,7 +76,7 @@ describe('Device-only health analytics', () => {
     assert.ok(
       revoked.days.every((day) => Object.keys(day.readings).length === 0),
     );
-    assert.equal(calls.length, 7);
+    assert.equal(calls.length, 30);
   });
   it('preserves partial failures and missing readings instead of inventing zeros', async () => {
     const reader: HealthReader = {

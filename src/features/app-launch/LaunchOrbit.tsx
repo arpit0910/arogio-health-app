@@ -26,6 +26,7 @@ export function LaunchLeaf({ size = 90, color = '#42CDA2' }: { size?: number; co
 export function LaunchOrbit({ step, size, motion }: { step: number; size: number; motion: boolean }) {
   const c = usePalette(), { t } = useTranslation();
   const geometry = orbitGeometry(size);
+  const compact = size < 300;
   const [turn] = useState(() => new Animated.Value(0)), [float] = useState(() => new Animated.Value(0));
   useEffect(() => {
     if (!motion) { turn.setValue(0); float.setValue(0); return; }
@@ -59,7 +60,24 @@ export function LaunchOrbit({ step, size, motion }: { step: number; size: number
     </View>
     {cards.map((card, index) => {
       const path = spiralMotion(size, card.phase);
-      return <Animated.View key={card.title} style={[s.card, { left: (size - geometry.cardWidth) / 2, top: (geometry.height - geometry.cardHeight) / 2, width: geometry.cardWidth, height: geometry.cardHeight, backgroundColor: c.surface, borderColor: c.mintSurface, transform: [{ translateX: turn.interpolate({ inputRange: path.inputRange, outputRange: path.x }) }, { translateY: turn.interpolate({ inputRange: path.inputRange, outputRange: path.y }) }] }]}><View style={[s.cardIcon, { backgroundColor: c.subtle }]}><FigmaAsset screen={step === 1 ? "3:542" : "3:842"} name={step === 1 ? ["imgSvgDoctorStethoscopeIcon", "imgSvgHospitalBedIcon", "imgSvgAmbulanceSirenIcon"][index] : ["imgSvg3", "imgSvg4", "imgSvg5"][index]} width={14} height={14} /></View><View style={s.copy}><Text numberOfLines={1} maxFontSizeMultiplier={1} style={[s.cardTitle, { color: c.ink }]}>{t(card.title)}</Text><Text numberOfLines={1} maxFontSizeMultiplier={1} style={[s.cardDetail, { color: c.muted }]}>{t(card.detail)}</Text></View></Animated.View>;
+      return <Animated.View key={card.title} style={[s.card, compact && s.compactCard, {
+        left: (size - geometry.cardWidth) / 2, top: (geometry.height - geometry.cardHeight) / 2,
+        width: geometry.cardWidth, height: geometry.cardHeight, backgroundColor: c.surface, borderColor: c.mintSurface,
+        transform: [
+          { translateX: turn.interpolate({ inputRange: path.inputRange, outputRange: path.x }) },
+          { translateY: turn.interpolate({ inputRange: path.inputRange, outputRange: path.y }) },
+        ],
+      }]}>
+        <View style={[s.cardIcon, compact && s.compactIcon, { backgroundColor: c.subtle }]}>
+          <FigmaAsset screen={step === 1 ? '3:542' : '3:842'} name={step === 1
+            ? ['imgSvgDoctorStethoscopeIcon', 'imgSvgHospitalBedIcon', 'imgSvgAmbulanceSirenIcon'][index]
+            : ['imgSvg3', 'imgSvg4', 'imgSvg5'][index]} width={14} height={14} />
+        </View>
+        <View style={s.copy}>
+          <Text numberOfLines={1} maxFontSizeMultiplier={1} style={[s.cardTitle, { color: c.ink }]}>{t(card.title)}</Text>
+          {!compact && <Text numberOfLines={1} maxFontSizeMultiplier={1} style={[s.cardDetail, { color: c.muted }]}>{t(card.detail)}</Text>}
+        </View>
+      </Animated.View>;
     })}
   </View>;
 }
@@ -73,5 +91,7 @@ const s = StyleSheet.create({
   centerLabel: { fontFamily: fonts.bold, fontSize: 9, lineHeight: 14, letterSpacing: 0.2 },
   card: { position: 'absolute', padding: 5, borderWidth: 1, borderRadius: 12, flexDirection: 'row', alignItems: 'center', gap: 4 },
   cardIcon: { width: 18, height: 24, alignItems: 'center', justifyContent: 'center', borderRadius: 7 }, copy: { flex: 1, minWidth: 0 },
+  compactCard: { paddingHorizontal: 4, gap: 3 },
+  compactIcon: { width: 14, height: 18 },
   cardTitle: { fontFamily: fonts.semibold, fontSize: 9, lineHeight: 13 }, cardDetail: { fontFamily: fonts.regular, fontSize: 8, lineHeight: 11 },
 });

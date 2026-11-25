@@ -42,6 +42,7 @@ const profileSchema = z.object({
   website: z.string().nullable().optional(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
+  distanceKm: z.number().nonnegative().nullable().optional(),
   summary_en: z.string(),
   summary_hi: z.string(),
   image_url: z.string().nullable(),
@@ -124,6 +125,7 @@ export function adaptProvider(
     name: row.name_en,
     nameHi: row.name_hi,
     city: row.city,
+    distanceKm: row.distanceKm,
     address,
     addressHi: hindiAddress ? [...new Set([hindiAddress, ...locality])].join(", ") : "",
     mapAddress: street.length ? address : hindiAddress ? [hindiAddress, ...locality].join(", ") : "",
@@ -179,6 +181,7 @@ export type ProviderFilters = {
   city?: string;
   language?: "en" | "hi";
   limit?: number;
+  location?: { latitude: number; longitude: number; radiusKm: number };
 };
 export async function loadProviderPage(
   kind: CareKind,
@@ -196,11 +199,15 @@ export async function loadProviderPage(
     return carePageSchema.parse(
       await publicApi.request({ path: `/care?kind=${kind}&${params}`, signal }),
     );
-  for (const [key, value] of Object.entries(filters))
+  const { location, ...directoryFilters } = filters;
+  for (const [key, value] of Object.entries(directoryFilters))
     if (value !== undefined) params.set(key, String(value));
+  const directory = `/public/${kind === 'doctor' ? 'doctors' : 'hospitals'}`;
   const data = pageSchema.parse(
     await publicApi.request({
-      path: `/public/${kind === "doctor" ? "doctors" : "hospitals"}?${params}`,
+      path: location ? `${directory}/nearby` : `${directory}?${params}`,
+      method: location ? 'POST' : 'GET',
+      body: location ? { ...directoryFilters, search, page, location } : undefined,
       signal,
     }),
   );

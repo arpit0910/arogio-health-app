@@ -87,7 +87,7 @@ const fixtures = [
   category_hi: "",
   reading_minutes_en: [5, 4, 6, 3, 4, 7][i],
   thumbnail_url: "",
-  image_url: "",
+  image_url: ["ayurveda-feature", "nutrition-meal", "cardiac-sleep", "ayurvedic-kadha", "herbal-hydration", "thyroid-diagnostics"][i],
   author_name: i === 2 ? "Dr. Rohan Mehta, DM (Cardio)" : "Arogio editorial",
   created_at: "2026-11-15T00:00:00Z",
 }));
@@ -138,7 +138,13 @@ Module._load = function (request, parent, ...rest) {
       }),
     };
   if (request === "expo-router")
-    return { useRouter: () => ({ push() {}, navigate() {} }) };
+    return { useLocalSearchParams: () => ({}), useRouter: () => ({ push() {}, navigate() {} }) };
+  if (request === "./ArticleThumbnail" && parent?.filename.includes("ArticlesLibraryContent")) {
+    const { Image } = require("react-native-web");
+    return { ArticleThumbnail: ({ imageUrl, style }) => React.createElement(Image, {
+      source: require(path.join(root, "assets/articles/library", imageUrl + ".jpg")), style, resizeMode: "cover",
+    }) };
+  }
   if (request === "react-native-safe-area-context")
     return {
       useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),

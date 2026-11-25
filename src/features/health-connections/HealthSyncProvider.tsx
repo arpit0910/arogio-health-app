@@ -7,9 +7,10 @@ import { installedHealthApps } from './healthApps';
 import { cacheHealthSnapshot, cachedBackgroundHealth, startBackgroundHealth, stopBackgroundHealth } from './backgroundHealth';
 import { restoreHealthPreference, isHealthApp, type HealthApp, type HealthPreference } from './connection';
 import type { HealthAvailability, HealthMetric, HealthSnapshot } from './model';
-import { mergeHealthSnapshot, permittedSnapshot } from './model';
+import { mergeCurrentHealthSnapshot, mergeHealthSnapshot, permittedSnapshot } from './model';
 
 export const HEALTH_REFRESH_MS = 30 * 1000;
+const HISTORY_REFRESH_MS = 5 * 60 * 1000;
 type HealthState = {
   enabled: boolean;
   availability: HealthAvailability | null;
@@ -55,11 +56,13 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
   const [background, setBackground] = useState(false);
   const [preferences, setPreferences] = useState(() => restoreHealthPreference(null));
   const [apps, setApps] = useState<HealthApp[]>([]);
+  const lastDiscovered = useRef<HealthApp[]>([]);
   const [appsLoading, setAppsLoading] = useState(false);
   const [appsError, setAppsError] = useState('');
   const preference = useRef(preferences);
   const lock = useRef(false), mounted = useRef(true), revision = useRef(0), initialized = useRef(false), appsRequest = useRef(0);
   const pendingRefresh = useRef(false);
+  const historyCheckedAt = useRef(0);
   const key = `arogio.health.${account?.replace(/[^a-zA-Z0-9._-]/g, '_') ?? 'none'}`;
   function apply(next: HealthPreference) {
     preference.current = next;
@@ -74,7 +77,10 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     setAppsLoading(true); setAppsError('');
     try {
       const installed = (await installedHealthApps()).filter(isHealthApp);
-      if (mounted.current && request === appsRequest.current) setApps(installed);
+      if (mounted.current && request === appsRequest.current) {
+        lastDiscovered.current = installed;
+        setApps(installed);
+      }
       return installed;
     } catch {
       if (mounted.current && request === appsRequest.current) {
@@ -84,7 +90,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
       return [];
     } finally { if (mounted.current && request === appsRequest.current) setAppsLoading(false); }
   }
-  async function readCurrent(request: number) {
+  async function readCurrent(request: number, refreshHistory: boolean) {
     const pref = preference.current;
     const source = pref.source;
     const valid = () => mounted.current && revision.current === request && preference.current.source?.id === source?.id && preference.current.enabled && AppState.currentState === 'active';
@@ -93,18 +99,8 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     if (!valid()) return;
     setAvailability(status);
     if (status !== 'available') { setConnected(false); publishSnapshot(null); return; }
-    // Discovery is a convenience, not permission to read. An unavailable
-    // discovery bridge must not block an already selected Health Connect source.
-    const installed = await installedHealthApps().catch(() => null);
-    if (!valid()) return;
-    if (installed) setApps(installed.filter(isHealthApp));
-    if (installed && !installed.some((app) => app.id === source.id && app.supportsHealthConnect !== false)) {
-      setConnected(false); publishSnapshot(null); setBackground(false);
-      await stopBackgroundHealth();
-      if (valid()) setError(`${source.name} is unavailable. Choose another app in Settings > Connected health.`);
-      return;
-    }
-    const capabilities = installed?.find(app => app.id === source.id)?.metrics;
+    // Health Connect retains records even when the writer is unavailable.
+    const capabilities = lastDiscovered.current.find(app => app.id === source.id)?.metrics;
     const selected = capabilities ? pref.selected.filter(metric => capabilities.includes(metric)) : pref.selected;
     if (!selected.length) {
       setConnected(false); publishSnapshot(null); setBackground(false);
@@ -124,21 +120,29 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
       if (valid()) setError('Health access is off. Manage access in Settings > Connected health.');
       return;
     }
-    if (pref.background) {
-      const enabled = await startBackgroundHealth(account!, selected, source.id, () => valid() && preference.current.background).catch(() => false);
-      if (!valid()) return;
-      setBackground(enabled);
-    }
+    const today = await syncHealth(selected, source.id, 1);
+    if (!valid() || today.source !== source.id) return;
+    publishSnapshot(current => mergeCurrentHealthSnapshot(current, today));
+    setConnected(today.granted.length > 0);
+    if (today.failed.length) setError('Some health readings could not refresh. Previous values keep their earlier check time. Pull down to retry.');
+    if (!today.granted.length) return;
+    if (Date.now() - historyCheckedAt.current < HISTORY_REFRESH_MS && !refreshHistory) return;
+    historyCheckedAt.current = Date.now();
     const next = await syncHealth(selected, source.id);
     if (!valid() || next.source !== source.id) return;
-    const merged = mergeHealthSnapshot(permittedSnapshot(snapshotRef.current, allowed), next);
-    publishSnapshot(merged); setConnected(next.granted.length > 0);
-    if (next.failed.length) setError('Some health readings could not refresh. Previous values keep their earlier check time. Pull down to retry.');
-    await cacheHealthSnapshot(account!, source.id, merged, valid).catch(() => {
+    const merged = mergeHealthSnapshot(snapshotRef.current, next);
+    publishSnapshot(merged);
+    setConnected(next.granted.length > 0);
+    setError(next.failed.length ? 'Some health readings could not refresh. Previous values keep their earlier check time. Pull down to retry.' : '');
+    void cacheHealthSnapshot(account!, source.id, merged, valid).catch(() => {
       if (valid()) setError('Readings refreshed, but could not be saved on this device. Pull down to retry.');
     });
+    if (pref.background && next.granted.length) {
+      const enabled = await startBackgroundHealth(account!, selected, source.id, () => valid() && preference.current.background).catch(() => false);
+      if (valid()) setBackground(enabled);
+    }
   }
-  async function run() {
+  async function run(refreshHistory = true) {
     if (!account || !initialized.current) return;
     if (lock.current) { pendingRefresh.current = true; return; }
     if (!preference.current.enabled || !preference.current.source) return;
@@ -146,7 +150,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
     lock.current = true;
     const request = ++revision.current;
     setBusy(true); setError('');
-    try { await readCurrent(request); }
+    try { await readCurrent(request, refreshHistory); }
     catch {
       if (mounted.current && request === revision.current) {
         // Retain the last successful reading and its timestamp during transient failures.
@@ -199,7 +203,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
         }
       } catch { /* Foreground polling and resume refresh remain available. */ }
       if (!valid()) return false;
-      await readCurrent(request);
+      await readCurrent(request, true);
       return valid();
     } catch {
       if (valid()) setError('This health app could not connect. Check that it is installed and sharing data with Health Connect, then try again.');
@@ -248,7 +252,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
         const status = await healthAvailability();
         if (!mounted.current) return;
         setAvailability(status);
-        if (Platform.OS === 'android') await actions.current.refreshApps();
+        if (Platform.OS === 'android') void actions.current.refreshApps();
         if (mounted.current) await actions.current.run();
       } catch {
         if (mounted.current) {
@@ -260,7 +264,7 @@ function HealthSession({ account, children }: PropsWithChildren<{ account: strin
       } finally { if (mounted.current) setReady(true); }
     }
     void restore();
-    const timer = setInterval(() => { if (AppState.currentState === 'active') void actions.current.run(); }, HEALTH_REFRESH_MS);
+    const timer = setInterval(() => { if (AppState.currentState === 'active' && !lock.current) void actions.current.run(false); }, HEALTH_REFRESH_MS);
     const listener = AppState.addEventListener('change', (state) => {
       if (state === 'active') { void actions.current.refreshApps(); void actions.current.run(); }
 

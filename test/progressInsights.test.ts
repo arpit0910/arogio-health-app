@@ -21,7 +21,7 @@ it('sorts comparisons, excludes future or invalid readings and avoids invented g
 });
 it('retains successful daily buckets when one native read fails, and merges only the failed cell', async () => {
   const next = await readHealthSnapshot({ granted: async () => ['Steps'], aggregate: async () => { throw new Error('unused'); }, latestWeight: async () => null,
-    aggregateDays: async () => Array.from({ length: 7 }, (_, i) => i === 6 ? undefined : { value: 1000, sources: ['example.app'] }) }, ['Steps'], new Date('2026-11-10T06:00:00Z'), 'example.app');
+    aggregateDays: async (_, ranges) => ranges.map((_, i) => i === ranges.length - 1 ? undefined : { value: 1000, sources: ['example.app'] }) }, ['Steps'], new Date('2026-11-10T06:00:00Z'), 'example.app');
   assert.deepEqual(next.failed, ['Steps']);
   const merged = mergeHealthSnapshot(snapshot, next);
   assert.equal(merged.days.at(-1)?.readings.Steps?.value, 4000);

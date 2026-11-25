@@ -10,6 +10,7 @@ export async function connectHealth(
 export async function syncHealth(
   _metrics: HealthMetric[],
   _source: string,
+  _dayCount?: number,
 ): Promise<HealthSnapshot> {
   throw new Error('Health Connect is available in the Android app.');
 }

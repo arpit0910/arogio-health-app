@@ -21,20 +21,23 @@ export function HealthChart({ snapshot, metric, emptyMessage: _emptyMessage, sel
   if (!finite.length) return null;
   const max = Math.max(...finite, 1) * 1.16;
   const isLine = ['HeartRate', 'RestingHeartRate', 'Weight'].includes(metric);
-  const x = (i: number) => 68 + i * 40;
+  const spacing = Math.min(40, 260 / snapshot.days.length);
+  const x = (i: number) => 50 + (i + 0.5) * spacing;
+  const barWidth = spacing / 2;
+  const labelEvery = Math.ceil(snapshot.days.length / 7);
   const y = (value: number) => 160 - Math.max(0, value) / max * 128;
   const summary = snapshot.days.map((day, i) => `${day.day}: ${formatHealthValue(metric, values[i])} ${values[i] == null || metric === 'SleepSession' ? '' : info.unit}`).join('; ');
   return <View style={{ gap: 12 }}>
-    <View accessible accessibilityRole="image" accessibilityLabel={tr(`${info.title}, last 7 days. ${summary}`)}>
+    <View accessible accessibilityRole="image" accessibilityLabel={tr(`${info.title}, last ${snapshot.days.length} days. ${summary}`)}>
       <Svg fontFamily={fonts.regular} width="100%" height={190} viewBox="0 0 336 190" accessible={false}>
-        {snapshot.days.map((day, i) => selectedDay === day.day ? <Rect key={day.day} x={x(i) - 17} y={16} width={34} height={148} rx={8} fill={colors.subtle} /> : null)}
+        {snapshot.days.map((day, i) => selectedDay === day.day ? <Rect key={day.day} x={x(i) - spacing / 2} y={16} width={spacing} height={148} rx={Math.min(8, spacing / 2)} fill={colors.subtle} /> : null)}
         {[0, 0.5, 1].map(part => <ViewlessGrid key={part} at={y(max * part)} label={formatHealthValue(metric, max * part)} />)}
         {snapshot.days.map((day, i) => {
           const value = values[i], previous = values[i - 1], selected = selectedDay === day.day;
           return <PathGroup key={day.day}>
             {value != null && isLine && previous != null && <Line x1={x(i - 1)} y1={y(previous)} x2={x(i)} y2={y(value)} stroke={colors.primary} strokeWidth={2.5} />}
-            {value != null && (isLine ? <Circle cx={x(i)} cy={y(value)} r={selected ? 6 : 4} fill={selected ? colors.accent : colors.primary} stroke={colors.surface} strokeWidth={2} /> : <Rect x={x(i) - 10} y={y(value) - (value === 0 ? 2 : 0)} width={20} height={value === 0 ? 2 : 160 - y(value)} rx={5} fill={selected ? colors.accent : colors.primary} />)}
-            <SvgText x={x(i)} y={182} textAnchor="middle" fontSize={11} fill={colors.muted}>{dayLabel(day.day, locale)}</SvgText>
+            {value != null && (isLine ? <Circle cx={x(i)} cy={y(value)} r={selected ? 5 : Math.min(4, spacing / 3)} fill={selected ? colors.accent : colors.primary} stroke={colors.surface} strokeWidth={1} /> : <Rect x={x(i) - barWidth / 2} y={y(value) - (value === 0 ? 2 : 0)} width={barWidth} height={value === 0 ? 2 : 160 - y(value)} rx={Math.min(5, barWidth / 2)} fill={selected ? colors.accent : colors.primary} />)}
+            {i % labelEvery === 0 && <SvgText x={x(i)} y={182} textAnchor="middle" fontSize={11} fill={colors.muted}>{labelEvery === 1 ? dayLabel(day.day, locale) : Number(day.day.slice(-2))}</SvgText>}
           </PathGroup>;
         })}
       </Svg>

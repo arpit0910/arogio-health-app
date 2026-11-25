@@ -4,7 +4,6 @@ import { ActivityIndicator, FlatList, View } from "react-native";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { AppScreen } from "../../components/app/AppScreen";
-import { AppIcon } from "../../components/app/AppIcon";
 import {
   IconButton,
   LibraryHeader,
@@ -12,7 +11,6 @@ import {
   LibraryQuestion,
 } from "./ArticlesLibraryContent";
 import { articleLibraryStyles as s } from "./articleLibraryStyles";
-import { TouchTarget } from "../../components/ui/TouchTarget";
 import { Button } from "../../components/ui/Button";
 import { useTranslation } from "../../localization/LanguageProvider";
 import { publicApi } from "../care-directory/api";
@@ -201,29 +199,17 @@ function LibrarySession({ initialSearch, initialCategory, initialSaved }: { init
   const topics = categories.data ?? query.data?.pages[0]?.categoryDetails ?? [];
   return (
     <AppScreen
-      title={t("Wellness Library")}
+      title={t(savedOnly ? "Saved articles" : "Articles")}
       back
       scrollable={false}
       navigation="articles"
       action={
-        <View style={s.row}>
           <IconButton
             icon="bookmark"
             label={savedOnly ? "Show all articles" : "Show saved articles"}
             selected={savedOnly}
             onPress={() => setSavedOnly(!savedOnly)}
           />
-          <TouchTarget
-            accessibilityRole="button"
-            accessibilityLabel={t("Profile")}
-            onPress={() => router.push("/profile")}
-            style={s.iconButton}
-          >
-            <View style={s.profile}>
-              <AppIcon name="user" size={18} color="#FFFFFF" />
-            </View>
-          </TouchTarget>
-        </View>
       }
     >
       <FlatList
@@ -241,7 +227,6 @@ function LibrarySession({ initialSearch, initialCategory, initialSaved }: { init
             category={category}
             setCategory={setCategory}
             topics={topics}
-            total={savedOnly ? articles.length : query.data?.pages[0]?.total}
             filtersOpen={filtersOpen}
             setFiltersOpen={setFiltersOpen}
             sort={sort}
@@ -249,6 +234,7 @@ function LibrarySession({ initialSearch, initialCategory, initialSaved }: { init
             savedOnly={savedOnly}
             reset={reset}
             featured={articles[0]}
+            hasMore={articles.length > 1}
             savedIds={savedIds}
             toggleSaved={toggleSaved}
             saving={saving || !bookmarksReady}

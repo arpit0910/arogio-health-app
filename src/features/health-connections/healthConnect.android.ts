@@ -80,43 +80,54 @@ function createReader(source: string): HealthReader {
       return normalizeAggregate(metric, await healthRead(Health.aggregateRecord({ recordType: metric,
         timeRangeFilter: { operator: 'between', startTime: start, endTime: end }, dataOriginFilter })), source);
     },
-    // Read exact day windows. Duration buckets can omit the partial current day
-    // on older providers; sleep belongs to the day the session ends.
     aggregateDays: async (metric, ranges) => {
-      if (metric !== 'SleepSession') {
-        const readings: (Reading | undefined)[] = [];
-        for (const range of ranges) {
-          try { readings.push(await thisReader.aggregate(metric, range.start, range.end)); }
-          catch { readings.push(undefined); }
-        }
-        return readings;
-      }
       const first = ranges[0], last = ranges.at(-1);
       if (!first || !last) return [];
+      if (metric !== 'SleepSession') {
+        // Android can omit the partial final duration bucket. Read today directly.
+        const today = thisReader.aggregate(metric, last.start, last.end).catch(() => undefined);
+        if (first === last) return [await today];
+        try {
+          const buckets = await healthRead(Health.aggregateGroupByDuration({
+            recordType: metric, dataOriginFilter,
+            timeRangeFilter: { operator: 'between', startTime: first.start, endTime: last.start },
+            timeRangeSlicer: { duration: 'DAYS', length: 1 },
+          }));
+          const byStart = new Map(buckets.map(bucket => [Date.parse(bucket.startTime), bucket.result]));
+          return [...ranges.slice(0, -1).map(range => {
+            const result = byStart.get(Date.parse(range.start));
+            return result ? normalizeAggregate(metric, result, source) : { value: null, sources: [] };
+          }), await today];
+        } catch {
+          return [...ranges.slice(0, -1).map(() => undefined), await today];
+        }
+      }
       const sessions: { startTime: string; endTime: string }[] = [];
       let pageToken: string | undefined;
       const pages = new Set<string>();
       do {
         const response = await healthRead(Health.readRecords('SleepSession', {
           dataOriginFilter, pageSize: 1000, pageToken,
-          timeRangeFilter: { operator: 'between', startTime: new Date(Date.parse(first.start) - 86400000).toISOString(), endTime: last.end },
+          timeRangeFilter: { operator: 'between', startTime: new Date(Math.max(Date.parse(first.start) - 86400000, Date.parse(last.end) - 30 * 86400000)).toISOString(), endTime: last.end },
         }));
         sessions.push(...response.records.filter(record => record.metadata?.dataOrigin === source));
         pageToken = response.pageToken || undefined;
         if (pageToken && pages.has(pageToken)) throw new Error('Health Connect repeated a sleep page.');
         if (pageToken) pages.add(pageToken);
       } while (pageToken);
-      const readings: Reading[] = [];
-      for (const range of ranges) {
+      return Promise.all(ranges.map(async range => {
         const intervals = sleepIntervals(sessions, range.start, range.end);
-        let total = 0, found = false;
-        for (const interval of intervals) {
-          const reading = await thisReader.aggregate('SleepSession', interval.startTime, interval.endTime);
-          if (reading.value != null) { total += reading.value; found = true; }
+        try {
+          let total = 0, found = false;
+          for (const interval of intervals) {
+            const reading = await thisReader.aggregate('SleepSession', interval.startTime, interval.endTime);
+            if (reading.value != null) { total += reading.value; found = true; }
+          }
+          return { value: found ? total : null, sources: found ? [source] : [] };
+        } catch {
+          return undefined;
         }
-        readings.push({ value: found ? total : null, sources: found ? [source] : [] });
-      }
-      return readings;
+      }));
     },
     async latestWeight(startTime, endTime) {
       const response = await healthRead(Health.readRecords('Weight', {
@@ -137,10 +148,10 @@ function createReader(source: string): HealthReader {
   };
   return thisReader;
 }
-export async function syncHealth(metrics: HealthMetric[], source: string) {
+export async function syncHealth(metrics: HealthMetric[], source: string, dayCount?: number) {
   if (!source || !/^[a-zA-Z][\w]*(\.[a-zA-Z][\w]*)+$/.test(source)) throw new Error('Choose one health app before syncing.');
   await initializeHealth();
-  return readHealthSnapshot(createReader(source), metrics, new Date(), source);
+  return readHealthSnapshot(createReader(source), metrics, new Date(), source, dayCount);
 }
 /** An explicit diagnostic reads source timestamps directly, without using the app cache. */
 export async function checkSourceRecords(metrics: HealthMetric[], source: string): Promise<SourceRecordCheck[]> {

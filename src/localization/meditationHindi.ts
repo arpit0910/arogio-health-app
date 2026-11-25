@@ -1,4 +1,13 @@
 export const meditationHindi: Record<string, string> = {
+  'Show as row': 'कतार में देखें',
+  'Show as list': 'सूची में देखें',
+  'Before you start': 'शुरू करने से पहले',
+  'Practice': 'अभ्यास',
+  'Video': 'वीडियो',
+  'About this video': 'इस वीडियो के बारे में',
+  'Breathing & grounding': 'साँस और वर्तमान पर ध्यान',
+  'Choose a yoga or meditation session.': 'योग या ध्यान का सत्र चुनें।',
+  'Guided meditation': 'निर्देशित ध्यान',
   "Health connections": "स्वास्थ्य कनेक्शन",
   "Manage connection & sync": "कनेक्शन और सिंक प्रबंधित करें",
   "Connect a health app": "स्वास्थ्य ऐप कनेक्ट करें",

@@ -19,14 +19,15 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
   const { register, isSubmitting, error, clearError } = useAuth();
   const [name, setName] = useState(''), [email, setEmail] = useState(''), [password, setPassword] = useState('');
   const [invalid, setInvalid] = useState<string | null>(null), lock = useRef(false);
+  const [submittingEmail, setSubmittingEmail] = useState(false);
   async function submit() {
     if (lock.current || isSubmitting) return;
     clearError();
     const parsed = registerSchema.safeParse({ fullName: name.trim(), email: email.trim(), password });
     if (!parsed.success) { setInvalid(parsed.error.issues[0].message); return; }
-    lock.current = true; setInvalid(null);
+    lock.current = true; setInvalid(null); setSubmittingEmail(true);
     try { await register(parsed.data); } catch { /* The auth provider exposes the error. */ }
-    finally { lock.current = false; }
+    finally { lock.current = false; setSubmittingEmail(false); }
   }
   return <View style={s.page}>
     <AuthIntro title="Create your Arogio account" subtitle="Keep your health records and daily routines in one place." />
@@ -38,7 +39,7 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
       {field.icon === 'lock' && <Text style={[s.subtitle, { color: c.muted, textAlign: 'left', lineHeight: 20 }]}>{t('Use at least 8 characters, including uppercase and lowercase letters and a number.')}</Text>}
     </View>)}</View>
     <FormError message={invalid || error} />
-    <View style={s.submit}><Button title={t('Create Account')} onPress={() => void submit()} loading={isSubmitting} trailing={<AppIcon name="arrow" color={c.onPrimary} size={20} />} /></View>
+    <View style={s.submit}><Button title={t('Create Account')} onPress={() => void submit()} loading={submittingEmail} disabled={isSubmitting} trailing={<AppIcon name="arrow" color={c.onPrimary} size={20} />} /></View>
     <View style={s.divider}><View style={[s.line, { backgroundColor: c.border }]} /><Text style={[s.dividerText, { color: c.muted }]}>{t('or continue with')}</Text><View style={[s.line, { backgroundColor: c.border }]} /></View>
     <GoogleSignInButton disabled={isSubmitting} />
     <View style={s.signup}><Text style={[s.accountText, { color: c.muted }]}>{t('Already have an account?')}</Text><TouchTarget accessibilityRole="link" disabled={isSubmitting} onPress={onSwitchToLogin ?? (() => router.replace('/login'))}><Text style={[s.signupText, { color: c.primary }]}>{t('Sign In')}</Text></TouchTarget></View>

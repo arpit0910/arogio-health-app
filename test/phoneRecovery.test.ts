@@ -6,7 +6,7 @@ import ts from 'typescript';
 import { stepDelta } from '../src/features/activity/model.ts';
 import { localDay, addDays, validDay } from '../src/features/personal-wellness/domain.ts';
 
-it('starts the foreground counter after Android refuses background startup', async () => {
+it('reports background startup failure instead of silently switching Android to foreground-only tracking', async () => {
   const values: any[] = [], refs: any[] = [], effects: (() => void)[] = [];
   let stateCursor = 0, refCursor = 0, callback: ((count: number) => void) | undefined;
   const dependencies: Record<string, unknown> = {
@@ -26,8 +26,7 @@ it('starts the foreground counter after Android refuses background startup', asy
   await new Promise<void>(resolve => setImmediate(resolve));
   render(); effects[2](); // Start tracking with the restored preference.
   await new Promise<void>(resolve => setImmediate(resolve));
-  assert.ok(callback);
-  callback(12);
-  assert.equal(render().totals[localDay()], 12);
-  assert.match(render().status, /while Arogio is open/);
+  assert.equal(callback, undefined);
+  assert.equal(render().totals[localDay()], undefined);
+  assert.match(render().status, /Background counting could not start/);
 });

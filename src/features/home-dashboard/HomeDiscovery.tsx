@@ -55,18 +55,19 @@ function HomeProviderCard({ entry, specialist = false }: { entry: CareEntry; spe
   </View>;
 }
 
-export function HomeCareDiscovery({ data, pending, error, retry }: { data?: Awaited<ReturnType<typeof loadDiscovery>>; pending: boolean; error: boolean; retry: () => void }) {
+export function HomeCareDiscovery({ city, data, pending, error, retry }: { city?: string; data?: Awaited<ReturnType<typeof loadDiscovery>>; pending: boolean; error: boolean; retry: () => void }) {
   const router = useRouter(), c = usePalette(), { t } = useTranslation();
   const [filter, setFilter] = useState('all');
   // Only source-provided provider types can be used as filters or badges.
   const types = [...new Set(data?.hospitals.items.map(entry => entry.details.providerType).filter(Boolean))];
   const hospitals = data?.hospitals.items.filter(entry => filter === 'all' || entry.details.providerType === filter) ?? [];
+  const open = (pathname: '/hospitals' | '/doctors') => router.push({ pathname, params: city ? { city } : {} });
   return <View style={{ gap: 28 }}>
-    <View style={{ gap: 10 }}><HomeSectionHeading title="Hospitals & Clinics" detail="Hospital directory information" action="View all" onPress={() => router.push('/hospitals')} />
+    <View style={{ gap: 10 }}><HomeSectionHeading title="Hospitals & Clinics" detail={city || 'Hospital directory information'} action="View all" onPress={() => open('/hospitals')} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}><View style={{ flexDirection: 'row', gap: 6 }}>{['all', ...types].map(value => <TouchTarget key={value} accessibilityRole="radio" accessibilityState={{ checked: filter === value }} accessibilityLabel={t(value === 'all' ? 'All hospitals' : value)} onPress={() => setFilter(value)} style={[s.filter, { backgroundColor: value === filter ? c.primary : c.surface, borderColor: c.border }]}><Text style={[typeStyles.label, { color: value === filter ? c.onPrimary : c.muted }]}>{t(value === 'all' ? 'All' : value)}</Text></TouchTarget>)}<TouchTarget accessibilityRole="button" onPress={() => router.push('/hospitals')} style={[s.filter, { backgroundColor: c.surface, borderColor: c.border }]}><Text style={[typeStyles.label, { color: c.muted }]}>{t('Browse directory')}</Text><AppIcon name="right" size={12} /></TouchTarget></View></ScrollView>
       {hospitals.map(entry => <HomeProviderCard key={entry.id} entry={entry} />)}{!hospitals.length && <SectionState loading={pending} error={error || data?.hospitals.status === 'unavailable'} retry={retry} empty="Listed hospitals will appear here. Emergency contacts remain available." />}
     </View>
-    <View style={{ gap: 12 }}><HomeSectionHeading title="Specialists" detail="Find the right care for you" action="Find doctors" onPress={() => router.push('/doctors')} />
+    <View style={{ gap: 12 }}><HomeSectionHeading title="Specialists" detail={city || 'Find the right care for you'} action="Find doctors" onPress={() => open('/doctors')} />
       {data?.doctors.items.length ? <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingBottom: 4 }}>{data.doctors.items.map(entry => <HomeProviderCard key={entry.id} entry={entry} specialist />)}</ScrollView> : <SectionState loading={pending} error={error || data?.doctors.status === 'unavailable'} retry={retry} empty="Specialists will appear here when listed." />}
     </View>
   </View>;
@@ -76,7 +77,7 @@ export function HomeGuides() {
   const c = usePalette(), { t, language } = useTranslation(), router = useRouter();
   const articles = useQuery({ queryKey: ['articles', 'home'], queryFn: ({ signal }) => loadArticles('', 1, signal, { limit: 3 }), staleTime: 300000 });
   return <View style={{ gap: 10 }}><HomeSectionHeading title="Featured Health Guides" detail="Ideas for your everyday wellbeing" action="Browse all" onPress={() => router.push('/articles')} />
-    {articles.data?.items.slice(0, 2).map(article => <TouchTarget key={article.id} accessibilityRole="button" accessibilityLabel={`${t('Read')}: ${language === 'hi' && article.title_hi ? article.title_hi : article.title_en}`} onPress={() => router.push({ pathname: '/articles/[id]', params: { id: article.id } })} style={[s.article, { backgroundColor: c.surface }]}><ArticleThumbnail category={article.category} uri={article.thumbnail_url || article.image_url} style={{ width: 96, height: 86, borderRadius: 12 }} /><View style={s.copy}><Text style={[typeStyles.label, { color: c.primary }]}>{language === 'hi' && article.category_hi ? article.category_hi : article.category}</Text><Text style={[typeStyles.title, { color: c.ink, fontSize: 17, lineHeight: 23 }]} numberOfLines={2}>{language === 'hi' && article.title_hi ? article.title_hi : article.title_en}</Text><Text style={[typeStyles.body, { color: c.muted }]} numberOfLines={2}>{language === 'hi' && article.excerpt_hi ? article.excerpt_hi : article.excerpt_en}</Text></View></TouchTarget>)}
+    {articles.data?.items.slice(0, 2).map(article => <TouchTarget key={article.id} accessibilityRole="button" accessibilityLabel={`${t('Read')}: ${language === 'hi' && article.title_hi ? article.title_hi : article.title_en}`} onPress={() => router.push({ pathname: '/articles/[id]', params: { id: article.id } })} style={[s.article, { backgroundColor: c.surface }]}><ArticleThumbnail thumbnailUrl={article.thumbnail_url} imageUrl={article.image_url} style={{ width: 96, height: 86, borderRadius: 12 }} /><View style={s.copy}><Text style={[typeStyles.label, { color: c.primary }]}>{language === 'hi' && article.category_hi ? article.category_hi : article.category}</Text><Text style={[typeStyles.title, { color: c.ink, fontSize: 17, lineHeight: 23 }]} numberOfLines={2}>{language === 'hi' && article.title_hi ? article.title_hi : article.title_en}</Text><Text style={[typeStyles.body, { color: c.muted }]} numberOfLines={2}>{language === 'hi' && article.excerpt_hi ? article.excerpt_hi : article.excerpt_en}</Text></View></TouchTarget>)}
     {!articles.data?.items.length && <SectionState loading={articles.isPending} error={articles.isError} retry={() => void articles.refetch()} empty="New articles will appear here when published." />}
   </View>;
 }

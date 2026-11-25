@@ -64,15 +64,16 @@ export async function healthRead<T>(work: Promise<T>, timeoutMs = 10000): Promis
     })]);
   } finally { if (timer) clearTimeout(timer); }
 }
-export function healthDayRanges(now = new Date()) {
+export const HEALTH_HISTORY_DAYS = 30;
+export function healthDayRanges(now = new Date(), dayCount = HEALTH_HISTORY_DAYS) {
   const today = localDay(now, APP_TIMEZONE);
-  return Array.from({ length: 7 }, (_, i) => {
-    const day = addDays(today, i - 6);
+  return Array.from({ length: dayCount }, (_, i) => {
+    const day = addDays(today, i - dayCount + 1);
     return {
       day,
       start: zonedInstant(day, '00:00', APP_TIMEZONE).toISOString(),
       end:
-        i === 6
+        i === dayCount - 1
           ? now.toISOString()
           : zonedInstant(addDays(day, 1), '00:00', APP_TIMEZONE).toISOString(),
     };
@@ -84,15 +85,15 @@ export async function readHealthSnapshot(
   selected: HealthMetric[],
   now = new Date(),
   source?: string,
+  dayCount = HEALTH_HISTORY_DAYS,
 ): Promise<HealthSnapshot> {
   const granted = (await reader.granted()).filter((metric) =>
     selected.includes(metric),
   );
   const failed = new Set<HealthMetric>();
-  const ranges = healthDayRanges(now);
+  const ranges = healthDayRanges(now, dayCount);
   const days: DailyHealth[] = ranges.map(range => ({ day: range.day, readings: {} }));
-  // Read each metric's buckets in one call where supported; avoid native call bursts.
-  for (const metric of granted) {
+  await Promise.all(granted.map(async (metric) => {
     if (reader.aggregateDays) {
       try {
         const readings = await reader.aggregateDays(metric, ranges);
@@ -115,7 +116,7 @@ export async function readHealthSnapshot(
         }
       }
     }
-  }
+  }));
   let latestWeight: HealthSnapshot['latestWeight'] = null;
   if (granted.includes('Weight')) {
     try {
@@ -182,6 +183,16 @@ export function mergeHealthSnapshot(previous: HealthSnapshot | null, next: Healt
     }
     return { ...day, readings };
   }), latestWeight: next.latestWeight ?? (next.granted.includes('Weight') && next.failed.includes('Weight') ? safe.latestWeight : null) };
+}
+/** A fast current-day refresh leaves completed days available until the history refresh. */
+export function mergeCurrentHealthSnapshot(previous: HealthSnapshot | null, next: HealthSnapshot): HealthSnapshot {
+  const days = healthDayRanges(new Date(next.syncedAt)).map(({ day }) =>
+    next.days.find(item => item.day === day) ?? { day, readings: {} });
+  const merged = mergeHealthSnapshot(previous, { ...next, days });
+  if (!previous || previous.source !== next.source) return merged;
+  const safe = permittedSnapshot(previous, next.granted)!;
+  return { ...merged, days: merged.days.map(day =>
+    next.days.some(item => item.day === day.day) ? day : safe.days.find(item => item.day === day.day) ?? day) };
 }
 export function formatHealthValue(
   metric: HealthMetric,

@@ -19,6 +19,8 @@ import {
   type Article,
 } from "../../services/api/healthResourcesApi";
 import { ArticleThumbnail } from "./ArticleThumbnail";
+import { articleBodyLines } from "./articlePresentation";
+import { fonts } from "../../theme/tokens";
 
 export function ArticleRow({
   article,
@@ -49,8 +51,8 @@ export function ArticleRow({
       })}
     >
       <ArticleThumbnail
-        category={article.category}
-        uri={article.thumbnail_url || article.image_url}
+        thumbnailUrl={article.thumbnail_url}
+        imageUrl={article.image_url}
         style={{
           width: width < 360 ? 80 : 100,
           height: width < 360 ? 96 : 112,
@@ -146,6 +148,17 @@ export function ArticleScreen() {
       ),
   });
   const article = query.data;
+  const minutes = hindi ? article?.reading_minutes_hi ?? article?.reading_minutes_en : article?.reading_minutes_en;
+  const readingBlocks: { text: string; bold: boolean }[] = [];
+  let paragraph = '';
+  for (const line of articleBodyLines((hindi && article?.content_hi) || article?.content_en || '')) {
+    if (line.bold || !line.text.trim()) {
+      if (paragraph) readingBlocks.push({ text: paragraph, bold: false });
+      paragraph = '';
+      if (line.bold) readingBlocks.push(line);
+    } else paragraph = paragraph ? paragraph + '\n' + line.text : line.text;
+  }
+  if (paragraph) readingBlocks.push({ text: paragraph, bold: false });
   return (
     <AppScreen title={tr("Article")} back>
       <View style={{ gap: 18 }}>
@@ -163,33 +176,27 @@ export function ArticleScreen() {
         ) : (
           <>
             <View style={{width: '100%', aspectRatio: 1.8, borderRadius: 16, overflow: 'hidden', backgroundColor: colors.subtle}}><ArticleThumbnail
-              category={article.category}
-              uri={article.thumbnail_url || article.image_url}
+              thumbnailUrl={article.thumbnail_url}
+              imageUrl={article.image_url}
               style={{
                 width: "100%",
                 height: '100%',
                 backgroundColor: colors.subtle,
               }}
             /></View>
-            <Text style={[c.text, { color: colors.primary }]}>
-              {(hindi && article.category_hi) || article.category}
-            </Text>
-            <Text style={c.heading}>
-              {(hindi && article.title_hi) || article.title_en}
-            </Text>
-            <Text style={c.text}>
-              {article.author_name || tr("Arogio editorial")} ·{" "}
-              {new Date(article.created_at).toLocaleDateString(locale)}
-            </Text>
-            <Text
-              selectable
-              style={[
-                c.text,
-                { fontSize: 17, lineHeight: 29, color: colors.ink },
-              ]}
-            >
-              {(hindi && article.content_hi) || article.content_en}
-            </Text>
+            <View style={{ gap: 8 }}>
+              <Text style={[c.text, { color: colors.primaryPressed }]}>
+                {[(hindi && article.category_hi) || article.category, minutes ? minutes + ' ' + tr('min read') : ''].filter(Boolean).join(' · ')}
+              </Text>
+              <Text accessibilityRole="header" style={c.heading}>{(hindi && article.title_hi) || article.title_en}</Text>
+              <Text style={c.text}>{article.author_name || tr('Arogio editorial')} · {new Date(article.created_at).toLocaleDateString(locale)}</Text>
+            </View>
+            <View style={{ gap: 14 }}>
+              {readingBlocks.map((block, index) => block.bold
+                ? <Text key={index} accessibilityRole="header" selectable style={[c.title, { fontFamily: fonts.bold, marginTop: 8 }]}>{block.text}</Text>
+                : <Text key={index} selectable style={[c.text, { fontSize: 17, lineHeight: 29, color: colors.ink }]}>{block.text}</Text>
+              )}
+            </View>
             <Text style={c.text}>
               {tr(
                 "For general information. Speak with a qualified clinician about your own care.",

@@ -6,6 +6,7 @@ export const careKinds = ['hospital', 'doctor', 'medicine', 'lab', 'pharmacy'] a
 export type CareKind = typeof careKinds[number];
 export const careEntrySchema = z.object({
   id: z.string().uuid(), kind: z.enum(careKinds), name: z.string(), nameHi: z.string(), city: z.string(), address: z.string(), addressHi: z.string(), phone: z.string().nullable(),
+  distanceKm: z.number().nonnegative().nullable().optional(),
   imageUrl:z.string().nullable().optional(),imageAlt:z.string().optional(),
   alternatePhone: z.string().nullable().optional(), email: z.string().nullable().optional(),
   website: z.string().nullable().optional(), mapAddress: z.string().optional(),

@@ -54,6 +54,13 @@ if (mode.startsWith('connections-')) {
 const fixtureEntry = (kind, name, index) => ({ id: `00000000-0000-4000-8000-${String(index).padStart(12,'0')}`, kind, name, nameHi:'', city:'', address:'Example locality', phone:'+910000000000', reviewedAt:'2026-11-01', sourceUrl:'https://example.invalid/', verification:'source-reviewed', details:{ providerType:kind === 'hospital' ? index === 1 ? 'Government Apex' : 'Private' : 'Medicine Guide', specialties:kind === 'hospital' ? ['Emergency Care','General Medicine'] : ['Salt composition & precautions'], qualifications:'', registration:'', languages:[], summary:'', precautions:'', latitude:null, longitude:null} });
 const providerFixtures = [fixtureEntry('hospital','Sawai Man Singh (SMS) Hospital',1),fixtureEntry('hospital','Eternal Heart Care Centre',2),fixtureEntry('hospital','Apex Hospitals',3)];
 const medicineFixtures = [fixtureEntry('medicine','Paracetamol 650 mg',4),fixtureEntry('medicine','Azithromycin 500 mg',5),fixtureEntry('medicine','Pantoprazole 40 mg',6)];
+const { yogaExercises } = require('../src/features/meditation/exercises.ts');
+const practiceFixtures = require('./fixtures/meditation-catalog.json');
+const yogaFixtures = yogaExercises.map(exercise => ({
+  ...exercise, kind: 'practice', title_en: exercise.title, title_hi: '', description_en: exercise.description, description_hi: '',
+  preparation_en: exercise.preparation, preparation_hi: '', repeat: 1, videoId: null,
+  steps: exercise.steps.map(step => ({ ...step, title_en: step.title, title_hi: '', instruction_en: step.instruction, instruction_hi: '' })),
+}));
 function useReminderPreviewState(initial) {
   let value = initial;
   if (initial === 0) value = mode === 'reminder-times' ? 1 : 2;
@@ -74,6 +81,12 @@ Module._load = function(request, parent, ...rest) {
   if (request.endsWith('/AppSidebar')) return { useSidebar: () => ({ openSidebar() {}, isOpen: false }), SidebarButton: () => React.createElement(require('../src/components/ui/TouchTarget.tsx').TouchTarget,{style:{width:48,alignItems:'center',justifyContent:'center'}},React.createElement(require('../src/components/app/AppIcon.tsx').AppIcon,{name:'menu'})) };
   if (request.endsWith('/configuration/environment')) return { env: { apiUrl: 'https://example.invalid/api/v1' } };
   if (request.endsWith('/api/client')) return { apiClient: {} };
+  if (request === './useMeditationLibrary' && ['yoga', 'guided', 'wellness-browse'].includes(mode)) return {
+    useMeditationLibrary: (section) => ({
+      items: [...yogaFixtures, ...practiceFixtures.items].filter(item => !section || item.section === section),
+      query: { data: {}, isPending: false, isRefetching: false, isFetchingNextPage: false, refetch() {} },
+    }),
+  };
   if (request === '@react-native-community/datetimepicker') return {};
   if (request === './GoogleSignInButton') return { GoogleSignInButton: () => React.createElement(require('../src/components/ui/Button.tsx').Button, {title:'Continue with Google',variant:'social',leading:React.createElement(require('../src/features/authentication/components/GoogleIcon.tsx').GoogleIcon),onPress(){}}) };
   if (request === 'expo-location' || request === 'expo-image-picker' || request === 'expo-image-manipulator') return {};
@@ -105,6 +118,15 @@ const screens = {
   explore: () => require('../src/app/(main)/explore.tsx').default,
   connections: () => require('../src/features/health-connections/HealthSyncScreen.tsx').HealthSyncScreen,
   meditation: () => require('../src/features/meditation/MeditationScreen.tsx').MeditationScreen,
+  yoga: () => () => React.createElement(require('../src/features/meditation/YogaMeditationScreen.tsx').YogaMeditationScreen, {section:'yoga'}),
+  guided: () => () => React.createElement(require('../src/features/meditation/YogaMeditationScreen.tsx').YogaMeditationScreen, {section:'meditation'}),
+  'wellness-browse': () => require('../src/features/meditation/YogaMeditationScreen.tsx').YogaMeditationScreen,
+  'practice-detail': () => () => {
+    const { PracticeDetailIntro, PracticePrimaryAction } = require('../src/features/meditation/MeditationScreen.tsx');
+    const footer = React.createElement(PracticePrimaryAction, { title:'Start practice', onPress() {} });
+    return React.createElement(require('../src/components/app/AppScreen.tsx').AppScreen, {back:true, title:'Practice', footer},
+      React.createElement(PracticeDetailIntro, { exercise: yogaExercises[0] }));
+  },
   login: () => require('../src/features/authentication/components/AuthScreen.tsx').AuthScreen,
   signup: () => () => React.createElement(require('../src/features/authentication/components/AuthScreen.tsx').AuthScreen, {initialTab:'signup'}),
   home: () => require('../src/features/home-dashboard/HomeScreen.tsx').HomeScreen,

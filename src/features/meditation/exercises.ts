@@ -1,5 +1,6 @@
 export type Exercise = {
   section?: string;
+  thumbnailVariant?: 'evening-yoga' | 'body-scan';
   publishedVersion?: number;
   id: string;
   title: string;

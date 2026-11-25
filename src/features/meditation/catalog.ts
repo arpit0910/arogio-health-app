@@ -13,17 +13,21 @@ export const meditationItemSchema = z.object({
 });
 export type MeditationItem = z.infer<typeof meditationItemSchema>;
 const catalogPage = z.object({ items: z.array(meditationItemSchema), page: z.number().int().positive(), hasNext: z.boolean() });
-export async function loadMeditationPage(page: number, signal?: AbortSignal) {
-  return catalogPage.parse(await apiClient.request({ path: `/public/meditation/content?page=${page}&limit=24`, signal }));
+export async function loadMeditationPage(page: number, signal?: AbortSignal, section?: MeditationItem['section']) {
+  const params = new URLSearchParams({ page: String(page), limit: '24' });
+  if (section) params.set('section', section);
+  return catalogPage.parse(await apiClient.request({ path: `/public/meditation/content?${params}`, signal }));
 }
 export async function loadMeditationItem(id: string, signal?: AbortSignal) {
   return meditationItemSchema.parse(await apiClient.request({ path: `/public/meditation/content/${encodeURIComponent(id)}`, signal }));
 }
 export function catalogExercise(item: MeditationItem, hindi: boolean): Exercise {
   const copy = (english: string, translated: string) => hindi && translated ? translated : english;
+  const thumbnailVariant = item.section === 'yoga' && /evening/i.test(item.title_en) ? 'evening-yoga'
+    : item.section === 'meditation' && /body scan/i.test(item.title_en) ? 'body-scan' : undefined;
   return { id: item.id, section: item.section, title: copy(item.title_en, item.title_hi),
     description: copy(item.description_en, item.description_hi), preparation: copy(item.preparation_en, item.preparation_hi), repeat: item.repeat,
-    publishedVersion: item.publishedVersion,
+    publishedVersion: item.publishedVersion, thumbnailVariant,
     steps: item.steps.map(step => ({ title: copy(step.title_en, step.title_hi), instruction: copy(step.instruction_en, step.instruction_hi), seconds: step.seconds })) };
 }
 

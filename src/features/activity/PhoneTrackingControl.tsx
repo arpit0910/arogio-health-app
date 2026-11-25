@@ -6,11 +6,14 @@ import { useCareStyles } from "../../components/app/CareUI";
 import { usePalette } from "../../theme/AppearanceProvider";
 import { AppIcon } from "../../components/app/AppIcon";
 import { Button } from "../../components/ui/Button";
+import { localDay } from "../personal-wellness/domain";
+import { useTrackingClock } from "../personal-wellness/useTrackingClock";
 export function PhoneTrackingControl() {
   const { t: tr } = useTranslation();
   const phone = usePhoneSteps(),
     colors = usePalette(),
     c = useCareStyles();
+  const today = phone.totals[localDay(useTrackingClock())];
   return (
     <View
       style={{
@@ -26,7 +29,8 @@ export function PhoneTrackingControl() {
         <Text style={[c.title, { flex: 1 }]}>{tr("Count steps with this phone")}</Text>
       </View>
       <Text style={c.text}>
-        {tr(Platform.OS === 'android' ? 'No health app needed. On supported Android phones, counting continues when you close Arogio, with a step-counting notification. Force-stop or battery restrictions can interrupt counting.' : 'No health app needed. On supported phones, Arogio counts steps while it is open.')} {tr(" You can turn counting off in Settings.")}</Text>
+        {tr(Platform.OS === 'android' ? 'Allow physical activity access to count steps on this phone, even when Arogio is closed. You can turn counting off here at any time.' : 'Allow motion access to count steps while Arogio is open.')}</Text>
+      {phone.enabled && today != null && <Text style={c.title}>{today.toLocaleString()} {tr('phone steps today')}</Text>}
       <Text
         accessibilityLiveRegion="polite"
         style={[c.text, { color: colors.ink }]}

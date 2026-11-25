@@ -5,7 +5,7 @@ import { useAuth } from '../authentication/context/AuthContext';
 import { addDays, localDay, validDay } from '../personal-wellness/domain';
 import { phoneSensorState, watchPhoneSteps } from './stepSensor';
 import { stepDelta } from './model';
-import { startPersistentSteps, stopPersistentSteps, persistentStepTotals } from './backgroundSteps';
+import { startPersistentSteps, stopPersistentSteps, persistentStepTotals, persistentStepsRunning } from './backgroundSteps';
 type Stored = { enabled: boolean; totals: Record<string, number> };
 type State = Stored & { status: string; busy: boolean; ready: boolean; toggle: () => Promise<void>; clear: () => Promise<void> };
 const Context = createContext<State | null>(null);
@@ -67,16 +67,21 @@ function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | n
         const sensor = await phoneSensorState();
         if (!valid) return;
         if (!sensor.available || !sensor.granted) { setStatus(sensor.available ? 'Motion permission is off. Enable phone counting to allow access.' : 'No step sensor is available. You can enter daily totals instead.'); return; }
-        // Foreground counting remains usable when the optional native service
-        // is missing from an older build or Android refuses background startup.
-        if (await startPersistentSteps(owner, value.current.totals).catch(() => false)) {
+        if (Platform.OS === 'android') {
+          const running = await startPersistentSteps(owner, value.current.totals).catch(() => false);
           if (!valid) return;
-          setStatus('Counting phone steps in the background. Android shows a step-counting notification.');
+          if (!running) {
+            setStatus('Background counting could not start. Check physical activity access and reopen Arogio to retry.');
+            return;
+          }
           const read = async () => {
-            const totals = await persistentStepTotals(owner);
-            if (valid && totals) apply({ ...value.current, totals });
+            const [totals, running] = await Promise.all([persistentStepTotals(owner), persistentStepsRunning(owner)]);
+            if (!valid) return;
+            setStatus(running ? 'Counting phone steps in the background.' : 'Phone counting is paused. Reopen Arogio to restart it.');
+            if (totals && JSON.stringify(totals) !== JSON.stringify(value.current.totals)) apply({ ...value.current, totals }, false);
           };
           await read();
+          if (!valid) return;
           timer = setInterval(() => { void read().catch(() => { if (valid) setStatus('Phone totals could not refresh. Try reopening Activity.'); }); }, 3000);
           return;
         }
@@ -103,11 +108,22 @@ function PhoneSession({ children, owner }: PropsWithChildren<{ owner: string | n
     if (lock.current || !owner || !ready) return;
     lock.current = true; setBusy(true);
     try {
-      if (value.current.enabled) { await stopPersistentSteps(owner); apply({ ...value.current, enabled: false }); await persist(); if (alive.current) setStatus('Phone counting is off. Entered step totals are used.'); return; }
+      if (value.current.enabled) {
+        await stopPersistentSteps(owner);
+        const totals = await persistentStepTotals(owner).catch(() => null);
+        apply({ enabled: false, totals: totals ?? value.current.totals });
+        await persist();
+        if (alive.current) setStatus('Phone counting is off. Entered step totals are used.');
+        return;
+      }
       const sensor = await phoneSensorState(true);
       if (!alive.current) return;
       if (!sensor.available || !sensor.granted) { setStatus(sensor.available ? 'Motion access was declined. You can allow it in device settings or enter totals.' : 'No step sensor is available on this device.'); return; }
-      await startPersistentSteps(owner, value.current.totals).catch(() => false);
+      if (Platform.OS === 'android' && !(await startPersistentSteps(owner, value.current.totals).catch(() => false))) {
+        await stopPersistentSteps(owner).catch(() => {});
+        if (alive.current) setStatus('Background counting could not start. Check physical activity access and try again.');
+        return;
+      }
       if (!alive.current) { await stopPersistentSteps(owner); return; }
       apply({ ...value.current, enabled: true }); await persist();
     } catch { await stopPersistentSteps(owner).catch(() => {}); apply({ ...value.current, enabled: false }); if (alive.current) setStatus('Phone step counting could not start or save. Install the latest build and check motion access in device settings, then try again.'); }

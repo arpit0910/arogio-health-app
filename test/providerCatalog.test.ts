@@ -65,7 +65,7 @@ const hospital = {
   nabh_accredited: true,
   is_cashless: null,
 };
-type Request = { path: string; signal?: AbortSignal };
+type Request = { path: string; signal?: AbortSignal; method?: string; body?: unknown };
 function loader(request: (options: Request) => Promise<unknown>) {
   const cache = new Map<string, any>();
   function load(file: string) {
@@ -189,6 +189,20 @@ it("loads structured doctor details and public hospital relations with uploaded 
   assert.equal(result.affiliations[0].imageUrl, hospital.image_url);
   assert.equal(result.recordedSchedules[0].start, "09:00");
 });
+it("sends nearby coordinates in the request body and preserves server distances and pagination", async () => {
+  const location = { latitude: 28.61, longitude: 77.21, radiusKm: 50 };
+  const calls: Request[] = [];
+  const { catalog } = loader(async (request) => {
+    calls.push(request);
+    return { items: [{ ...hospital, distanceKm: 2.4 }], total: 25, page: 1, hasNext: true };
+  });
+  const page = await catalog.loadProviderPage("hospital", "heart", 1, undefined, { location, type: "Private" });
+  assert.equal(calls[0].path, "/public/hospitals/nearby");
+  assert.equal(calls[0].method, "POST");
+  assert.deepEqual(JSON.parse(JSON.stringify(calls[0].body)), { location, type: "Private", search: "heart", page: 1 });
+  assert.equal(page.items[0].distanceKm, 2.4);
+  assert.equal(page.hasNext, true);
+});
 it("loads affiliated doctors through the new hospital filter", async () => {
   let filtered = false;
   const { catalog } = loader(async ({ path }) => {
@@ -209,12 +223,13 @@ it("keeps Home available across recorded locations and isolates section failures
     if (path.startsWith("/public/doctors")) throw Error("offline");
     return { items: [hospital], total: 1, page: 1, hasNext: false };
   });
-  const result = await home().loadDiscovery(new AbortController().signal);
+  const result = await home().loadDiscovery(new AbortController().signal, "Delhi");
   assert.equal(result.coverage, "available-locations");
   assert.equal(result.hospitals.status, "available");
   assert.equal(result.doctors.status, "unavailable");
   assert.equal(result.hospitals.items[0].imageUrl, hospital.image_url);
   assert.equal(calls.length, 2);
+  assert.ok(calls.every(path => new URL("https://test" + path).searchParams.get("city") === "Delhi"));
 });
 it("reads all pages of active departments", async () => {
   let page = 0;

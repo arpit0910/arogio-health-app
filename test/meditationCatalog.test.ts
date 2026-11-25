@@ -9,10 +9,11 @@ import { exercises, exerciseDuration } from '../src/features/meditation/exercise
 const require = createRequire(import.meta.url);
 const ts = require('typescript');
 const fixture = JSON.parse(readFileSync('scripts/fixtures/meditation-catalog.json', 'utf8'));
-function catalog() {
+function catalog(request: (options: { path: string }) => Promise<unknown> = async () => fixture) {
   const exports: Record<string, any> = {};
   vm.runInNewContext(ts.transpileModule(readFileSync('src/features/meditation/catalog.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, {
-    exports, require: (name: string) => name === 'zod' ? require('zod') : name === './exercises' ? { exercises } : { publicApi: { request: async () => fixture } },
+    exports, require: (name: string) => name === 'zod' ? require('zod') : name === './exercises' ? { exercises } : { publicApi: { request } },
+    URLSearchParams,
   });
   return exports;
 }
@@ -21,6 +22,15 @@ function render(mode: string) {
   return readFileSync(`.impeccable/review/ui-system/${mode}-390-light-en.html`, 'utf8');
 }
 describe('Published meditation catalog', () => {
+  it('requests the yoga section before paginating its cards', async () => {
+    const api = catalog(async ({ path }) => {
+      const params = new URL(path, 'https://example.test').searchParams;
+      assert.equal(params.get('section'), 'yoga');
+      assert.equal(params.get('page'), '2');
+      return { items: [], page: 2, hasNext: false };
+    });
+    assert.equal((await api.loadMeditationPage(2, undefined, 'yoga')).page, 2);
+  });
   it('validates seeded API items and retains the guided timing and Hindi fallback', () => {
     const api = catalog(), item = api.meditationItemSchema.parse(fixture.items[0]);
     const practice = api.catalogExercise(item, false), hindi = api.catalogExercise(item, true);

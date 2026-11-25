@@ -1,87 +1,34 @@
-import { useState } from "react";
-import { Image, type ImageStyle, type StyleProp } from "react-native";
-import { env } from "../../configuration/environment";
+import { useState } from 'react';
+import { Image, View, type ImageStyle, type StyleProp, type ViewStyle } from 'react-native';
+import { env } from '../../configuration/environment';
+import { usePalette } from '../../theme/AppearanceProvider';
+import { AppIcon } from '../../components/app/AppIcon';
+import { articleImageCandidates } from './articlePresentation';
 
-const covers = {
-  ayurveda: require("../../../assets/articles/library/ayurveda-feature.jpg"),
-  diabetes: require("../../../assets/articles/library/nutrition-meal.jpg"),
-  cardiacSleep: require("../../../assets/articles/library/cardiac-sleep.jpg"),
-  kadha: require("../../../assets/articles/library/ayurvedic-kadha.jpg"),
-  hydration: require("../../../assets/articles/library/herbal-hydration.jpg"),
-  diagnostics: require("../../../assets/articles/library/thyroid-diagnostics.jpg"),
-  care: require("../../../assets/articles/care.jpg"),
-  family: require("../../../assets/articles/family.jpg"),
-  mindfulness: require("../../../assets/articles/mindfulness.jpg"),
-  movement: require("../../../assets/articles/movement.jpg"),
-  nutrition: require("../../../assets/homepage/reference-5.jpg"),
-  seasonal: require("../../../assets/homepage/reference-6.jpg"),
-  sleep: require("../../../assets/articles/sleep.jpg"),
-  walking: require("../../../assets/articles/walking.jpg"),
-  wellbeing: require("../../../assets/articles/wellbeing.jpg"),
-  yoga: require("../../../assets/articles/yoga.jpg"),
-};
-const topic: Record<string, keyof typeof covers> = {
-  "Food & Nutrition": "diabetes",
-  "Ayush Care": "ayurveda",
-  "Diabetes Care": "diabetes",
-  "Heart Health": "cardiacSleep",
-  "Ayush Certified": "kadha",
-  "Daily Wellness": "hydration",
-  "Diagnostics": "diagnostics",
-  "Yoga & Breathing": "yoga",
-  "Mental Wellbeing": "mindfulness",
-  "Exercise & Movement": "movement",
-  "Sleep & Rest": "sleep",
-  "Family & Children": "family",
-  "Healthy Aging": "walking",
-  "Remedies & Supplements": "care",
-  "Ayurvedic Wisdom": "ayurveda",
-  "Preventive Care": "nutrition",
-  "Heart & Blood Pressure": "care",
-  "Common Health Conditions": "care",
-  "Prevention & Checkups": "care",
-  "First Aid & Safety": "care",
-  "Women's Health": "walking",
-  "Men's Health": "movement",
-  "Sexual Wellness (Adults)": "family",
-  "Skin & Oral Care": "care",
-};
-export function ArticleThumbnail({
-  category,
-  uri,
-  style,
-}: {
-  category: string;
-  uri?: string;
-  style: StyleProp<ImageStyle>;
+export function ArticleThumbnail({ thumbnailUrl, imageUrl, style }: {
+  thumbnailUrl?: string;
+  imageUrl?: string;
+  style: StyleProp<ImageStyle & ViewStyle>;
 }) {
-  const [failed, setFailed] = useState<string>();
-  const fallback = covers[topic[category] ?? "wellbeing"];
-  // Bundled topic images avoid network requests and work offline. Admin-provided
-  // HTTPS photos load anonymously and fall back to the same local topic image.
-  const uploadedArticleImage = /^\/api\/v1\/public\/articles\/[0-9a-f-]{36}\/thumbnail\?v=[0-9a-f-]{36}$/i;
-  const remote = uri?.startsWith("https://")
-    ? uri
-    : uri && (uri.startsWith("/admin-assets/") || uploadedArticleImage.test(uri))
-      ? new URL(uri, env.apiUrl).toString()
-      : undefined;
-  const bundled = uri?.match(
-    /^\/admin-assets\/article-thumbnails\/(\w+)\.jpg$/,
-  )?.[1] as keyof typeof covers | undefined;
-  const source =
-    bundled && covers[bundled]
-      ? covers[bundled]
-      : remote && failed !== remote
-        ? { uri: remote }
-        : fallback;
+  const colors = usePalette();
+  const [failed, setFailed] = useState<string[]>([]);
+  const uri = articleImageCandidates(env.apiUrl, thumbnailUrl, imageUrl).find((candidate) => !failed.includes(candidate));
+
+  if (!uri) {
+    return (
+      <View accessible={false} style={[{ backgroundColor: colors.subtle }, style, { alignItems: 'center', justifyContent: 'center' }]}>
+        <AppIcon name="book" size={22} color={colors.muted} />
+      </View>
+    );
+  }
   return (
     <Image
+      key={uri}
       accessible={false}
-      source={source}
-      defaultSource={fallback}
-      onError={() => setFailed(remote)}
+      source={{ uri }}
+      onError={() => setFailed((previous) => previous.includes(uri) ? previous : [...previous, uri])}
       resizeMode="cover"
-      style={style}
+      style={[{ backgroundColor: colors.subtle }, style]}
     />
   );
 }

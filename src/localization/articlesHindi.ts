@@ -1,4 +1,10 @@
 export const articlesHindi: Record<string, string> = {
+  'Article topics': 'लेखों के विषय',
+  'Search articles': 'लेख खोजें',
+  'Saved articles': 'सहेजे गए लेख',
+  'More saved articles': 'और सहेजे गए लेख',
+  'More articles': 'और लेख',
+  'Close Jeeva question': 'जीवा का सवाल बंद करें',
   "Wellness Library": "स्वास्थ्य पुस्तकालय",
   "Wellness Knowledge": "स्वास्थ्य संबंधी जानकारी",
   "Evidence-based wellness guides, Ayurveda wisdom, and health insights for daily vitality.":

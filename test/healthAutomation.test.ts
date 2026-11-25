@@ -21,30 +21,51 @@ function load(file: string, dependencies: Record<string, unknown>) {
   return module.exports;
 }
 const model = require('../src/features/health-connections/model.ts');
+const dayMs = 86400000;
+type AggregateQuery = { recordType: string; dataOriginFilter: string[]; timeRangeFilter: { startTime: string; endTime: string } };
+function groupedRecords(query: AggregateQuery, result: (query: AggregateQuery, index: number) => object | Promise<object>) {
+  const start = Date.parse(query.timeRangeFilter.startTime);
+  const count = (Date.parse(query.timeRangeFilter.endTime) - start) / dayMs;
+  return Promise.all(Array.from({ length: count }, async (_, index) => ({
+    startTime: new Date(start + index * dayMs).toISOString(),
+    result: await result(query, index),
+  })));
+}
 
 describe('Expanded native health import', () => {
-  it('batches a week per metric, keeps sparse IST dates aligned, and refuses another app’s bucket', async () => {
-    let aggregates = 0;
+  it('batches completed dates, reads today directly, and keeps sparse and foreign buckets out', async () => {
+    let aggregates = 0, historyQueries = 0;
     const native = { initialize: async () => true,
       getGrantedPermissions: async () => [{ recordType: 'Steps', accessType: 'read' }],
       aggregateRecord: async ({ timeRangeFilter, dataOriginFilter }: { timeRangeFilter: { startTime: string; endTime: string }; dataOriginFilter: string[] }) => {
-        const index = aggregates++;
+        aggregates++;
         assert.deepEqual(Array.from(dataOriginFilter), ['com.pebble.ring.app']);
         assert.ok(Date.parse(timeRangeFilter.endTime) > Date.parse(timeRangeFilter.startTime));
-        return { COUNT_TOTAL: index === 0 ? 0 : index * 100, dataOrigins: index === 2 ? [] : index === 4 ? ['other.health'] : ['com.pebble.ring.app'] };
+        return { COUNT_TOTAL: 600, dataOrigins: ['com.pebble.ring.app'] };
+      },
+      aggregateGroupByDuration: async (query: AggregateQuery) => {
+        historyQueries++;
+        assert.deepEqual(Array.from(query.dataOriginFilter), ['com.pebble.ring.app']);
+        const buckets = await groupedRecords(query, (_, index) => ({
+          COUNT_TOTAL: index * 100,
+          dataOrigins: index === 4 ? ['other.health'] : ['com.pebble.ring.app'],
+        }));
+        return buckets.filter((_, index) => index !== 2);
       },
     };
     const api = load('../src/features/health-connections/healthConnect.android.ts', {
       'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
     }) as { syncHealth: (selected: string[], source: string) => Promise<HealthSnapshot> };
     const snapshot = await api.syncHealth(['Steps'], 'com.pebble.ring.app');
-    assert.equal(aggregates, 7);
+    assert.equal(aggregates, 1);
+    assert.equal(historyQueries, 1);
+    assert.equal(snapshot.days.length, 30);
     assert.equal(snapshot.days[0].readings.Steps?.value, 0);
     assert.equal(snapshot.days[2].readings.Steps?.value, null);
     assert.equal(snapshot.days[3].readings.Steps?.value, 300);
     assert.equal(snapshot.days[4].readings.Steps?.value, null);
-    assert.equal(snapshot.days[6].readings.Steps?.value, 600);
-    assert.equal(snapshot.days[6].readings.Steps?.checkedAt, snapshot.syncedAt);
+    assert.equal(snapshot.days.at(-1)?.readings.Steps?.value, 600);
+    assert.equal(snapshot.days.at(-1)?.readings.Steps?.checkedAt, snapshot.syncedAt);
   });
   it('rejects missing sources and refuses mixed-origin readings or a weight from another app', async () => {
     let queries = 0;
@@ -54,6 +75,7 @@ describe('Expanded native health import', () => {
         queries++; assert.deepEqual(Array.from(dataOriginFilter), ['example.source']);
         return { COUNT_TOTAL: 2000, WEIGHT_AVG: { inKilograms: 60 }, dataOrigins: ['example.source', 'other.source'] };
       },
+      aggregateGroupByDuration: (query: AggregateQuery) => groupedRecords(query, () => ({ COUNT_TOTAL: 2000, dataOrigins: ['example.source', 'other.source'] })),
       readRecords: async (_type: string, options: { dataOriginFilter: string[] }) => {
         assert.deepEqual(Array.from(options.dataOriginFilter), ['example.source']);
         return { records: [{ time: new Date().toISOString(), weight: { inKilograms: 60 }, metadata: { dataOrigin: 'other.source' } }] };
@@ -75,7 +97,10 @@ describe('Expanded native health import', () => {
       aggregateRecord: async ({ dataOriginFilter }: { dataOriginFilter: string[] }) => {
         await Promise.resolve();
         return { COUNT_TOTAL: dataOriginFilter[0] === 'example.source' ? 100 : 900, dataOrigins: [dataOriginFilter[0]] };
-      }, readRecords: async () => ({ records: [] }),
+      },
+      aggregateGroupByDuration: (query: AggregateQuery) => groupedRecords(query, ({ dataOriginFilter }) =>
+        ({ COUNT_TOTAL: dataOriginFilter[0] === 'example.source' ? 100 : 900, dataOrigins: [dataOriginFilter[0]] })),
+      readRecords: async () => ({ records: [] }),
     };
     const api = load('../src/features/health-connections/healthConnect.android.ts', {
       'react-native': { Platform: { Version: 36 } }, './sleep.ts': { sleepIntervals }, './model': model, 'react-native-health-connect': native,
@@ -102,6 +127,8 @@ describe('Expanded native health import', () => {
         return permissions;
       },
       aggregateRecord: async ({ recordType, dataOriginFilter }: { recordType: string; dataOriginFilter: string[] }) => { assert.deepEqual(Array.from(dataOriginFilter), ['example.source']); return { ...values[recordType], dataOrigins: ['example.source'] }; },
+      aggregateGroupByDuration: (query: AggregateQuery) => groupedRecords(query, ({ recordType, dataOriginFilter }) =>
+        ({ ...values[recordType], dataOrigins: Array.from(dataOriginFilter) })),
       readRecords: async (type: string, options: { dataOriginFilter: string[]; timeRangeFilter: { startTime: string } }) => {
         assert.deepEqual(Array.from(options.dataOriginFilter), ['example.source']);
         const ranges = model.healthDayRanges();
@@ -221,15 +248,17 @@ describe('Background refresh lifecycle', () => {
     await h.run();
     assert.equal((await h.api.cachedBackgroundHealth('alice', 'other.source'))?.source, 'other.source');
   });
-  it('clears cache on revocation and failed reads, and declines obsolete account registrations', async () => {
+  it('preserves dated readings on transient failure, clears them on revocation, and rejects obsolete registrations', async () => {
     const h = backgroundHarness();
     assert.equal(await h.api.startBackgroundHealth('alice', ['Steps'], 'example.source', () => false), false);
     assert.equal(h.store.size, 0);
     await h.api.startBackgroundHealth('alice', ['Steps'], 'example.source');
     await h.run();
+    const previous = await h.api.cachedBackgroundHealth('alice', 'example.source');
+    assert.ok(previous);
     h.setRead(async () => { throw new Error('Provider read failed'); });
     assert.equal(await h.run(), 2);
-    assert.equal(await h.api.cachedBackgroundHealth('alice', 'example.source'), null);
+    assert.equal((await h.api.cachedBackgroundHealth('alice', 'example.source'))?.syncedAt, previous.syncedAt);
     h.revoke();
     await h.run();
     assert.equal(h.store.size, 0);

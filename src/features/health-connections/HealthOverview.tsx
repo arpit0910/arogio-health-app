@@ -51,9 +51,9 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
   const metric = available.includes(chosen) ? chosen : available[0];
   if (!metric) return null;
   const info = healthMetrics.find((item) => item.key === metric)!;
-  const day =
-    snapshot.days.find((item) => item.day === selectedDay && hasHealthValue(item.readings[metric]?.value)) ??
-    snapshot.days.filter(item => hasHealthValue(item.readings[metric]?.value)).at(-1);
+  const day = selectedDay
+    ? snapshot.days.find(item => item.day === selectedDay)
+    : snapshot.days.filter(item => hasHealthValue(item.readings[metric]?.value)).at(-1);
   const latestWeight =
     metric === "Weight" && !selectedDay ? snapshot.latestWeight : null;
   const chartDay = latestWeight
@@ -178,7 +178,7 @@ export function HealthOverview({ snapshot }: { snapshot: HealthSnapshot }) {
       </View>
       {summary.recorded > 0 && <><View style={{ gap: 6 }}>
         <Text accessibilityRole="header" style={c.title}>
-          {tr("Your week")}</Text>
+          {tr("Reading history")}</Text>
         <Text style={[c.text, { fontSize: 13 }]}>
           {snapshot.days[0] ? date(snapshot.days[0].day) : ""} –{" "}
           {snapshot.days.at(-1) ? date(snapshot.days.at(-1)!.day) : ""} {tr(" · IST")}</Text>

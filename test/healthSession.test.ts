@@ -11,7 +11,7 @@ describe('Health connection recovery', () => {
   it('keeps a saved source through a cache permission failure and retries only writer-supported types', async () => {
     const source = { id: 'com.pebble.ring.app', name: 'Pebble Halo', supportsHealthConnect: true, metrics: ['Steps'] };
     const unsupported = { id: 'example.legacy', name: 'Legacy app', supportsHealthConnect: false, metrics: [] };
-    const snapshot = { source: source.id, days: [], granted: ['Steps'], latestWeight: null, failed: [], syncedAt: new Date().toISOString() };
+    const snapshot = { source: source.id, days: [], granted: ['Steps'], latestWeight: null, failed: [], syncedAt: '2026-11-04T06:00:00.000Z' };
     let steps = 1000;
     let discoveryFails = false;
     let poll: () => void = () => {};
@@ -45,7 +45,7 @@ describe('Health connection recovery', () => {
     assert.equal(state.source.id, source.id);
     assert.equal(state.connected, true);
     assert.equal(state.error, '');
-    assert.deepEqual(synced.map(item => Array.from(item)), [['Steps']]);
+    assert.deepEqual(synced.map(item => Array.from(item)), [['Steps'], ['Steps']]);
     assert.equal(state.apps.length, 2);
     assert.equal(state.enabled, true);
     assert.equal(state.snapshot.days[0].readings.Steps.value, 1000);
@@ -55,7 +55,7 @@ describe('Health connection recovery', () => {
     steps = 70035;
     poll();
     await new Promise<void>(resolve => setImmediate(resolve));
-    assert.equal(render().snapshot.days[0].readings.Steps.value, 70035);
+    assert.equal(render().snapshot.days.at(-1).readings.Steps.value, 70035);
     discoveryFails = true;
     steps = 70050;
     await render().run();
@@ -66,7 +66,7 @@ describe('Health connection recovery', () => {
     const app = { id: 'example.writer', name: 'Writer', metrics: ['Steps', 'SleepSession', 'HeartRate', 'Weight'] as model.HealthMetric[] };
     const snapshot: model.HealthSnapshot = { source: app.id, syncedAt: '', days: [{ day: '2026-11-04', readings: { Steps: { value: 0, sources: [app.id] } } }], granted: ['Steps', 'SleepSession', 'HeartRate'], failed: ['HeartRate'], latestWeight: null };
     const statuses = readingDiagnostics(app, app.metrics, snapshot).map(item => item.status);
-    assert.deepEqual(statuses, ['Receiving records', 'No shared records in the last 7 days', 'Refresh failed', 'Read access off']);
+    assert.deepEqual(statuses, ['Receiving records', 'No shared records in the last 30 days', 'Refresh failed', 'Read access off']);
     assert.ok(readingDiagnostics(app, app.metrics, { ...snapshot, source: 'other.writer' }).every(item => item.status === 'Not checked yet'));
   });
 });

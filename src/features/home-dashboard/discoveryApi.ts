@@ -1,9 +1,10 @@
 import { loadProviderPage } from "../care-directory/providerCatalog";
-export async function loadDiscovery(signal: AbortSignal) {
+export async function loadDiscovery(signal: AbortSignal, city?: string) {
   const results = await Promise.allSettled(
     ["hospital", "doctor"].map((kind) =>
       loadProviderPage(kind as "hospital" | "doctor", "", 1, signal, {
         limit: 3,
+        ...(city ? { city } : {}),
       }),
     ),
   );

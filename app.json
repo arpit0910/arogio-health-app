@@ -140,7 +140,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Allow Arogio to find your city during account setup or nearby blood banks when you ask. Blood-bank search coordinates are not saved."
+          "locationWhenInUsePermission": "Allow Arogio to find your city and show nearby hospitals, doctors and blood banks."
         }
       ]
     ],
