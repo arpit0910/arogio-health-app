@@ -175,15 +175,11 @@ export function ArticleScreen() {
           </>
         ) : (
           <>
-            <View style={{width: '100%', aspectRatio: 1.8, borderRadius: 16, overflow: 'hidden', backgroundColor: colors.subtle}}><ArticleThumbnail
+            <ArticleThumbnail
               thumbnailUrl={article.thumbnail_url}
               imageUrl={article.image_url}
-              style={{
-                width: "100%",
-                height: '100%',
-                backgroundColor: colors.subtle,
-              }}
-            /></View>
+              style={{ width: "100%", height: 168, borderRadius: 16 }}
+            />
             <View style={{ gap: 8 }}>
               <Text style={[c.text, { color: colors.primaryPressed }]}>
                 {[(hindi && article.category_hi) || article.category, minutes ? minutes + ' ' + tr('min read') : ''].filter(Boolean).join(' · ')}

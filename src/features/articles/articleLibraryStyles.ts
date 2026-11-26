@@ -19,7 +19,7 @@ export const articleLibraryStyles = StyleSheet.create({
   filters: { padding: 14, backgroundColor: colors.surface, borderRadius: 16, gap: 10 },
   sortOptions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   article: { borderRadius: ui.radius.card, backgroundColor: colors.mintSurface, overflow: 'hidden', marginBottom: 16 },
-  cover: { width: '100%', aspectRatio: 1.8 },
+  cover: { width: '100%', height: 144 },
   articleCopy: { padding: 18, gap: 8 },
   articleTitle: { ...typeStyles.heading, color: colors.ink },
   bookmark: { position: 'absolute', top: 10, right: 10 },

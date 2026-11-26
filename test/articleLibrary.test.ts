@@ -7,14 +7,17 @@ import {
   estimateReadingMinutes,
 } from "../src/features/articles/articleLibraryModel.ts";
 
-test("tries uploaded and article-specific images before category covers", () => {
+test("uses only uploaded and article-specific images", () => {
   const api = "https://backend.arogio.com/api/v1";
   const upload = "/api/v1/public/articles/00000000-0000-0000-0000-000000000001/thumbnail?v=revision";
   const cover = "/admin-assets/article-thumbnails/sleep.jpg";
   const image = "https://images.example.test/article.jpg";
   assert.deepEqual(articleImageCandidates(api, upload, image), [new URL(upload, api).href, image]);
-  assert.deepEqual(articleImageCandidates(api, cover, image), [image, new URL(cover, api).href]);
+  assert.deepEqual(articleImageCandidates(api, cover, image), [image]);
   assert.deepEqual(articleImageCandidates(api, image, image), [image]);
+  assert.deepEqual(articleImageCandidates(api, cover), []);
+  assert.deepEqual(articleImageCandidates(api, image), []);
+  assert.deepEqual(articleImageCandidates(api, cover, cover), []);
   assert.deepEqual(articleImageCandidates(api, "//other.example.test/image.jpg", "http://images.example.test/article.jpg"), []);
 });
 
@@ -30,9 +33,9 @@ test("resolves backend thumbnails from the host root with React Native URL behav
   try {
     const api = "https://backend.arogio.com/api/v1";
     const uploaded = "/api/v1/public/articles/00000000-0000-0000-0000-000000000001/thumbnail?v=revision";
-    const category = "/admin-assets/article-thumbnails/wellbeing.jpg";
+    const articleImage = "/uploads/articles/article.jpg";
     assert.deepEqual(articleImageCandidates(api, uploaded), ["https://backend.arogio.com" + uploaded]);
-    assert.deepEqual(articleImageCandidates(api, category), ["https://backend.arogio.com" + category]);
+    assert.deepEqual(articleImageCandidates(api, undefined, articleImage), ["https://backend.arogio.com" + articleImage]);
   } finally {
     globalThis.URL = StandardURL;
   }
