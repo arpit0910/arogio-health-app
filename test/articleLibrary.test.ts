@@ -18,6 +18,26 @@ test("tries uploaded and article-specific images before category covers", () => 
   assert.deepEqual(articleImageCandidates(api, "//other.example.test/image.jpg", "http://images.example.test/article.jpg"), []);
 });
 
+test("resolves backend thumbnails from the host root with React Native URL behavior", () => {
+  const StandardURL = globalThis.URL;
+  globalThis.URL = class extends StandardURL {
+    constructor(input: string | URL, base?: string | URL) {
+      const value = String(input);
+      const root = base === undefined ? "" : String(base).replace(/\/$/, "");
+      super(root && value.startsWith("/") ? root + value : value, base);
+    }
+  };
+  try {
+    const api = "https://backend.arogio.com/api/v1";
+    const uploaded = "/api/v1/public/articles/00000000-0000-0000-0000-000000000001/thumbnail?v=revision";
+    const category = "/admin-assets/article-thumbnails/wellbeing.jpg";
+    assert.deepEqual(articleImageCandidates(api, uploaded), ["https://backend.arogio.com" + uploaded]);
+    assert.deepEqual(articleImageCandidates(api, category), ["https://backend.arogio.com" + category]);
+  } finally {
+    globalThis.URL = StandardURL;
+  }
+});
+
 test("formats two-hash lines as bold and preserves other lines and blank space", () => {
   assert.deepEqual(articleBodyLines("Introduction\r\n## Rest well\r\n\r\n  ##अगला भाग\nBody ## marker\n### Other\n##"), [
     { text: "Introduction", bold: false },

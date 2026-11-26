@@ -32,13 +32,7 @@ type HeaderProps = {
   setFiltersOpen: (open: boolean) => void;
   sort: ArticleSort;
   setSort: (sort: ArticleSort) => void;
-  savedOnly: boolean;
   reset: () => void;
-  featured?: Article;
-  hasMore: boolean;
-  savedIds: string[];
-  toggleSaved: (id: string) => Promise<void>;
-  saving: boolean;
   error: string;
 };
 
@@ -51,7 +45,7 @@ const sorts = [
 
 export function LibraryHeader(props: HeaderProps) {
   const { t, language } = useTranslation();
-  const { search, setSearch, submitSearch, category, setCategory, topics, filtersOpen, setFiltersOpen, sort, setSort, featured } = props;
+  const { search, setSearch, submitSearch, category, setCategory, topics, filtersOpen, setFiltersOpen, sort, setSort } = props;
   return <View style={s.header}>
     <View style={s.searchRow}>
       <View style={s.search}>
@@ -86,35 +80,31 @@ export function LibraryHeader(props: HeaderProps) {
       <Button title={t('Clear filters')} variant="secondary" onPress={props.reset} />
     </View>}
     {!!props.error && <Text accessibilityRole="alert" style={s.error}>{t(props.error)}</Text>}
-    {featured && <LibraryArticleCard article={featured} featured saved={props.savedIds.includes(featured.id)}
-      toggleSaved={() => void props.toggleSaved(featured.id)} saving={props.saving} />}
-    {props.hasMore && <Text accessibilityRole="header" style={s.sectionTitle}>{t(props.savedOnly ? 'More saved articles' : 'More articles')}</Text>}
   </View>;
 }
 
-export function LibraryArticleCard({ article, featured = false, saved, toggleSaved, saving = false }: {
-  article: Article; featured?: boolean; saved: boolean; toggleSaved: () => void; saving?: boolean;
+export function LibraryArticleCard({ article, saved, toggleSaved, saving = false }: {
+  article: Article; saved: boolean; toggleSaved: () => void; saving?: boolean;
 }) {
-  const { language, t } = useTranslation(), router = useRouter(), { width, fontScale } = useWindowDimensions();
+  const { language, t } = useTranslation(), router = useRouter(), { fontScale } = useWindowDimensions();
   const title = (language === 'hi' && article.title_hi) || article.title_en;
   const excerpt = (language === 'hi' && article.excerpt_hi) || article.excerpt_en;
   const category = (language === 'hi' && article.category_hi) || article.category;
   const minutes = language === 'hi' ? article.reading_minutes_hi ?? article.reading_minutes_en : article.reading_minutes_en;
   const meta = [category, minutes ? minutes + ' ' + t('min read') : ''].filter(Boolean).join(' · ');
-  const stack = width < 420 && fontScale >= 1.4;
   const open = () => router.push({ pathname: '/articles/[id]', params: { id: article.id } });
   const bookmarkLabel = (saved ? t('Remove saved article') : t('Save article')) + ': ' + title;
-  return <View style={featured ? s.feature : s.article}>
+  return <View style={s.article}>
     <TouchTarget accessibilityRole="button" accessibilityLabel={title} onPress={open}
-      style={({ pressed }) => [featured ? s.featureLink : s.articleLink, stack && !featured && s.stackedLink, { opacity: pressed ? 0.76 : 1 }]}>
-      <ArticleThumbnail thumbnailUrl={article.thumbnail_url} imageUrl={article.image_url} style={featured ? s.cover : [s.thumbnail, stack && s.smallCover]} />
-      <View style={featured ? s.featureCopy : s.rowCopy}>
+      style={({ pressed }) => ({ opacity: pressed ? 0.76 : 1 })}>
+      <ArticleThumbnail thumbnailUrl={article.thumbnail_url} imageUrl={article.image_url} style={s.cover} />
+      <View style={s.articleCopy}>
         {!!meta && <Text style={s.meta}>{meta}</Text>}
-        <Text style={featured ? s.featureTitle : s.rowTitle}>{title}</Text>
-        {featured && !!excerpt && <Text style={s.body} numberOfLines={fontScale >= 1.3 ? undefined : 3}>{excerpt}</Text>}
+        <Text style={s.articleTitle}>{title}</Text>
+        {!!excerpt && <Text style={s.body} numberOfLines={fontScale >= 1.3 ? undefined : 3}>{excerpt}</Text>}
       </View>
     </TouchTarget>
-    <View style={featured ? s.featureBookmark : s.bookmark}>
+    <View style={s.bookmark}>
       <IconButton icon="bookmark" selected={saved} disabled={saving} label={bookmarkLabel} onPress={toggleSaved} />
     </View>
   </View>;

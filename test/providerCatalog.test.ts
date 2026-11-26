@@ -96,6 +96,8 @@ function loader(request: (options: Request) => Promise<unknown>) {
         require: (name: string) => {
           if (name === "./api")
             return load("src/features/care-directory/api.ts");
+          if (name === "../../services/api/mediaUrl")
+            return load("src/services/api/mediaUrl.ts");
           if (name === "../care-directory/providerCatalog")
             return load("src/features/care-directory/providerCatalog.ts");
           if (name in deps) return deps[name];

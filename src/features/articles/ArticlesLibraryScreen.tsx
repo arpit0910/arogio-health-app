@@ -213,7 +213,7 @@ function LibrarySession({ initialSearch, initialCategory, initialSaved }: { init
       }
     >
       <FlatList
-        data={articles.slice(1)}
+        data={articles}
         keyExtractor={(article) => article.id}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
@@ -231,13 +231,7 @@ function LibrarySession({ initialSearch, initialCategory, initialSaved }: { init
             setFiltersOpen={setFiltersOpen}
             sort={sort}
             setSort={setSort}
-            savedOnly={savedOnly}
             reset={reset}
-            featured={articles[0]}
-            hasMore={articles.length > 1}
-            savedIds={savedIds}
-            toggleSaved={toggleSaved}
-            saving={saving || !bookmarksReady}
             error={bookmarkError}
           />
         }

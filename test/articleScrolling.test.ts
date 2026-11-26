@@ -70,10 +70,10 @@ describe('Article infinite scrolling', () => {
       app.render(); await app.settle();
       const list = app.render(); list.onEndReached(); list.onEndReached();
       await app.settle();
-      assert.deepEqual(Array.from(app.render().data, (item: any) => item.id), ['b', 'c']);
+      assert.deepEqual(Array.from(app.render().data, (item: any) => item.id), ['a', 'b', 'c']);
       app.render().onEndReached(); await app.settle(); app.render().onEndReached();
       assert.deepEqual(app.calls.map(call => call.page), [1, 2, 3]);
-      assert.deepEqual(Array.from(app.render().data, (item: any) => item.id), ['b', 'c', 'd']);
+      assert.deepEqual(Array.from(app.render().data, (item: any) => item.id), ['a', 'b', 'c', 'd']);
     } finally { app.close(); }
   });
   it('retains articles after a next-page failure and retries that page', async () => {
@@ -81,12 +81,12 @@ describe('Article infinite scrolling', () => {
     try {
       app.render(); await app.settle(); app.render().onEndReached(); await app.settle();
       let list = app.render();
-      assert.equal(list.data.length, 1);
+      assert.equal(list.data.length, 2);
       list.onEndReached(); await app.settle();
       assert.equal(app.calls.length, 2);
       find(list.ListFooterComponent, node => node.props?.title === 'Retry').props.onPress();
       await app.settle(); list = app.render();
-      assert.equal(list.data.length, 2);
+      assert.equal(list.data.length, 3);
       assert.deepEqual(app.calls.map(call => call.page), [1, 2, 2]);
     } finally { app.close(); }
   });
@@ -97,7 +97,7 @@ describe('Article infinite scrolling', () => {
       app.render().ListHeaderComponent.props.setSearch('rest');
       app.render().ListHeaderComponent.props.submitSearch();
       app.render(); await app.settle();
-      assert.deepEqual([app.render().ListHeaderComponent.props.featured.id, ...Array.from(app.render().data, (item: any) => item.id)], ['filtered']);
+      assert.deepEqual(Array.from(app.render().data, (item: any) => item.id), ['filtered']);
       assert.equal(app.calls.at(-1)?.page, 1); assert.equal(app.calls.at(-1)?.term, 'rest');
       app.render().ListHeaderComponent.props.setCategory('Sleep');
       app.render(); await app.settle();

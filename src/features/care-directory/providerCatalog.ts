@@ -8,6 +8,7 @@ import {
   type CareKind,
 } from "./api";
 import { env } from "../../configuration/environment";
+import { resolveMediaUrl } from "../../services/api/mediaUrl";
 const reference = z.object({
   id: z.string().uuid(),
   name_en: z.string(),
@@ -80,20 +81,8 @@ export function providerImageUrl(
   value: string | null | undefined,
   base = env.apiUrl,
 ) {
-  if (!value) return undefined;
-  try {
-    const url = new URL(value, base);
-    if (
-      !["http:", "https:"].includes(url.protocol) ||
-      url.origin !== new URL(base).origin ||
-      url.username ||
-      url.password
-    )
-      return undefined;
-    return url.toString();
-  } catch {
-    return undefined;
-  }
+  const url = resolveMediaUrl(value, base);
+  return url && url.origin === new URL(base).origin ? url.href : undefined;
 }
 export function adaptProvider(
   kind: "doctor" | "hospital",
