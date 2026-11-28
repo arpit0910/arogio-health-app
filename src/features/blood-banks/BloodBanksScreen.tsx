@@ -3,6 +3,7 @@ import { useTranslation } from "../../localization/LanguageProvider";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   Linking,
   View,
 } from "react-native";
@@ -14,6 +15,7 @@ import { Button } from "../../components/ui/Button";
 import { TouchTarget } from "../../components/ui/TouchTarget";
 import { usePalette } from "../../theme/AppearanceProvider";
 import { directoryDirections, publicApi as apiClient } from "../care-directory/api";
+import { providerImageUrl } from "../care-directory/providerCatalog";
 import { bankListSchema, dialNumber, type Bank } from "../../services/api/healthResourcesApi";
 import { DirectoryLocationControl } from "../care-directory/DirectoryLocationControl";
 import { NEARBY_RADIUS_KM, useDirectoryLocation } from "../care-directory/useDirectoryLocation";
@@ -177,7 +179,15 @@ export function BloodBanksScreen() {
           gap: 12,
         }}
       >
-        <Text style={c.title}>{(hindi && bank.name_hi) || bank.name_en}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <View style={{ width: 64, height: 64, borderRadius: 14, backgroundColor: colors.errorSurface, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <AppIcon name="drop" size={26} color={colors.error} />
+            {!!providerImageUrl(bank.image_url) && (
+              <Image source={{ uri: providerImageUrl(bank.image_url)! }} resizeMode="cover" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+            )}
+          </View>
+          <Text style={[c.title, { flex: 1 }]}>{(hindi && bank.name_hi) || bank.name_en}</Text>
+        </View>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
           <AppIcon name="location" size={19} color={colors.primary} />
           <View style={{ flex: 1, gap: 4 }}>

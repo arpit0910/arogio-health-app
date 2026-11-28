@@ -16,17 +16,33 @@ const groundingCover = require('../../../assets/wellness/grounding.jpg');
 const bodyScanCover = require('../../../assets/articles/mindfulness.jpg');
 const restCover = require('../../../assets/articles/sleep.jpg');
 
-export function PracticeCover({ section, videoId, thumbnailVariant, style }: {
-  section?: string; videoId?: string; thumbnailVariant?: Exercise['thumbnailVariant']; style?: StyleProp<ViewStyle>;
+const postureAssets: Record<string, ReturnType<typeof require>> = {
+  'posture:chair': yogaCover,
+  'posture:standing': eveningCover,
+  'posture:seated': yogaCover,
+  'posture:kneeling': eveningCover,
+  'posture:floor': restCover,
+  'posture:balance': eveningCover,
+  'posture:instructor': yogaCover,
+  'posture:meditation': meditationCover,
+};
+
+export function PracticeCover({ section, videoId, imageUrl, thumbnailVariant, style }: {
+  section?: string; videoId?: string; imageUrl?: string; thumbnailVariant?: Exercise['thumbnailVariant']; style?: StyleProp<ViewStyle>;
 }) {
   const colors = usePalette();
-  const [failedVideo, setFailedVideo] = useState<string>();
-  const video = videoId && /^[A-Za-z0-9_-]{11}$/.test(videoId) && failedVideo !== videoId ? videoId : undefined;
-  const fallback = thumbnailVariant === 'evening-yoga' ? eveningCover : thumbnailVariant === 'body-scan' ? bodyScanCover
-    : section === 'yoga' ? yogaCover : section === 'grounding' ? groundingCover : section === 'rest' ? restCover : meditationCover;
+  const [failedUri, setFailedUri] = useState<string>();
+  const video = videoId && /^[A-Za-z0-9_-]{11}$/.test(videoId) ? videoId : undefined;
+  const remoteUri = imageUrl && imageUrl.startsWith('https://') && failedUri !== imageUrl
+    ? imageUrl
+    : video && failedUri !== `yt:${video}`
+      ? `https://i.ytimg.com/vi/${video}/hqdefault.jpg`
+      : undefined;
+  const fallback = (imageUrl && postureAssets[imageUrl]) || (thumbnailVariant === 'evening-yoga' ? eveningCover : thumbnailVariant === 'body-scan' ? bodyScanCover
+    : section === 'yoga' ? yogaCover : section === 'grounding' ? groundingCover : section === 'rest' ? restCover : meditationCover);
   return <View style={[styles.cover, { backgroundColor: colors.mintSurface }, style]}>
-    <Image key={video ?? 'cover'} accessible={false} source={video ? { uri: `https://i.ytimg.com/vi/${video}/hqdefault.jpg` } : fallback}
-      onError={video ? () => setFailedVideo(video) : undefined} resizeMode="cover" style={styles.image} />
+    <Image key={remoteUri ?? imageUrl ?? 'cover'} accessible={false} source={remoteUri ? { uri: remoteUri } : fallback}
+      onError={remoteUri ? () => setFailedUri(imageUrl?.startsWith('https://') ? imageUrl : `yt:${video}`) : undefined} resizeMode="cover" style={styles.image} />
   </View>;
 }
 
@@ -36,6 +52,7 @@ export type PracticeCardItem = {
   detail: string;
   section?: string;
   videoId?: string;
+  imageUrl?: string;
   thumbnailVariant?: Exercise['thumbnailVariant'];
 };
 
@@ -48,6 +65,7 @@ export function catalogCard(item: MeditationItem, hindi: boolean, videoLabel: st
     detail: [item.kind === 'video' ? videoLabel : '', duration ? clockTime(duration) : ''].filter(Boolean).join(' · '),
     section: item.section,
     videoId: item.videoId ?? undefined,
+    imageUrl: exercise.imageUrl,
     thumbnailVariant: exercise.thumbnailVariant,
   };
 }
@@ -68,7 +86,7 @@ export function PracticeCardRow({ title, items, onOpen, onBrowse, browseLabel }:
     <TouchTarget key={item.id} accessibilityRole="button" accessibilityLabel={[item.title, item.detail].filter(Boolean).join(', ')}
       onPress={() => onOpen(item)}
       style={({ pressed }) => [styles.card, { width: stacked ? '100%' : cardWidth, maxWidth: stacked ? 520 : undefined, opacity: pressed ? 0.8 : 1, borderColor: colors.border, backgroundColor: colors.surface }]}>
-      <PracticeCover section={item.section} videoId={item.videoId} thumbnailVariant={item.thumbnailVariant} />
+      <PracticeCover section={item.section} videoId={item.videoId} imageUrl={item.imageUrl} thumbnailVariant={item.thumbnailVariant} />
       <View style={styles.copy}>
         <View style={{ flex: 1, gap: 4 }}>
           <Text style={[typeStyles.rowTitle, { color: colors.ink }]}>{item.title}</Text>

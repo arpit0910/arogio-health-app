@@ -4,6 +4,7 @@ import {
   readHealthSnapshot,
   healthRead,
   healthMetrics,
+  type ExerciseWorkout,
   type HealthAvailability,
   type HealthMetric,
   type HealthReader,
@@ -67,8 +68,10 @@ function normalizeAggregate(metric: HealthMetric, result: NativeAggregate, sourc
     FloorsClimbed: result.FLOORS_CLIMBED_TOTAL, RestingHeartRate: result.BPM_AVG, Hydration: result.VOLUME_TOTAL?.inLiters,
   };
   const validSource = sources.length > 0 && sources.every(origin => origin === source), value = values[metric];
-  return { value: validSource && value != null && Number.isFinite(value) && value >= 0 ? value : null,
-    sources: validSource ? sources : [] };
+  return {
+    value: validSource && value != null && Number.isFinite(value) && value >= 0 ? value : null,
+    sources: validSource ? sources : []
+  };
 }
 /** Every native request stays scoped to the selected app. IST has fixed 24h days. */
 function createReader(source: string): HealthReader {
@@ -77,8 +80,10 @@ function createReader(source: string): HealthReader {
     granted: grantedTypes,
     async aggregate(metric, start, end): Promise<Reading> {
       if (start === end) return { value: null, sources: [] };
-      return normalizeAggregate(metric, await healthRead(Health.aggregateRecord({ recordType: metric,
-        timeRangeFilter: { operator: 'between', startTime: start, endTime: end }, dataOriginFilter })), source);
+      return normalizeAggregate(metric, await healthRead(Health.aggregateRecord({
+        recordType: metric,
+        timeRangeFilter: { operator: 'between', startTime: start, endTime: end }, dataOriginFilter
+      })), source);
     },
     aggregateDays: async (metric, ranges) => {
       const first = ranges[0], last = ranges.at(-1);
@@ -139,10 +144,10 @@ function createReader(source: string): HealthReader {
       const record = response.records[0];
       return record?.metadata?.dataOrigin === source
         ? {
-            kg: record.weight.inKilograms,
-            at: record.time,
-            source: record.metadata?.dataOrigin ?? '',
-          }
+          kg: record.weight.inKilograms,
+          at: record.time,
+          source: record.metadata?.dataOrigin ?? '',
+        }
         : null;
     },
   };
@@ -162,14 +167,18 @@ export async function checkSourceRecords(metrics: HealthMetric[], source: string
   const checks: SourceRecordCheck[] = [];
   for (const metric of metrics.filter(item => granted.includes(item))) {
     try {
-      const response = await healthRead(Health.readRecords(metric, { dataOriginFilter: [source], pageSize: 1, ascendingOrder: false,
-        timeRangeFilter: { operator: 'between', startTime: start.toISOString(), endTime: end.toISOString() } }));
+      const response = await healthRead(Health.readRecords(metric, {
+        dataOriginFilter: [source], pageSize: 1, ascendingOrder: false,
+        timeRangeFilter: { operator: 'between', startTime: start.toISOString(), endTime: end.toISOString() }
+      }));
       const record = response.records.find(item => item.metadata?.dataOrigin === source);
       const instant = record ? ('time' in record ? record.time : 'endTime' in record ? record.endTime : null) : null;
       const recordedAt = typeof instant === 'string' ? instant : null;
       const modifiedAt = record?.metadata?.lastModifiedTime;
-      checks.push({ metric, source, recordedAt: recordedAt && Number.isFinite(Date.parse(recordedAt)) ? recordedAt : null,
-        modifiedAt: modifiedAt && Number.isFinite(Date.parse(modifiedAt)) ? modifiedAt : null, failed: false });
+      checks.push({
+        metric, source, recordedAt: recordedAt && Number.isFinite(Date.parse(recordedAt)) ? recordedAt : null,
+        modifiedAt: modifiedAt && Number.isFinite(Date.parse(modifiedAt)) ? modifiedAt : null, failed: false
+      });
     } catch { checks.push({ metric, source, recordedAt: null, modifiedAt: null, failed: true }); }
   }
   return checks;
@@ -197,4 +206,38 @@ export async function requestBackgroundHealth() {
   await initializeHealth();
   await Health.requestPermission([{ accessType: 'read', recordType: 'BackgroundAccessPermission' }]);
   return backgroundHealthGranted();
+}
+
+export async function readExerciseSessions(source: string, days = 7): Promise<ExerciseWorkout[]> {
+  if (!source || !/^[a-zA-Z][\w]*(\.[a-zA-Z][\w]*)+$/.test(source)) return [];
+  await initializeHealth();
+  const granted = await grantedTypes();
+  if (!granted.includes('ExerciseSession')) return [];
+  const end = new Date();
+  const start = new Date(end.getTime() - Math.max(1, days) * 86400000);
+  const response = await healthRead(
+    Health.readRecords('ExerciseSession', {
+      dataOriginFilter: [source],
+      pageSize: 50,
+      ascendingOrder: false,
+      timeRangeFilter: { operator: 'between', startTime: start.toISOString(), endTime: end.toISOString() },
+    }),
+  );
+  return response.records
+    .filter((record) => record.metadata?.dataOrigin === source)
+    .map((record, index) => {
+      const startMs = Date.parse(record.startTime);
+      const endMs = Date.parse(record.endTime);
+      const durationMinutes = Number.isFinite(startMs) && Number.isFinite(endMs) && endMs > startMs
+        ? Math.round((endMs - startMs) / 60000)
+        : 0;
+      return {
+        id: record.metadata?.id || `${record.startTime}-${index}`,
+        title: record.title?.trim() || 'Workout',
+        exerciseType: record.exerciseType,
+        startTime: record.startTime,
+        endTime: record.endTime,
+        durationMinutes,
+      };
+    });
 }

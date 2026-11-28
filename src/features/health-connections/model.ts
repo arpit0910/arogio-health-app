@@ -29,6 +29,14 @@ export type HealthMetric = (typeof healthMetrics)[number]['key'];
 export type HealthAvailability =
   'available' | 'update-required' | 'unsupported' | 'rebuild-required';
 export type Reading = { value: number | null; sources: string[]; checkedAt?: string };
+export type ExerciseWorkout = {
+  id: string;
+  title: string;
+  exerciseType: number;
+  startTime: string;
+  endTime: string;
+  durationMinutes: number;
+};
 export type SourceRecordCheck = { metric: HealthMetric; source: string; recordedAt: string | null; modifiedAt: string | null; failed: boolean };
 export type DailyHealth = {
   day: string;

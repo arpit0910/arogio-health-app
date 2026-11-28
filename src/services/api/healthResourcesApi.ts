@@ -38,6 +38,7 @@ export const bankSchema = z.object({
   component_facility: z.boolean(),
   apheresis_facility: z.boolean(),
   available_blood_groups: z.array(z.string()),
+  image_url: z.string().nullable().optional(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
   distanceKm: z.number().optional(),

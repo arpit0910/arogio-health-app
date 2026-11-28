@@ -1,4 +1,4 @@
-import type { HealthAvailability, HealthMetric, HealthSnapshot, SourceRecordCheck } from './model';
+import type { ExerciseWorkout, HealthAvailability, HealthMetric, HealthSnapshot, SourceRecordCheck } from './model';
 export async function healthAvailability(): Promise<HealthAvailability> {
   return 'unsupported';
 }
@@ -23,4 +23,7 @@ export async function backgroundHealthGranted() { return false; }
 export async function requestBackgroundHealth() { return false; }
 export async function checkSourceRecords(_metrics: HealthMetric[], _source: string): Promise<SourceRecordCheck[]> {
   throw new Error('Health Connect is available in the Android app.');
+}
+export async function readExerciseSessions(_source: string, _days?: number): Promise<ExerciseWorkout[]> {
+  return [];
 }

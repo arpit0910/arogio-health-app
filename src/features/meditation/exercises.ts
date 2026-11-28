@@ -1,3 +1,14 @@
+export type ExerciseStep = {
+  title: string;
+  instruction: string;
+  seconds: number;
+  sanskritName?: string;
+  imageUrl?: string;
+  impact?: string;
+  videoId?: string | null;
+  phase?: 'warmup' | 'main' | 'cooldown';
+};
+
 export type Exercise = {
   section?: string;
   thumbnailVariant?: 'evening-yoga' | 'body-scan';
@@ -6,7 +17,13 @@ export type Exercise = {
   title: string;
   description: string;
   preparation: string;
-  steps: { title: string; instruction: string; seconds: number }[];
+  impact?: string;
+  sanskritName?: string;
+  difficulty?: 'gentle' | 'beginner' | 'intermediate';
+  imageUrl?: string;
+  audioUrl?: string;
+  videoId?: string | null;
+  steps: ExerciseStep[];
   repeat?: number;
 };
 

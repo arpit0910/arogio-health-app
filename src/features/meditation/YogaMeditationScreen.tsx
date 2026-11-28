@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 import { AppScreen } from '../../components/app/AppScreen';
+import { DTabs } from '../../components/app/DesignUI';
 import { AccessibleText as Text } from '../../components/ui/AccessibleText';
 import { Button } from '../../components/ui/Button';
 import { useTranslation } from '../../localization/LanguageProvider';
@@ -24,9 +26,17 @@ export function YogaMeditationScreen({ section }: { section?: 'yoga' | 'meditati
   const { query, items } = useMeditationLibrary(section === 'yoga' ? 'yoga' : undefined);
   const yogaPreview = useMeditationLibrary('yoga', !section);
   const heading = !section ? 'Yoga & Meditation' : section === 'yoga' ? 'Yoga' : 'Meditation';
+  const [filter, setFilter] = useState('All');
   const yoga = (!section && yogaPreview.query.data ? yogaPreview.items : items).filter(item => item.section === 'yoga');
   const meditation = items.filter(item => item.section !== 'yoga');
-  const visible = section === 'yoga' ? yoga : section === 'meditation' ? meditation : items;
+  const baseVisible = section === 'yoga' ? yoga : section === 'meditation' ? meditation : items;
+  const visible = baseVisible.filter(item => {
+    if (filter === 'Videos') return item.kind === 'video';
+    if (filter === 'Gentle') return item.difficulty === 'gentle';
+    if (filter === 'Beginner') return item.difficulty === 'beginner';
+    if (filter === 'Intermediate') return item.difficulty === 'intermediate';
+    return true;
+  });
   const cards = (entries: MeditationItem[]) => entries.map(item => catalogCard(item, language === 'hi', t('Video')));
   function open(item: PracticeCardItem) {
     if (item.videoId) {
@@ -43,6 +53,9 @@ export function YogaMeditationScreen({ section }: { section?: 'yoga' | 'meditati
     onRefresh={() => { void query.refetch(); if (!section) void yogaPreview.query.refetch(); }}>
     <View style={{ gap: 24 }}>
       <Text style={[typeStyles.body, { color: colors.muted }]}>{t(intro)}</Text>
+      {Boolean(section) && (
+        <DTabs options={['All', 'Gentle', 'Beginner', 'Intermediate', 'Videos']} value={filter} onChange={setFilter} grid columns={3} />
+      )}
       {query.isPending && <ActivityIndicator color={colors.primary} accessibilityLabel={t('Loading meditation library')} />}
       {query.isError && !query.data && <View style={{ gap: 12 }}>
         <Text accessibilityRole="alert" style={[typeStyles.body, { color: colors.ink }]}>{t('The library could not refresh. Try again when you are online.')}</Text>

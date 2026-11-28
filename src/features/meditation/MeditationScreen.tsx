@@ -172,14 +172,46 @@ export function MeditationScreen() {
       <Button title={tr('Browse guided collections')} variant="secondary" onPress={() => router.push('/wellness-collections')} />
       </View>
     </> : <>
-      <PracticeAudio running={running} language={language} cue={position ? position.step.seconds <= 8 ? tr(position.step.title) : `${tr(position.step.title)}. ${tr(position.step.instruction)}` : ''} />
-      {preview ? <PracticeDetailIntro exercise={selected} /> : <View style={s.session}>
+      <PracticeAudio running={running} language={language} audioUrl={selected.audioUrl} cue={position ? position.step.seconds <= 8 ? tr(position.step.title) : `${tr(position.step.title)}. ${tr(position.step.instruction)}` : ''} />
+      {preview ? <PracticeDetailIntro exercise={selected} onWatchVideo={selected.videoId ? () => router.push({ pathname: '/meditation-video', params: { id: selected.videoId!, contentId: selected.id, title: selected.title, section: selected.section } }) : undefined} /> : <View style={s.session}>
         <Text style={a.subtitle}>{tr(selected.section === 'yoga' ? 'Yoga' : 'Meditation')}{' \u00b7 '}{clockTime(duration)}</Text>
+        {(position?.step.imageUrl || selected.imageUrl || position?.step.videoId || selected.videoId) && !complete && (
+          <PracticeCover
+            section={selected.section}
+            imageUrl={position?.step.imageUrl ?? selected.imageUrl}
+            videoId={(position?.step.videoId ?? selected.videoId) || undefined}
+            thumbnailVariant={selected.thumbnailVariant}
+            style={{ borderRadius: 16 }}
+          />
+        )}
         <Text accessibilityRole="header" style={s.libraryTitle}>{tr(selected.title)}</Text>
-        <Text style={s.status}>{tr(complete ? 'Practice complete' : running ? 'In progress' : 'Paused')}</Text>
+        {!!(position?.step.sanskritName || selected.sanskritName) && !complete && (
+          <Text style={[s.status, { fontStyle: 'italic' }]}>{position?.step.sanskritName ?? selected.sanskritName}</Text>
+        )}
+        <Text style={s.status}>
+          {tr(complete ? 'Practice complete' : running ? 'In progress' : 'Paused')}
+          {!complete && position?.step.phase ? ` · ${tr(position.step.phase === 'warmup' ? 'Warm-up' : position.step.phase === 'cooldown' ? 'Cool-down' : 'Main posture')}` : ''}
+        </Text>
         <Text accessibilityLabel={`${tr('Time remaining')}: ${clockTime(duration - elapsed)}`} style={s.timer}>{clockTime(duration - elapsed)}</Text>
         <Text accessibilityLiveRegion="polite" accessibilityRole="header" style={a.sectionTitle}>{tr(complete ? 'Take a moment' : position?.step.title ?? '')}</Text>
         <Text style={[a.subtitle, s.center]}>{tr(complete ? 'Notice how you feel. Return to your day whenever you are ready.' : position?.step.instruction ?? '')}</Text>
+        {!!position?.step.impact && !complete && (
+          <View style={s.impactBox}>
+            <Text style={s.impactLabel}>{tr('Impact on body')}</Text>
+            <Text style={a.subtitle}>{position.step.impact}</Text>
+          </View>
+        )}
+        {!!(position?.step.videoId || selected.videoId) && !complete && (
+          <Button
+            title={tr('Watch how-to video')}
+            variant="secondary"
+            onPress={() => {
+              pause();
+              const vid = (position?.step.videoId ?? selected.videoId)!;
+              router.push({ pathname: '/meditation-video', params: { id: vid, contentId: selected.id, title: position?.step.title ?? selected.title, section: selected.section } });
+            }}
+          />
+        )}
         {(selected.id === 'breathing' || selected.section === 'breathing') && !complete && <Text style={s.status}>{tr('Follow the comfortable count')}: {position?.remaining}</Text>}
         {canSave && completionStatus !== 'saved' &&
           <Button title={tr(completionStatus === 'error' ? 'Retry saving practice' : 'Save completed practice')}
@@ -190,25 +222,53 @@ export function MeditationScreen() {
       </View>}
       <Text accessibilityRole="header" style={[a.sectionTitle, s.note]}>{tr('Practice guide')}</Text>
       {selected.steps.map((step, index) => <View key={`${index}-${step.title}`} style={s.guide}>
-        <Text style={s.guideTitle}>{index + 1}. {tr(step.title)}</Text>
+        <Text style={s.guideTitle}>
+          {index + 1}. {tr(step.title)}
+          {step.phase ? ` · ${tr(step.phase === 'warmup' ? 'Warm-up' : step.phase === 'cooldown' ? 'Cool-down' : 'Main posture')}` : ''}
+          {` (${clockTime(step.seconds)})`}
+        </Text>
+        {!!step.sanskritName && <Text style={[a.subtitle, { fontStyle: 'italic' }]}>{step.sanskritName}</Text>}
         <Text style={a.subtitle}>{tr(step.instruction)}</Text>
+        {!!step.impact && <Text style={[a.subtitle, { fontSize: 13 }]}>{tr('Impact on body')}: {step.impact}</Text>}
+        {!!step.videoId && (
+          <Button
+            title={tr('Watch how-to video')}
+            variant="secondary"
+            onPress={() => {
+              pause();
+              router.push({ pathname: '/meditation-video', params: { id: step.videoId!, contentId: selected.id, title: step.title, section: selected.section } });
+            }}
+          />
+        )}
       </View>)}
       <Text style={[a.subtitle, s.note]}>{tr('The timer and audio pause when you leave this screen or put the app in the background.')}</Text>
     </>}
   </AppScreen>;
 }
 
-export function PracticeDetailIntro({ exercise }: { exercise: Exercise }) {
+export function PracticeDetailIntro({ exercise, onWatchVideo }: { exercise: Exercise; onWatchVideo?: () => void }) {
   const a = useAppStyles(), s = useStyles(), { t } = useTranslation();
   const yoga = exercise.section === 'yoga';
   return <>
-    <PracticeCover section={exercise.section} thumbnailVariant={exercise.thumbnailVariant} style={s.detailCover} />
+    <PracticeCover section={exercise.section} imageUrl={exercise.imageUrl} videoId={exercise.videoId ?? undefined} thumbnailVariant={exercise.thumbnailVariant} style={s.detailCover} />
     <View style={s.session}>
       <View style={{ gap: 6 }}>
-        <Text style={a.subtitle}>{t(yoga ? 'Yoga' : 'Meditation')}{' \u00b7 '}{clockTime(exerciseDuration(exercise))}</Text>
+        <Text style={a.subtitle}>
+          {t(yoga ? 'Yoga' : 'Meditation')}
+          {exercise.difficulty ? ` · ${t(exercise.difficulty === 'beginner' ? 'Beginner' : exercise.difficulty === 'intermediate' ? 'Intermediate' : 'Gentle')}` : ''}
+          {' · '}{clockTime(exerciseDuration(exercise))}
+        </Text>
         <Text accessibilityRole="header" style={s.libraryTitle}>{t(exercise.title)}</Text>
+        {!!exercise.sanskritName && <Text style={[a.subtitle, { fontStyle: 'italic' }]}>{exercise.sanskritName}</Text>}
         {!!exercise.description && <Text style={a.subtitle}>{t(exercise.description)}</Text>}
       </View>
+      {!!exercise.impact && (
+        <View style={s.impactBox}>
+          <Text style={s.impactLabel}>{t('Impact on body')}</Text>
+          <Text style={a.subtitle}>{exercise.impact}</Text>
+        </View>
+      )}
+      {onWatchVideo && <Button title={t('Watch how-to video')} variant="secondary" onPress={onWatchVideo} />}
       <View style={{ gap: 6 }}>
         <Text accessibilityRole="header" style={a.sectionTitle}>{t('Before you start')}</Text>
         {!!exercise.preparation && <Text style={a.subtitle}>{t(exercise.preparation)}</Text>}
@@ -241,5 +301,7 @@ const useStyles = () => {
     center: { textAlign: 'center' },
     guide: { paddingVertical: 16, borderBottomWidth: 1, borderColor: c.border, gap: 6 },
     guideTitle: { fontFamily: fonts.medium, fontSize: 16, lineHeight: 24, color: c.ink },
+    impactBox: { backgroundColor: c.mintSurface, borderRadius: 14, padding: 14, gap: 4 },
+    impactLabel: { fontFamily: fonts.semibold, fontSize: 13, lineHeight: 18, color: c.primaryPressed },
   });
 };

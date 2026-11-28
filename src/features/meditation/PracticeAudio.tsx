@@ -6,11 +6,13 @@ import { useAppStyles } from '../../components/app/AppScreen';
 import { usePalette } from '../../theme/AppearanceProvider';
 import { useTranslation } from '../../localization/LanguageProvider';
 
-export function PracticeAudio({ running }: { running: boolean; cue: string; language: string }) {
+const ambientAsset = require('../../../assets/sounds/meditation_ambient.wav');
+
+export function PracticeAudio({ running, audioUrl }: { running: boolean; cue: string; language: string; audioUrl?: string }) {
   const { t } = useTranslation(), s = useAppStyles(), colors = usePalette();
   const [ambient, setAmbient] = useState(true);
   const [error, setError] = useState('');
-  const player = useAudioPlayer(require('../../../assets/sounds/meditation_ambient.wav'));
+  const player = useAudioPlayer(audioUrl ? { uri: audioUrl } : ambientAsset);
   useEffect(() => {
     let cancelled = false;
     // Expo Audio exposes native player properties as mutable setters.
